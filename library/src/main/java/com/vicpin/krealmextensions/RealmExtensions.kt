@@ -56,7 +56,7 @@ fun <T : RealmObject> T.where(query: (RealmQuery<T>) -> Unit): List<T> {
  * Utility extension for modifying database. Create a transaction, run the function passed as argument,
  * commit transaction and close realm instance.
  */
-fun Realm.update(action: (Realm) -> Unit) {
+fun Realm.transaction(action: (Realm) -> Unit) {
     use { executeTransaction { action(this) } }
 }
 
@@ -64,7 +64,7 @@ fun Realm.update(action: (Realm) -> Unit) {
  * Creates a new entry in database. Usefull for RealmObject with no primary key.
  */
 fun <T : RealmObject> T.create() {
-    Realm.getDefaultInstance().update {
+    Realm.getDefaultInstance().transaction {
         it.copyToRealm(this)
     }
 }
@@ -73,7 +73,7 @@ fun <T : RealmObject> T.create() {
  * Creates or updates a entry in database. Requires a RealmObject with primary key, or IllegalArgumentException will be thrown
  */
 fun <T : RealmObject> T.createOrUpdate() {
-    Realm.getDefaultInstance().update { it.copyToRealmOrUpdate(this) }
+    Realm.getDefaultInstance().transaction { it.copyToRealmOrUpdate(this) }
 }
 
 /**
@@ -81,8 +81,15 @@ fun <T : RealmObject> T.createOrUpdate() {
  * If has primary key, it tries to updates an existing one.
  */
 fun <T : RealmObject> T.save() {
-    Realm.getDefaultInstance().update {
+    Realm.getDefaultInstance().transaction {
         if(this.hasPrimaryKey(it)) it.copyToRealmOrUpdate(this) else it.copyToRealm(this)
+    }
+}
+
+fun <T : List<out RealmObject>> T.saveAll() {
+    val realm = Realm.getDefaultInstance()
+    realm.transaction {
+        forEach { if(it.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(it) else realm.copyToRealm(it) }
     }
 }
 
@@ -90,14 +97,14 @@ fun <T : RealmObject> T.save() {
  * Delete all entries of this type in database
  */
 fun <T : RealmObject> T.deleteAll() {
-    Realm.getDefaultInstance().update { it.forEntity(this).findAll().deleteAllFromRealm() }
+    Realm.getDefaultInstance().transaction { it.forEntity(this).findAll().deleteAllFromRealm() }
 }
 
 /**
  * Delete all entries returned by the specified query
  */
 fun <T : RealmObject> T.delete(myQuery: (RealmQuery<T>) -> Unit) {
-    Realm.getDefaultInstance().update {
+    Realm.getDefaultInstance().transaction {
         it.forEntity(this).withQuery(myQuery).findAll().deleteAllFromRealm()
     }
 }

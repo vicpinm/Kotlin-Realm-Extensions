@@ -71,6 +71,11 @@ class RealmTest {
         TestEntityPK(1).create() //Exception expected
     }
 
+    @Test fun testPersistPKEntityListWithSaveMethod() {
+        val list = listOf(TestEntityPK(1),TestEntityPK(2),TestEntityPK(3))
+        list.saveAll()
+    }
+
     /**
      * QUERY TESTS WITH EMPTY DB
      */
