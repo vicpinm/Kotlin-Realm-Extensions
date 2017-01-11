@@ -38,6 +38,8 @@ realm.close();
 User("John").save()
 ````
 
+Save method creates or updates your entity into database. You can also use create() method, which only create a new entity into database. If a previous one exists with the same primary key, it will throw a exception.
+
 #### Save list: Before (java)
 ````
 List<User> users = new ArrayList<User>(...);
@@ -53,8 +55,6 @@ realm.close();
 ````
 listOf<User>(...).saveAll()
 ````
-
-Save method creates or updates your entity into database. You can also use create() method, which only create a new entity into database. If a previous one exists with the same primary key, it will throw a exception.
 
 ### Query entities
 
