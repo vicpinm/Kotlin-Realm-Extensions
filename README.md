@@ -100,3 +100,27 @@ val events = Event().where { query -> query.equalTo("id",1) }
 ````
 
 ### Delete entities
+
+#### Delete all: Before (java)
+````
+Realm realm = Realm.getDefaultInstance();
+List<Event> events = realm.where(Event.class).findAll().deleteAllFromRealm();
+events = realm.copyFromRealm(event);
+realm.close();
+````
+#### Delete all: After (Kotlin + extensions)
+````
+Event().deleteAll()
+````
+
+#### Delete with condition: Before (java)
+````
+Realm realm = Realm.getDefaultInstance();
+List<Event> events = realm.where(Event.class).equalTo("id",1).findAll().deleteAllFromRealm();
+events = realm.copyFromRealm(event);
+realm.close();
+````
+#### Delete with condition: After (Kotlin + extensions)
+````
+Event().delete { query -> query.equalTo("id", 1) }
+````
