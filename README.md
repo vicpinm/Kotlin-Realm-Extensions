@@ -56,6 +56,7 @@ realm.close();
 listOf<User>(...).saveAll()
 ````
 
+
 ### Query entities
 
 All query extensions return detached realm objects, using copyFromRealm() method. 
@@ -96,8 +97,9 @@ realm.close();
 
 #### Get entities with conditions: After (Kotlin + extensions)
 ````
-val events = Event().where { query -> query.equalTo("id",1) }
+val events = Event().query { query -> query.equalTo("id",1) }
 ````
+
 
 ### Delete entities
 
@@ -124,3 +126,41 @@ realm.close();
 ````
 Event().delete { query -> query.equalTo("id", 1) }
 ````
+
+
+### Observe data changes
+
+#### Before (java)
+
+````
+Realm realm = Realm.getDefaultInstance();
+Observable<List<Event>> obs =  realm.where(Event.class).findAllAsync()
+.asObservable()
+.filter(RealmResults::isLoaded)
+.map(realm::copyFromRealm)
+.doOnUnsubscribe(() -> realm.close());
+````
+
+#### After (Kotlin + extensions)
+
+````
+val obs = Event().allItemsAsObservable
+````
+
+#### Observe query with condition: Before (java)
+
+````
+Realm realm = Realm.getDefaultInstance();
+Observable<List<Event>> obs =  realm.where(Event.class).equalTo("id",1).findAllAsync()
+.asObservable()
+.filter(RealmResults::isLoaded)
+.map(realm::copyFromRealm)
+.doOnUnsubscribe(() -> realm.close());
+````
+
+#### Observe query with condition: After (Kotlin + extensions)
+
+````
+val obs = Event().queryAsObservable { query -> query.equalTo("id",1) }
+````
+
