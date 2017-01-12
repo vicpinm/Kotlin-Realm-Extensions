@@ -38,6 +38,8 @@ dependencies {
     androidTestCompile "com.google.truth:truth:0.31"
     testCompile 'junit:junit:4.12'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    kaptAndroidTest 'io.realm:realm-annotations:2.2.1'
+    kaptAndroidTest 'io.realm:realm-annotations-processor:2.2.1'
 }
 repositories {
     mavenCentral()
