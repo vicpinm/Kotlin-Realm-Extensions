@@ -2,9 +2,9 @@
 
 Kotlin extensions for simplifying Realm API.
 
-## Features
+## Description
 
-Store, Query and Delete operations in Realm requires a bit of bolilerplate. With Kotlin Realm Extensions, you can simplify your code to its minimum expression.
+Simplify your code to its minimum expression with this set of kotlin extensions for Realm. Forget about all boilerplate related with Realm API and performs database operations in one line of code.
 
 ## Download
 
