@@ -14,7 +14,7 @@ repositories {
     mavenCentral()
 }
 
-compile 'com.github.vicpinm:krealmextensions:1.0.0'
+compile 'com.github.vicpinm:krealmextensions:1.0.2'
 ```
 
 ## Usage
