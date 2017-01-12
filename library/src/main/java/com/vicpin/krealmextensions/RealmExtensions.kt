@@ -44,7 +44,7 @@ val <T : RealmObject> T.allItems: List<T>
 /**
  * Query to the database with RealmQuery instance as argument
  */
-fun <T : RealmObject> T.where(query: (RealmQuery<T>) -> Unit): List<T> {
+fun <T : RealmObject> T.query(query: (RealmQuery<T>) -> Unit): List<T> {
 
     Realm.getDefaultInstance().use { realm ->
         val result = realm.forEntity(this).withQuery(query).findAll()

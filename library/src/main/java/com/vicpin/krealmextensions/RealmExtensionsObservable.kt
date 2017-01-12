@@ -5,11 +5,9 @@ import android.os.Looper
 import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.RealmQuery
-import io.realm.RealmResults
 import rx.Observable
 import rx.Subscriber
 import rx.Subscription
-import rx.functions.Action1
 
 
 /**
@@ -43,7 +41,7 @@ fun <T : RealmObject> T.allItemsAsObservable(): Observable<List<T>> {
 /**
  * Queries for entities in database asynchronously, and observe changes returning an observable.
  */
-fun <T : RealmObject> T.observeQuery(query: (RealmQuery<T>) -> Unit): Observable<List<T>> {
+fun <T : RealmObject> T.queryAsObservable(query: (RealmQuery<T>) -> Unit): Observable<List<T>> {
 
     var realm : Realm? = null
     var subscription: Subscription? = null

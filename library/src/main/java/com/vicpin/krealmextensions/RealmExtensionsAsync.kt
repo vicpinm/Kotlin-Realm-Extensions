@@ -60,7 +60,7 @@ fun <T : RealmObject> T.allItemsAsync(callback: (List<T>) -> Unit) {
 /**
  * Queries for entities in database asynchronously.
  */
-fun <T : RealmObject> T.whereAsync(query: (RealmQuery<T>) -> Unit, callback: (List<T>) -> Unit) {
+fun <T : RealmObject> T.queryAsync(query: (RealmQuery<T>) -> Unit, callback: (List<T>) -> Unit) {
     mainThread {
 
         val realm = Realm.getDefaultInstance()

@@ -153,12 +153,20 @@ class RealmTest {
     }
 
 
+    @Test fun testQueryAllItemsAfterSaveCollection() {
+        val list = listOf(TestEntityPK(1),TestEntityPK(2),TestEntityPK(3))
+        list.saveAll()
+
+        assertThat(TestEntityPK().allItems).hasSize(3)
+
+    }
+
     /**
      * QUERY TESTS WITH WHERE STATEMENT
      */
     @Test fun testWhereQueryShouldReturnExpectedItems(){
         populateDBWithTestEntityPK(numItems = 5)
-        val results = TestEntityPK().where { query -> query.equalTo("id",1) }
+        val results = TestEntityPK().query { query -> query.equalTo("id",1) }
 
         assertThat(results).hasSize(1)
         assertThat(results.first().id).isEqualTo(1)
@@ -166,7 +174,7 @@ class RealmTest {
 
     @Test fun testAsyncWhereQueryShouldReturnExpectedItems(){
         populateDBWithTestEntityPK(numItems = 5)
-        TestEntityPK().whereAsync({ query -> query.equalTo("id",1) }){ results ->
+        TestEntityPK().queryAsync({ query -> query.equalTo("id",1) }){ results ->
             assertThat(results).hasSize(1)
             assertThat(results.first().id).isEqualTo(1)
             release()
@@ -177,14 +185,14 @@ class RealmTest {
 
     @Test fun testWhereQueryShouldNotReturnAnyItem(){
         populateDBWithTestEntityPK(numItems = 5)
-        val results = TestEntityPK().where { query -> query.equalTo("id",6) }
+        val results = TestEntityPK().query { query -> query.equalTo("id",6) }
 
         assertThat(results).hasSize(0)
     }
 
     @Test fun testAsyncWhereQueryShouldNotReturnAnyItem(){
         populateDBWithTestEntityPK(numItems = 5)
-        TestEntityPK().whereAsync({ query -> query.equalTo("id",6) }){ results ->
+        TestEntityPK().queryAsync({ query -> query.equalTo("id",6) }){ results ->
             assertThat(results).hasSize(0)
             release()
         }
