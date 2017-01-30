@@ -86,7 +86,14 @@ fun <T : RealmObject> T.save() {
     }
 }
 
-fun <T : List<out RealmObject>> T.saveAll() {
+fun <T : Collection<out RealmObject>> T.saveAll() {
+    val realm = Realm.getDefaultInstance()
+    realm.transaction {
+        forEach { if(it.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(it) else realm.copyToRealm(it) }
+    }
+}
+
+fun  Array<out RealmObject>.saveAll() {
     val realm = Realm.getDefaultInstance()
     realm.transaction {
         forEach { if(it.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(it) else realm.copyToRealm(it) }

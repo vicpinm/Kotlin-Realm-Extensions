@@ -1,8 +1,9 @@
-package com.vicpin.krealmextensions.model
+package com.vicpin.krealmextensions
 
 import android.support.test.runner.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
-import com.vicpin.krealmextensions.*
+import com.vicpin.krealmextensions.model.TestEntity
+import com.vicpin.krealmextensions.model.TestEntityPK
 import com.vicpin.krealmextensions.util.TestRealmConfigurationFactory
 import io.realm.Realm
 import io.realm.exceptions.RealmPrimaryKeyConstraintException
@@ -17,12 +18,11 @@ import java.util.concurrent.CountDownLatch
  * Created by victor on 10/1/17.
  */
 @RunWith(AndroidJUnit4::class)
-class RealmTest {
+class KRealmExtensionsTests {
 
     @get:Rule var configFactory = TestRealmConfigurationFactory()
     lateinit var realm: Realm
     lateinit var latch: CountDownLatch
-
 
     @Before fun setUp() {
         val realmConfig = configFactory.createConfiguration()
@@ -72,7 +72,7 @@ class RealmTest {
     }
 
     @Test fun testPersistPKEntityListWithSaveMethod() {
-        val list = listOf(TestEntityPK(1),TestEntityPK(2),TestEntityPK(3))
+        val list = listOf(TestEntityPK(1), TestEntityPK(2), TestEntityPK(3))
         list.saveAll()
     }
 
@@ -154,7 +154,7 @@ class RealmTest {
 
 
     @Test fun testQueryAllItemsAfterSaveCollection() {
-        val list = listOf(TestEntityPK(1),TestEntityPK(2),TestEntityPK(3))
+        val list = listOf(TestEntityPK(1), TestEntityPK(2), TestEntityPK(3))
         list.saveAll()
 
         assertThat(TestEntityPK().allItems).hasSize(3)
@@ -228,6 +228,46 @@ class RealmTest {
     }
 
     /**
+     * OBSERVABLE TESTS
+     */
+    @Test fun testAllItemsAsObservable(){
+
+        var itemsCount = 5
+
+        populateDBWithTestEntity(numItems = itemsCount)
+
+        val subscription = TestEntity().allItemsAsObservable().subscribe({
+            assertThat(it).hasSize(itemsCount)
+            release()
+        })
+
+        block()
+
+        //Add one item more to db
+        ++itemsCount
+        populateDBWithTestEntity(numItems = 1)
+
+        block()
+
+        subscription.unsubscribe()
+
+    }
+
+    @Test fun testQueryAsObservable(){
+
+        populateDBWithTestEntityPK(numItems = 5)
+
+        val subscription = TestEntityPK().queryAsObservable { query -> query.equalTo("id",1) }.subscribe({
+            assertThat(it).hasSize(1)
+            release()
+        })
+
+        block()
+
+        subscription.unsubscribe()
+    }
+
+    /**
      * UTILITY TEST METHODS
      */
     private fun populateDBWithTestEntity(numItems: Int) {
@@ -244,5 +284,6 @@ class RealmTest {
 
     private fun release() {
         latch.countDown()
+        latch = CountDownLatch(1)
     }
 }

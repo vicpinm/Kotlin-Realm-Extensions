@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'realm-android'
 apply from: 'maven-push.gradle'
 
@@ -40,6 +41,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     kaptAndroidTest 'io.realm:realm-annotations:2.2.1'
     kaptAndroidTest 'io.realm:realm-annotations-processor:2.2.1'
+
 }
 repositories {
     mavenCentral()

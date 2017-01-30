@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Kotlin Realm Extensions</string>
+    <string name="title">See androidTest folder for more usage examples</string>
+
 </resources>

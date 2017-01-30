@@ -34,7 +34,7 @@ fun <T : RealmObject> T.allItemsAsObservable(): Observable<List<T>> {
                 .subscribe({ subscriber.onNext(it)
                 }, { subscriber.onError(it) })
 
-    }.doOnUnsubscribe { realm?.close(); subscription?.unsubscribe() }
+    }.doOnUnsubscribe { mainThread { realm?.close(); subscription?.unsubscribe() } }
 
 }
 
@@ -59,7 +59,7 @@ fun <T : RealmObject> T.queryAsObservable(query: (RealmQuery<T>) -> Unit): Obser
                 .subscribe({ subscriber.onNext(it)
                 }, { subscriber.onError(it) })
 
-    }.doOnUnsubscribe { realm?.close(); subscription?.unsubscribe() }
+    }.doOnUnsubscribe { mainThread { realm?.close(); subscription?.unsubscribe() } }
 
 }
 
