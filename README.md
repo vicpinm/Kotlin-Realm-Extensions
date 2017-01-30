@@ -5,7 +5,7 @@
 
 ## Description
 
-Simplify your code to its minimum expression with this set of kotlin extensions for Realm. Forget all boilerplate related with Realm API and perform database operations in one line of code with this set of extensions.
+Simplify your code to its minimum expression with this set of kotlin extensions for Realm. Forget all boilerplate related with Realm API and perform database operations in one line of code with this set of extensions. Full test coverage.
 
 ## Download
 
@@ -15,7 +15,7 @@ repositories {
     mavenCentral()
 }
 
-compile 'com.github.vicpinm:krealmextensions:1.0.2'
+compile 'com.github.vicpinm:krealmextensions:1.0.3'
 ```
 
 ## Usage
