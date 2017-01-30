@@ -5,7 +5,7 @@
 
 ## Description
 
-Simplify your code to its minimum expression with this set of kotlin extensions for Realm. Forget about all boilerplate related with Realm API and performs database operations in one line of code.
+Simplify your code to its minimum expression with this set of kotlin extensions for Realm. Forget all boilerplate related with Realm API and perform database operations in one line of code with this set of extensions.
 
 ## Download
 
@@ -39,7 +39,7 @@ realm.close();
 User("John").save()
 ````
 
-Save method creates or updates your entity into database. You can also use create() method, which only create a new entity into database. If a previous one exists with the same primary key, it will throw a exception.
+Save method creates or updates your entity into database. You can also use create() method, which only create a new entity into database. If a previous one exists with the same primary key, it will throw an exception.
 
 #### Save list: Before (java)
 ````
