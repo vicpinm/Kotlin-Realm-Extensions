@@ -28,10 +28,13 @@ All your entities should extend RealmObject.
 User user = new User("John");
 
 Realm realm = Realm.getDefaultInstance();
-realm.beginTransaction();
-realm.copyToRealmOrUpdate(user);  
-realm.commitTransaction();
-realm.close();
+try{
+   realm.beginTransaction();
+   realm.copyToRealmOrUpdate(user);  
+   realm.commitTransaction();
+} finally {
+   realm.close();
+}
 ````
 #### After (Kotlin + extensions)
 
@@ -46,10 +49,13 @@ Save method creates or updates your entity into database. You can also use creat
 List<User> users = new ArrayList<User>(...);
 
 Realm realm = Realm.getDefaultInstance();
-realm.beginTransaction();
-realm.copyToRealmOrUpdate(users);  
-realm.commitTransaction();
-realm.close();
+try {
+    realm.beginTransaction();
+    realm.copyToRealmOrUpdate(users);  
+    realm.commitTransaction();
+} finally {
+    realm.close();
+}
 ````
 #### Save list: After (Kotlin + extensions)
 
@@ -65,9 +71,12 @@ All query extensions return detached realm objects, using copyFromRealm() method
 #### Get first entity: Before (java)
 ````
 Realm realm = Realm.getDefaultInstance();
-Event firstEvent = realm.where(Event.class).findFirst();
-firstEvent = realm.copyFromRealm(event);
-realm.close();
+try {
+   Event firstEvent = realm.where(Event.class).findFirst();
+   firstEvent = realm.copyFromRealm(event);
+} finally {
+   realm.close();
+}
 ````
 #### Get first entity: After (Kotlin + extensions)
 ````
@@ -79,9 +88,12 @@ You can use lastItem extension too.
 #### Get all entities: Before (java)
 ````
 Realm realm = Realm.getDefaultInstance();
-List<Event> events = realm.where(Event.class).findAll();
-events = realm.copyFromRealm(event);
-realm.close();
+try {
+    List<Event> events = realm.where(Event.class).findAll();
+    events = realm.copyFromRealm(event);
+} finally {
+    realm.close();
+}
 ````
 #### Get  all entities: After (Kotlin + extensions)
 ````
@@ -91,9 +103,12 @@ val events = Event().allItems
 #### Get entities with conditions: Before (java)
 ````
 Realm realm = Realm.getDefaultInstance();
-List<Event> events = realm.where(Event.class).equalTo("id",1).findAll();
-events = realm.copyFromRealm(event);
-realm.close();
+try{
+    List<Event> events = realm.where(Event.class).equalTo("id",1).findAll();
+    events = realm.copyFromRealm(event);
+} finally {
+    realm.close();
+}
 ````
 
 #### Get entities with conditions: After (Kotlin + extensions)
@@ -107,9 +122,12 @@ val events = Event().query { query -> query.equalTo("id",1) }
 #### Delete all: Before (java)
 ````
 Realm realm = Realm.getDefaultInstance();
-List<Event> events = realm.where(Event.class).findAll().deleteAllFromRealm();
-events = realm.copyFromRealm(event);
-realm.close();
+try{
+    List<Event> events = realm.where(Event.class).findAll().deleteAllFromRealm();
+    events = realm.copyFromRealm(event);
+} finally {
+    realm.close();
+}
 ````
 #### Delete all: After (Kotlin + extensions)
 ````
@@ -119,9 +137,12 @@ Event().deleteAll()
 #### Delete with condition: Before (java)
 ````
 Realm realm = Realm.getDefaultInstance();
-List<Event> events = realm.where(Event.class).equalTo("id",1).findAll().deleteAllFromRealm();
-events = realm.copyFromRealm(event);
-realm.close();
+try{
+    List<Event> events = realm.where(Event.class).equalTo("id",1).findAll().deleteAllFromRealm();
+    events = realm.copyFromRealm(event);
+} finally {
+    realm.close();
+}
 ````
 #### Delete with condition: After (Kotlin + extensions)
 ````
