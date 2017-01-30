@@ -1,10 +1,11 @@
-# Kotlin-Realm-Extensions
 
-Kotlin extensions for simplifying Realm API.
+[![Sin título.png](https://s23.postimg.org/3sg28rkor/Sin_t_tulo.png)](https://postimg.org/image/lv94zzgjb/)
 
-## Features
+ Kotlin extensions for simplifying Realm API.
 
-Store, Query and Delete operations in Realm requires a bit of bolilerplate. With Kotlin Realm Extensions, you can simplify your code to its minimum expression.
+## Description
+
+Simplify your code to its minimum expression with this set of kotlin extensions for Realm. Forget all boilerplate related with Realm API and perform database operations in one line of code with this set of extensions.
 
 ## Download
 
@@ -38,7 +39,7 @@ realm.close();
 User("John").save()
 ````
 
-Save method creates or updates your entity into database. You can also use create() method, which only create a new entity into database. If a previous one exists with the same primary key, it will throw a exception.
+Save method creates or updates your entity into database. You can also use create() method, which only create a new entity into database. If a previous one exists with the same primary key, it will throw an exception.
 
 #### Save list: Before (java)
 ````
