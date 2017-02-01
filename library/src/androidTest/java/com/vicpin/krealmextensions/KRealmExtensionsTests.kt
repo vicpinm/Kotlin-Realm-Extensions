@@ -44,8 +44,18 @@ class KRealmExtensionsTests {
         TestEntity().create() //No exception expected
     }
 
+    @Test fun testPersistEntityWithCreateManaged() {
+        val result = TestEntity().createManaged(realm) //No exception expected
+        assertThat(result.isManaged).isTrue()
+    }
+
     @Test fun testPersistPKEntityWithCreate() {
         TestEntityPK(1).create() //No exception expected
+    }
+
+    @Test fun testPersistPKEntityWithCreateManaged() {
+        val result = TestEntityPK(1).createManaged(realm) //No exception expected
+        assertThat(result.isManaged).isTrue()
     }
 
     @Test(expected = IllegalArgumentException::class)
@@ -53,16 +63,36 @@ class KRealmExtensionsTests {
         TestEntity().createOrUpdate() //Exception expected due to TestEntity has no primary key
     }
 
+    @Test(expected = IllegalArgumentException::class)
+    fun testPersistEntityWithCreateOrUpdateMethodManaged() {
+        TestEntity().createOrUpdateManaged(realm) //Exception expected due to TestEntity has no primary key
+    }
+
     fun testPersistPKEntityWithCreateOrUpdateMethod() {
         TestEntityPK(1).createOrUpdate() //No exception expected
+    }
+
+    fun testPersistPKEntityWithCreateOrUpdateMethodManaged() {
+        val result = TestEntityPK(1).createOrUpdateManaged(realm) //No exception expected
+        assertThat(result.isManaged).isTrue()
     }
 
     @Test fun testPersistEntityWithSaveMethod() {
         TestEntity().save() //No exception expected
     }
 
+    @Test fun testPersistEntityWithSaveMethodManaged() {
+        val result = TestEntity().saveManaged(realm) //No exception expected
+        assertThat(result.isManaged)
+    }
+
     @Test fun testPersistPKEntityWithSaveMethod() {
         TestEntityPK(1).save() //No exception expected
+    }
+
+    @Test fun testPersistPKEntityWithSaveMethodManaged() {
+        val result = TestEntityPK(1).saveManaged(realm) //No exception expected
+        assertThat(result.isManaged).isTrue()
     }
 
     @Test(expected = RealmPrimaryKeyConstraintException::class)
@@ -71,9 +101,22 @@ class KRealmExtensionsTests {
         TestEntityPK(1).create() //Exception expected
     }
 
+    @Test(expected = RealmPrimaryKeyConstraintException::class)
+    fun testPersistPKEntityWithCreateMethodAndSamePrimaryKeyManaged() {
+        val result = TestEntityPK(1).createManaged(realm) //No exception expected
+        assertThat(result.isManaged).isTrue()
+        TestEntityPK(1).createManaged(realm) //Exception expected
+    }
+
     @Test fun testPersistPKEntityListWithSaveMethod() {
         val list = listOf(TestEntityPK(1), TestEntityPK(2), TestEntityPK(3))
         list.saveAll()
+    }
+
+    @Test fun testPersistPKEntityListWithSaveMethodManaged() {
+        val list = listOf(TestEntityPK(1), TestEntityPK(2), TestEntityPK(3))
+        val results = list.saveAllManaged(realm)
+        results.forEach { assertThat(it.isManaged).isTrue() }
     }
 
     /**

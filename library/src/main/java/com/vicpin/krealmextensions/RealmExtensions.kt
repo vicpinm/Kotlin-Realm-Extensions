@@ -70,10 +70,30 @@ fun <T : RealmObject> T.create() {
 }
 
 /**
+ * Creates a new entry in database. Useful for RealmObject with no primary key.
+ * @return a managed version of a saved object
+ */
+fun <T : RealmObject> T.createManaged(realm: Realm): T {
+    var result: T? = null
+    realm.executeTransaction { result = it.copyToRealm(this) }
+    return result!!
+}
+
+/**
  * Creates or updates a entry in database. Requires a RealmObject with primary key, or IllegalArgumentException will be thrown
  */
 fun <T : RealmObject> T.createOrUpdate() {
     Realm.getDefaultInstance().transaction { it.copyToRealmOrUpdate(this) }
+}
+
+/**
+ * Creates or updates a entry in database. Requires a RealmObject with primary key, or IllegalArgumentException will be thrown
+ * @return a managed version of a saved object
+ */
+fun <T : RealmObject> T.createOrUpdateManaged(realm: Realm): T {
+    var result: T? = null
+    realm.executeTransaction { result = it.copyToRealmOrUpdate(this) }
+    return result!!
 }
 
 /**
@@ -86,6 +106,19 @@ fun <T : RealmObject> T.save() {
     }
 }
 
+/**
+ * Creates a new entry in database or updates an existing one. If entity has no primary key, always create a new one.
+ * If has primary key, it tries to update an existing one.
+ * @return a managed version of a saved object
+ */
+fun <T : RealmObject> T.saveManaged(realm: Realm): T {
+    var result: T? = null
+    realm.executeTransaction {
+        result = if(this.hasPrimaryKey(it)) it.copyToRealmOrUpdate(this) else it.copyToRealm(this)
+    }
+    return result!!
+}
+
 fun <T : Collection<out RealmObject>> T.saveAll() {
     val realm = Realm.getDefaultInstance()
     realm.transaction {
@@ -93,11 +126,27 @@ fun <T : Collection<out RealmObject>> T.saveAll() {
     }
 }
 
+fun <T : RealmObject> Collection<T>.saveAllManaged(realm: Realm): List<T> {
+    val results = mutableListOf<T>()
+    realm.executeTransaction {
+        forEach { results += if(it.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(it) else realm.copyToRealm(it) }
+    }
+    return results
+}
+
 fun  Array<out RealmObject>.saveAll() {
     val realm = Realm.getDefaultInstance()
     realm.transaction {
         forEach { if(it.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(it) else realm.copyToRealm(it) }
     }
+}
+
+fun <T : RealmObject> Array<T>.saveAllManaged(realm: Realm): List<T> {
+    val results = mutableListOf<T>()
+    realm.executeTransaction {
+        forEach { results += if(it.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(it) else realm.copyToRealm(it) }
+    }
+    return results
 }
 
 /**
