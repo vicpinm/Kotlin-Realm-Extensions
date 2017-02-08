@@ -1,11 +1,11 @@
 
 [![Sin título.png](https://s23.postimg.org/3sg28rkor/Sin_t_tulo.png)](https://postimg.org/image/lv94zzgjb/)
 
- Kotlin extensions for simplifying Realm API.
+ Kotlin extensions to simplify Realm API.
 
 ## Description
 
-Simplify your code to its minimum expression with this set of kotlin extensions for Realm. Forget all boilerplate related with Realm API and perform database operations in one line of code with this set of extensions. Full test coverage.
+Simplify your code to its minimum expression with this set of Kotlin extensions for Realm. Forget all boilerplate related with Realm API and perform database operations in one line of code with this lightweight library. Full test coverage.
 
 ## Download
 
@@ -17,6 +17,13 @@ repositories {
 
 compile 'com.github.vicpinm:krealmextensions:1.0.4'
 ```
+## Features
+
+Forget about:
+- Realm instances management
+- Transactions
+- Threads limitations
+- Boilerplate related with Realm API
 
 ## Usage
 ### Store entities
@@ -63,6 +70,7 @@ try {
 listOf<User>(...).saveAll()
 ````
 
+If you need to provide your own Realm instance, you can use the saveManaged(Realm) and saveAllManaged(Realm) methods. These methods return managed objects. You should close manually your Realm instance when you finish with them. 
 
 ### Query entities
 
