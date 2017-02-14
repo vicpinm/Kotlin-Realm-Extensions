@@ -53,6 +53,14 @@ fun <T : RealmObject> T.query(query: (RealmQuery<T>) -> Unit): List<T> {
 }
 
 /**
+ * Query to the database with RealmQuery instance as argument. Return first result, or null.
+ */
+fun <T : RealmObject> T.queryFirst(query: (RealmQuery<T>) -> Unit): T? {
+    val result = query(query)
+    return if (result.isNotEmpty()) result[0] else return null
+}
+
+/**
  * Utility extension for modifying database. Create a transaction, run the function passed as argument,
  * commit transaction and close realm instance.
  */

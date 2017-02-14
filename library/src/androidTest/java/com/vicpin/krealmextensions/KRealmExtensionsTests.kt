@@ -149,6 +149,16 @@ class KRealmExtensionsTests {
         block()
     }
 
+    @Test fun testQueryConditionalWhenDBIsEmpty() {
+        val result = TestEntity().query { it.equalTo("name", "test") }
+        assertThat(result).hasSize(0)
+    }
+
+    @Test fun testQueryFirstItemWhenDBIsEmpty() {
+        val result = TestEntity().queryFirst { it.equalTo("name", "test") }
+        assertThat(result).isNull()
+    }
+
     /**
      * QUERY TESTS WITH POPULATED DB
      */
@@ -201,7 +211,15 @@ class KRealmExtensionsTests {
         list.saveAll()
 
         assertThat(TestEntityPK().allItems).hasSize(3)
+    }
 
+    @Test fun testFirstItemWhenDbIsNotEmpty() {
+        populateDBWithTestEntityPK(numItems = 5)
+
+        val result = TestEntityPK().queryFirst { it.equalTo("id",2) }
+
+        assertThat(result).isNotNull()
+        assertThat(result?.id).isEqualTo(2)
     }
 
     /**
