@@ -1,4 +1,3 @@
-
 [![Sin título.png](https://s23.postimg.org/3sg28rkor/Sin_t_tulo.png)](https://postimg.org/image/lv94zzgjb/)
 
  Kotlin extensions to simplify Realm API.
@@ -15,7 +14,7 @@ repositories {
     mavenCentral()
 }
 
-compile 'com.github.vicpinm:krealmextensions:1.0.4'
+compile 'com.github.vicpinm:krealmextensions:1.0.5'
 ```
 ## Features
 
@@ -124,6 +123,19 @@ try{
 val events = Event().query { query -> query.equalTo("id",1) }
 ````
 
+If you only need the first result, you can also use:
+````
+val event = Event().queryFirst { query -> query.equalTo("id",1) }
+````
+
+#### Get sorted entities
+````
+val sortedEvents = Event().querySorted("name",Sort.DESCENDING) 
+````
+````
+val sortedEvents = Event().querySorted("name",Sort.DESCENDING) { query -> query.equalTo("id",1) }
+````
+
 
 ### Delete entities
 
@@ -193,4 +205,3 @@ Observable<List<Event>> obs =  realm.where(Event.class).equalTo("id",1).findAllA
 ````
 val obs = Event().queryAsObservable { query -> query.equalTo("id",1) }
 ````
-
