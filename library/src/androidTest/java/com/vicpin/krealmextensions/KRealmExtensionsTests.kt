@@ -6,6 +6,7 @@ import com.vicpin.krealmextensions.model.TestEntity
 import com.vicpin.krealmextensions.model.TestEntityPK
 import com.vicpin.krealmextensions.util.TestRealmConfigurationFactory
 import io.realm.Realm
+import io.realm.Sort
 import io.realm.exceptions.RealmPrimaryKeyConstraintException
 import org.junit.After
 import org.junit.Before
@@ -159,6 +160,11 @@ class KRealmExtensionsTests {
         assertThat(result).isNull()
     }
 
+    @Test fun testQuerySortedWhenDBIsEmpty() {
+        val result = TestEntity().querySorted("name", Sort.ASCENDING) { it.equalTo("name", "test") }
+        assertThat(result).hasSize(0)
+    }
+
     /**
      * QUERY TESTS WITH POPULATED DB
      */
@@ -213,15 +219,6 @@ class KRealmExtensionsTests {
         assertThat(TestEntityPK().allItems).hasSize(3)
     }
 
-    @Test fun testFirstItemWhenDbIsNotEmpty() {
-        populateDBWithTestEntityPK(numItems = 5)
-
-        val result = TestEntityPK().queryFirst { it.equalTo("id",2) }
-
-        assertThat(result).isNotNull()
-        assertThat(result?.id).isEqualTo(2)
-    }
-
     /**
      * QUERY TESTS WITH WHERE STATEMENT
      */
@@ -259,6 +256,47 @@ class KRealmExtensionsTests {
         }
 
         block()
+    }
+
+    @Test fun testFirstItemWhenDbIsNotEmpty() {
+        populateDBWithTestEntityPK(numItems = 5)
+
+        val result = TestEntityPK().queryFirst { it.equalTo("id",2) }
+
+        assertThat(result).isNotNull()
+        assertThat(result?.id).isEqualTo(2)
+    }
+
+    @Test fun testQueryAscendingShouldReturnOrderedResults() {
+        populateDBWithTestEntityPK(numItems = 5)
+
+        val result = TestEntityPK().querySorted("id", Sort.ASCENDING)
+
+        assertThat(result).hasSize(5)
+        assertThat(result.first().id).isEqualTo(0)
+        assertThat(result.last().id).isEqualTo(4)
+    }
+
+    @Test fun testQueryDescendingShouldReturnOrderedResults() {
+        populateDBWithTestEntityPK(numItems = 5)
+
+        val result = TestEntityPK().querySorted("id", Sort.DESCENDING)
+
+        assertThat(result).hasSize(5)
+        assertThat(result.first().id).isEqualTo(4)
+        assertThat(result.last().id).isEqualTo(0)
+    }
+
+    @Test fun testQueryDescendingWithFilterShouldReturnOrderedResults() {
+        populateDBWithTestEntityPK(numItems = 5)
+
+        val result = TestEntityPK().querySorted("id", Sort.DESCENDING) {
+            query -> query.lessThan("id",3).greaterThan("id",0)
+        }
+
+        assertThat(result).hasSize(2)
+        assertThat(result.first().id).isEqualTo(2)
+        assertThat(result.last().id).isEqualTo(1)
     }
 
     /**

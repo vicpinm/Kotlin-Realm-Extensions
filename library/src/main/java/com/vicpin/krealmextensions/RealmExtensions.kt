@@ -3,6 +3,7 @@ package com.vicpin.krealmextensions
 import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.RealmQuery
+import io.realm.Sort
 
 /**
  * Created by victor on 2/1/17.
@@ -58,6 +59,50 @@ fun <T : RealmObject> T.query(query: (RealmQuery<T>) -> Unit): List<T> {
 fun <T : RealmObject> T.queryFirst(query: (RealmQuery<T>) -> Unit): T? {
     val result = query(query)
     return if (result.isNotEmpty()) result[0] else return null
+}
+
+/**
+ * Query to the database with RealmQuery instance as argument
+ */
+fun <T : RealmObject> T.querySorted(fieldName : String, order : Sort, query: (RealmQuery<T>) -> Unit): List<T> {
+
+    Realm.getDefaultInstance().use { realm ->
+        val result = realm.forEntity(this).withQuery(query).findAll().sort(fieldName, order)
+        return realm.copyFromRealm(result)
+    }
+}
+
+/**
+ * Query to the database with a specific order and a RealmQuery instance as argument
+ */
+fun <T : RealmObject> T.querySorted(fieldName : List<String>, order : List<Sort>, query: (RealmQuery<T>) -> Unit): List<T> {
+
+    Realm.getDefaultInstance().use { realm ->
+        val result = realm.forEntity(this).withQuery(query).findAll().sort(fieldName.toTypedArray(), order.toTypedArray())
+        return realm.copyFromRealm(result)
+    }
+}
+
+/**
+ * Query to the database with a specific order
+ */
+fun <T : RealmObject> T.querySorted(fieldName : String, order : Sort): List<T> {
+
+    Realm.getDefaultInstance().use { realm ->
+        val result = realm.forEntity(this).findAll().sort(fieldName, order)
+        return realm.copyFromRealm(result)
+    }
+}
+
+/**
+ * Query to the database with a specific order
+ */
+fun <T : RealmObject> T.querySorted(fieldName : List<String>, order : List<Sort>): List<T> {
+
+    Realm.getDefaultInstance().use { realm ->
+        val result = realm.forEntity(this).findAll().sort(fieldName.toTypedArray(), order.toTypedArray())
+        return realm.copyFromRealm(result)
+    }
 }
 
 /**
