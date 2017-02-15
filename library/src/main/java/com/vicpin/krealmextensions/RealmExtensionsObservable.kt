@@ -1,6 +1,5 @@
 package com.vicpin.krealmextensions
 
-import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import android.os.Process
@@ -24,27 +23,15 @@ import rx.android.schedulers.AndroidSchedulers
  */
 fun <T : RealmObject> T.allItemsAsObservable(): Observable<List<T>> {
 
-    var realm : Realm? = null
-    var subscription: Subscription? = null
-
-    val backgroundThread = BackgroundThread()
-    backgroundThread.start()
-    val backgroundLooper = backgroundThread.looper
-
-    return Observable.create <List<T>> { subscriber ->
-        realm = Realm.getDefaultInstance()
-       subscription = RealmQuery.createQuery(realm, this.javaClass)
+    return prepareObservableQuery { realm, subscriber ->
+         RealmQuery.createQuery(realm, this.javaClass)
                 .findAllAsync()
                 .asObservable()
                 .filter { it.isLoaded }
-                .map { realm?.copyFromRealm(it) }
+                .map { realm.copyFromRealm(it) }
                 .subscribe({ subscriber.onNext(it)
                 }, { subscriber.onError(it) })
-
-    }.doOnUnsubscribe ({ realm?.close(); subscription?.unsubscribe() })
-        .unsubscribeOn(AndroidSchedulers.from(backgroundLooper))
-        .subscribeOn(AndroidSchedulers.from(backgroundLooper))
-
+    }
 }
 
 /**
@@ -52,33 +39,50 @@ fun <T : RealmObject> T.allItemsAsObservable(): Observable<List<T>> {
  */
 fun <T : RealmObject> T.queryAsObservable(query: (RealmQuery<T>) -> Unit): Observable<List<T>> {
 
-    var realm : Realm? = null
-    var subscription: Subscription? = null
-
-    val backgroundThread = BackgroundThread()
-    backgroundThread.start()
-    val backgroundLooper = backgroundThread.looper
-
-    return Observable.create <List<T>> { subscriber ->
-
-        realm = Realm.getDefaultInstance()
-        val realmQuery: RealmQuery<T> = RealmQuery.createQuery(realm, this.javaClass)
+    return prepareObservableQuery { realm, subscriber ->
+        val realmQuery = RealmQuery.createQuery(realm, this.javaClass)
         query(realmQuery)
 
-        subscription = realmQuery.findAllAsync()
+        realmQuery.findAllAsync()
                 .asObservable()
                 .filter { it.isLoaded }
-                .map { realm?.copyFromRealm(it) }
+                .map { realm.copyFromRealm(it) }
                 .subscribe({ subscriber.onNext(it)
                 }, { subscriber.onError(it) })
+    }
 
-    }.doOnUnsubscribe ({ realm?.close(); subscription?.unsubscribe()  })
-        .unsubscribeOn(AndroidSchedulers.from(backgroundLooper))
-        .subscribeOn(AndroidSchedulers.from(backgroundLooper))
 }
 
 class BackgroundThread : HandlerThread("Scheduler-Realm-BackgroundThread",
     Process.THREAD_PRIORITY_BACKGROUND)
+
+fun <T : Any> prepareObservableQuery(closure : (Realm, Subscriber<in T>) -> Subscription) : Observable<T> {
+    var realm : Realm? = null
+    var mySubscription: Subscription? = null
+
+    var backgroundThread: HandlerThread? = null
+    var looper: Looper = if (Looper.myLooper() != Looper.getMainLooper()) {
+        backgroundThread = BackgroundThread()
+        backgroundThread.start()
+        backgroundThread.looper
+    } else {
+        Looper.getMainLooper()
+    }
+
+    return Observable.defer {
+        Observable.create(Observable.OnSubscribe<T> {
+            realm = Realm.getDefaultInstance()
+            mySubscription = closure(realm!!, it)
+        }).doOnUnsubscribe({
+            realm?.close()
+            mySubscription?.unsubscribe()
+            backgroundThread?.interrupt()
+
+        }).unsubscribeOn(AndroidSchedulers.from(looper))
+                .subscribeOn(AndroidSchedulers.from(looper))
+    }
+}
+
 
 
 
