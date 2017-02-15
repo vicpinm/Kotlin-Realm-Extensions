@@ -1,0 +1,6 @@
+###1.0.5
+ - Added new method queryFirst()
+ - Added new methods of the family querySorted()
+ 
+###1.0.4
+ - Added saveManaged() methods
