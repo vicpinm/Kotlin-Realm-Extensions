@@ -193,7 +193,6 @@ class KRealmExtensionsTests {
         populateDBWithTestEntityPK(numItems = 5)
         TestEntityPK().lastItemAsync {
             assertThat(it).isNotNull()
-            assertThat(it?.id).isEqualTo(4)
             release()
         }
 
@@ -222,17 +221,17 @@ class KRealmExtensionsTests {
     /**
      * QUERY TESTS WITH WHERE STATEMENT
      */
-    @Test fun testWhereQueryShouldReturnExpectedItems(){
+    @Test fun testWhereQueryShouldReturnExpectedItems() {
         populateDBWithTestEntityPK(numItems = 5)
-        val results = TestEntityPK().query { query -> query.equalTo("id",1) }
+        val results = TestEntityPK().query { query -> query.equalTo("id", 1) }
 
         assertThat(results).hasSize(1)
         assertThat(results.first().id).isEqualTo(1)
     }
 
-    @Test fun testAsyncWhereQueryShouldReturnExpectedItems(){
+    @Test fun testAsyncWhereQueryShouldReturnExpectedItems() {
         populateDBWithTestEntityPK(numItems = 5)
-        TestEntityPK().queryAsync({ query -> query.equalTo("id",1) }){ results ->
+        TestEntityPK().queryAsync({ query -> query.equalTo("id", 1) }) { results ->
             assertThat(results).hasSize(1)
             assertThat(results.first().id).isEqualTo(1)
             release()
@@ -241,16 +240,16 @@ class KRealmExtensionsTests {
         block()
     }
 
-    @Test fun testWhereQueryShouldNotReturnAnyItem(){
+    @Test fun testWhereQueryShouldNotReturnAnyItem() {
         populateDBWithTestEntityPK(numItems = 5)
-        val results = TestEntityPK().query { query -> query.equalTo("id",6) }
+        val results = TestEntityPK().query { query -> query.equalTo("id", 6) }
 
         assertThat(results).hasSize(0)
     }
 
-    @Test fun testAsyncWhereQueryShouldNotReturnAnyItem(){
+    @Test fun testAsyncWhereQueryShouldNotReturnAnyItem() {
         populateDBWithTestEntityPK(numItems = 5)
-        TestEntityPK().queryAsync({ query -> query.equalTo("id",6) }){ results ->
+        TestEntityPK().queryAsync({ query -> query.equalTo("id", 6) }) { results ->
             assertThat(results).hasSize(0)
             release()
         }
@@ -261,7 +260,7 @@ class KRealmExtensionsTests {
     @Test fun testFirstItemWhenDbIsNotEmpty() {
         populateDBWithTestEntityPK(numItems = 5)
 
-        val result = TestEntityPK().queryFirst { it.equalTo("id",2) }
+        val result = TestEntityPK().queryFirst { it.equalTo("id", 2) }
 
         assertThat(result).isNotNull()
         assertThat(result?.id).isEqualTo(2)
@@ -291,7 +290,7 @@ class KRealmExtensionsTests {
         populateDBWithTestEntityPK(numItems = 5)
 
         val result = TestEntityPK().querySorted("id", Sort.DESCENDING) {
-            query -> query.lessThan("id",3).greaterThan("id",0)
+            it.lessThan("id", 3).greaterThan("id", 0)
         }
 
         assertThat(result).hasSize(2)
@@ -302,7 +301,7 @@ class KRealmExtensionsTests {
     /**
      * DELETION TESTS
      */
-    @Test fun testDeleteEntities(){
+    @Test fun testDeleteEntities() {
         populateDBWithTestEntity(numItems = 5)
 
         TestEntity().deleteAll()
@@ -310,7 +309,7 @@ class KRealmExtensionsTests {
         assertThat(TestEntity().allItems).hasSize(0)
     }
 
-    @Test fun testDeleteEntitiesWithPK(){
+    @Test fun testDeleteEntitiesWithPK() {
         populateDBWithTestEntityPK(numItems = 5)
 
         TestEntityPK().deleteAll()
@@ -318,10 +317,10 @@ class KRealmExtensionsTests {
         assertThat(TestEntityPK().allItems).hasSize(0)
     }
 
-    @Test fun testDeleteEntitiesWithStatement(){
+    @Test fun testDeleteEntitiesWithStatement() {
         populateDBWithTestEntityPK(numItems = 5)
 
-        TestEntityPK().delete { query -> query.equalTo("id",1) }
+        TestEntityPK().delete { query -> query.equalTo("id", 1) }
 
         assertThat(TestEntityPK().allItems).hasSize(4)
     }
@@ -329,7 +328,7 @@ class KRealmExtensionsTests {
     /**
      * OBSERVABLE TESTS
      */
-    @Test fun testAllItemsAsObservable(){
+    @Test fun testAllItemsAsObservable() {
 
         var itemsCount = 5
 
@@ -352,12 +351,13 @@ class KRealmExtensionsTests {
 
     }
 
-    @Test fun testQueryAsObservable(){
+    @Test fun testQueryAsObservable() {
 
         populateDBWithTestEntityPK(numItems = 5)
 
-        val subscription = TestEntityPK().queryAsObservable { query -> query.equalTo("id",1) }.subscribe({
+        val subscription = TestEntityPK().queryAsObservable { query -> query.equalTo("id", 1) }.subscribe({
             assertThat(it).hasSize(1)
+            assertThat(it[0].isManaged).isFalse()
             release()
         })
 
@@ -385,4 +385,6 @@ class KRealmExtensionsTests {
         latch.countDown()
         latch = CountDownLatch(1)
     }
+
+
 }
