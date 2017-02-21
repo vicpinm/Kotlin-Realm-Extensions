@@ -1,3 +1,11 @@
+###1.0.6
+ - firstItem property deprecated. Use queryFirst() instead. Same for async version. 
+ - lastItem property deprecated. Use queryLast() instead. Same for async version. 
+ - allItems property deprecatd. Use queryAll() instead. Same for async version. 
+ - If you perform observable queries on a background thread, now those queries are executed on a background thread with a looper attached, instead of execute them on the main thread. 
+ - Added new method queryLast with a condition. 
+ - Removed manifest params from library module. 
+ 
 ###1.0.5
  - Added new method queryFirst()
  - Added new methods of the family querySorted()
