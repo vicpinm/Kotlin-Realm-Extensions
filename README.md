@@ -14,7 +14,7 @@ repositories {
     mavenCentral()
 }
 
-compile 'com.github.vicpinm:krealmextensions:1.0.5'
+compile 'com.github.vicpinm:krealmextensions:1.0.6'
 ```
 ## Features
 
@@ -87,7 +87,7 @@ try {
 ````
 #### Get first entity: After (Kotlin + extensions)
 ````
-val firstEvent = Event().firstItem
+val firstEvent = Event().queryFirst()
 ````
 
 You can use lastItem extension too.
@@ -104,7 +104,7 @@ try {
 ````
 #### Get  all entities: After (Kotlin + extensions)
 ````
-val events = Event().allItems
+val events = Event().queryAll()
 ````
 
 #### Get entities with conditions: Before (java)
@@ -123,9 +123,10 @@ try{
 val events = Event().query { query -> query.equalTo("id",1) }
 ````
 
-If you only need the first result, you can also use:
+If you only need the first or last result, you can also use:
 ````
-val event = Event().queryFirst { query -> query.equalTo("id",1) }
+val first = Event().queryFirst { query -> query.equalTo("id",1) }
+val last = Event().queryLast { query -> query.equalTo("id",1) }
 ````
 
 #### Get sorted entities
@@ -205,3 +206,5 @@ Observable<List<Event>> obs =  realm.where(Event.class).equalTo("id",1).findAllA
 ````
 val obs = Event().queryAsObservable { query -> query.equalTo("id",1) }
 ````
+
+These kind of observable queries have to be performed on a thread with a looper attached to it. If you perform an observable query on the main thread, it will run on this thread. If you perform the query on a background thread, a new thread with a looper attached will be created for you to perform the query. This thread will be listen for data changes and it will terminate when you call unsubscribe() on your subscription. 
