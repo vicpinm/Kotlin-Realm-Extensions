@@ -144,8 +144,10 @@ val sortedEvents = Event().querySorted("name",Sort.DESCENDING) { query -> query.
 ````
 Realm realm = Realm.getDefaultInstance();
 try{
-    List<Event> events = realm.where(Event.class).findAll().deleteAllFromRealm();
-    events = realm.copyFromRealm(event);
+    List<Event> events = realm.where(Event.class).findAll();
+    realm.beginTransaction();
+    events.deleteAllFromRealm();
+    realm.commitTransaction();
 } finally {
     realm.close();
 }
