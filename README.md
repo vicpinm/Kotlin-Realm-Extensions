@@ -6,7 +6,18 @@
 
 Simplify your code to its minimum expression with this set of Kotlin extensions for Realm. Forget all boilerplate related with Realm API and perform database operations in one line of code with this lightweight library. Full test coverage.
 
-## Download
+## Download for Kotlin 1.1.x and Realm 3.1.3)
+
+Grab via Gradle:
+```groovy
+repositories {
+    mavenCentral()
+}
+
+compile 'com.github.vicpinm:krealmextensions:1.0.7'
+```
+
+## Download for Kotlin 1.0.x and Realm 2.2.1)
 
 Grab via Gradle:
 ```groovy
