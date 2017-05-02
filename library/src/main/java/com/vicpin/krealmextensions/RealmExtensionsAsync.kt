@@ -23,7 +23,7 @@ fun <T : RealmObject> T.firstItemAsync(callback: (T?) -> Unit) {
         var realm = Realm.getDefaultInstance()
 
         var result = RealmQuery.createQuery(realm, this.javaClass).findFirstAsync()
-        result.addChangeListener<T> {
+        result.addChangeListener<T> { it ->
             callback(if(it != null && it.isValid) realm.copyFromRealm(it) else null)
             result.removeChangeListeners()
             realm.close()
@@ -42,7 +42,7 @@ fun <T : RealmObject> T.queryFirstAsync(callback: (T?) -> Unit) {
         var realm = Realm.getDefaultInstance()
 
         var result = RealmQuery.createQuery(realm, this.javaClass).findFirstAsync()
-        result.addChangeListener<T> {
+        result.addChangeListener<T> { it ->
             callback(if(it != null && it.isValid) realm.copyFromRealm(it) else null)
             result.removeChangeListeners()
             realm.close()
@@ -77,7 +77,7 @@ fun <T : RealmObject> T.allItemsAsync(callback: (List<T>) -> Unit) {
         var realm = Realm.getDefaultInstance()
 
         var result: RealmResults<T> = RealmQuery.createQuery(realm, this.javaClass).findAllAsync()
-        result.addChangeListener {
+        result.addChangeListener { it ->
             callback(realm.copyFromRealm(it))
             result.removeChangeListeners()
             realm.close()
@@ -95,11 +95,11 @@ fun <T : RealmObject> T.queryAllAsync(callback: (List<T>) -> Unit) {
         var realm = Realm.getDefaultInstance()
 
         var result: RealmResults<T> = RealmQuery.createQuery(realm, this.javaClass).findAllAsync()
-        result.addChangeListener {
+
+        result.addChangeListener { it ->
             callback(realm.copyFromRealm(it))
             result.removeChangeListeners()
             realm.close()
-
         }
     }
 }
@@ -114,7 +114,7 @@ fun <T : RealmObject> T.queryAsync(query: (RealmQuery<T>) -> Unit, callback: (Li
         val realmQuery: RealmQuery<T> = RealmQuery.createQuery(realm, this.javaClass)
         query(realmQuery)
         val result = realmQuery.findAllAsync()
-        result.addChangeListener {
+        result.addChangeListener { it ->
             callback(realm.copyFromRealm(it))
             result.removeChangeListeners()
             realm.close()

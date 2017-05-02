@@ -1,6 +1,7 @@
 package com.vicpin.krealmextensions
 
 import android.support.test.runner.AndroidJUnit4
+import android.util.Log
 import com.google.common.truth.Truth.assertThat
 import com.vicpin.krealmextensions.model.TestEntity
 import com.vicpin.krealmextensions.model.TestEntityPK
@@ -24,6 +25,7 @@ class KRealmExtensionsTests {
     @get:Rule var configFactory = TestRealmConfigurationFactory()
     lateinit var realm: Realm
     lateinit var latch: CountDownLatch
+    var latchReleased = false
 
     @Before fun setUp() {
         val realmConfig = configFactory.createConfiguration()
@@ -35,6 +37,7 @@ class KRealmExtensionsTests {
         TestEntity().deleteAll()
         TestEntityPK().deleteAll()
         realm.close()
+        latchReleased = false
     }
 
     /**
@@ -388,10 +391,13 @@ class KRealmExtensionsTests {
     }
 
     private fun block() {
-        latch.await()
+        if(!latchReleased) {
+            latch.await()
+        }
     }
 
     private fun release() {
+        latchReleased = true
         latch.countDown()
         latch = CountDownLatch(1)
     }
