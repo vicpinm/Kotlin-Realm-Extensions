@@ -49,9 +49,9 @@ User user = new User("John");
 
 Realm realm = Realm.getDefaultInstance();
 try{
-   realm.beginTransaction();
-   realm.copyToRealmOrUpdate(user);  
-   realm.commitTransaction();
+   realm.executeTransaction(realm -> {
+      realm.copyToRealmOrUpdate(user);  
+   });  
 } finally {
    realm.close();
 }
@@ -72,9 +72,9 @@ List<User> users = new ArrayList<User>(...);
 
 Realm realm = Realm.getDefaultInstance();
 try {
-    realm.beginTransaction();
-    realm.copyToRealmOrUpdate(users);  
-    realm.commitTransaction();
+    realm.executeTransaction(realm -> {
+        realm.copyToRealmOrUpdate(users);  
+    });
 } finally {
     realm.close();
 }
@@ -167,9 +167,9 @@ val sortedEvents = Event().querySorted("name",Sort.DESCENDING) { query -> query.
 Realm realm = Realm.getDefaultInstance();
 try{
     List<Event> events = realm.where(Event.class).findAll();
-    realm.beginTransaction();
-    events.deleteAllFromRealm();
-    realm.commitTransaction();
+    realm.executeTransaction(realm -> {
+        events.deleteAllFromRealm();
+    });
 } finally {
     realm.close();
 }
