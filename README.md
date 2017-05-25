@@ -239,7 +239,7 @@ These kind of observable queries have to be performed on a thread with a looper 
 
 ### Proguard
 
-You need to add this rules in you use proguard, for rxjava and realm:
+You need to add these rules if you use proguard, for rxjava and realm:
 
 
 ```bash
