@@ -263,6 +263,14 @@ fun <T : RealmObject> T.delete(myQuery: (RealmQuery<T>) -> Unit) {
     }
 }
 
+/**
+ * Get count of entries
+ */
+inline fun <reified T: RealmObject> T.count(): Long {
+    val realm = Realm.getDefaultInstance()
+    return realm.where(T::class.java).count()
+}
+
 
 /**
  * UTILITY METHODS
