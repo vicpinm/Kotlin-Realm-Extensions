@@ -15,7 +15,7 @@ repositories {
     mavenCentral()
 }
 
-compile 'com.github.vicpinm:krealmextensions:1.0.7'
+compile 'com.github.vicpinm:krealmextensions:1.0.8'
 ```
 
 ## Download for Kotlin 1.0.x and Realm 2.2.1
