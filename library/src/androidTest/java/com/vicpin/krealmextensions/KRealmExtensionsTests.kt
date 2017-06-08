@@ -1,7 +1,6 @@
 package com.vicpin.krealmextensions
 
 import android.support.test.runner.AndroidJUnit4
-import android.util.Log
 import com.google.common.truth.Truth.assertThat
 import com.vicpin.krealmextensions.model.TestEntity
 import com.vicpin.krealmextensions.model.TestEntityPK
@@ -43,7 +42,6 @@ class KRealmExtensionsTests {
     /**
      * PERSISTENCE TESTS
      */
-
     @Test fun testPersistEntityWithCreate() {
         TestEntity().create() //No exception expected
     }
@@ -121,6 +119,24 @@ class KRealmExtensionsTests {
         val list = listOf(TestEntityPK(1), TestEntityPK(2), TestEntityPK(3))
         val results = list.saveAllManaged(realm)
         results.forEach { assertThat(it.isManaged).isTrue() }
+    }
+
+    @Test fun testCountPKEntity() {
+        val list = listOf(TestEntityPK(1), TestEntityPK(2), TestEntityPK(3))
+        list.saveAll()
+        assertThat(TestEntityPK().count()).isEqualTo(3)
+    }
+
+    @Test fun testCountDuplicatePKEntity() {
+        val list = listOf(TestEntityPK(1), TestEntityPK(1), TestEntityPK(1))
+        list.saveAll()
+        assertThat(TestEntityPK().count()).isEqualTo(1)
+    }
+
+    @Test fun testCountEntity() {
+        val list = listOf(TestEntity(), TestEntity(), TestEntity())
+        list.saveAll()
+        assertThat(TestEntity().count()).isEqualTo(3)
     }
 
     /**
