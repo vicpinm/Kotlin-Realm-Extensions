@@ -156,7 +156,7 @@ class KRealmExtensionsTests {
     }
 
     @Test fun testQueryLastObjectWithConditionAndEmptyDBShouldReturnNull() {
-        assertThat(TestEntity().queryLast { it.equalTo("name","test")}).isNull()
+        assertThat(TestEntity().queryLast { it.equalTo("name", "test") }).isNull()
     }
 
     @Test fun testAsyncQueryLastObjectWithEmptyDBShouldReturnNull() {
@@ -215,7 +215,7 @@ class KRealmExtensionsTests {
 
     @Test fun testQueryLastItemWithConditionShouldReturnLastItemWhenDBIsNotEmpty() {
         populateDBWithTestEntityPK(numItems = 5)
-        assertThat(TestEntityPK().queryLast{ it.equalTo("id",3) }?.id).isEqualTo(3)
+        assertThat(TestEntityPK().queryLast { it.equalTo("id", 3) }?.id).isEqualTo(3)
     }
 
     @Test fun testAsyncQueryLastItemShouldReturnLastItemWhenDBIsNotEmpty() {
@@ -396,6 +396,48 @@ class KRealmExtensionsTests {
     }
 
     /**
+     * FLOWABLE TESTS
+     */
+
+    @Test fun testAllItemsAsFlowable() {
+
+        var itemsCount = 5
+
+        populateDBWithTestEntity(numItems = itemsCount)
+
+        val disposable = TestEntity().allItemsAsFlowable().subscribe({
+            assertThat(it).hasSize(itemsCount)
+            release()
+        })
+
+        block()
+
+        //Add one item more to db
+        ++itemsCount
+        populateDBWithTestEntity(numItems = 1)
+
+        block()
+
+        disposable.dispose()
+
+    }
+
+    @Test fun testQueryAsFlowable() {
+
+        populateDBWithTestEntityPK(numItems = 5)
+
+        val disposable = TestEntityPK().queryAsFlowable { query -> query.equalTo("id", 1) }.subscribe({
+            assertThat(it).hasSize(1)
+            assertThat(it[0].isManaged).isFalse()
+            release()
+        })
+
+        block()
+
+        disposable.dispose()
+    }
+
+    /**
      * UTILITY TEST METHODS
      */
     private fun populateDBWithTestEntity(numItems: Int) {
@@ -407,7 +449,7 @@ class KRealmExtensionsTests {
     }
 
     private fun block() {
-        if(!latchReleased) {
+        if (!latchReleased) {
             latch.await()
         }
     }
