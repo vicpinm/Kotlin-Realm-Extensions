@@ -4,6 +4,7 @@ import android.os.Looper
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposables
 import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.RealmQuery
@@ -20,13 +21,13 @@ fun <T : RealmObject> T.allItemsAsFlowable(): Flowable<List<T>> {
         result.addChangeListener { it ->
             emitter.onNext(realm.copyFromRealm(it))
         }
-        emitter.setCancellable {
+        emitter.setDisposable(Disposables.fromAction {
             result.removeAllChangeListeners()
             realm.close()
             if (Looper.getMainLooper() != looper) {
                 looper?.thread?.interrupt()
             }
-        }
+        })
     }, BackpressureStrategy.LATEST)
             .subscribeOn(AndroidSchedulers.from(looper))
             .unsubscribeOn(AndroidSchedulers.from(looper))
@@ -45,13 +46,13 @@ fun <T : RealmObject> T.queryAsFlowable(query: (RealmQuery<T>) -> Unit): Flowabl
         result.addChangeListener { it ->
             emitter.onNext(realm.copyFromRealm(it))
         }
-        emitter.setCancellable {
+        emitter.setDisposable(Disposables.fromAction {
             result.removeAllChangeListeners()
             realm.close()
             if (Looper.getMainLooper() != looper) {
                 looper?.thread?.interrupt()
             }
-        }
+        })
     }, BackpressureStrategy.LATEST)
             .subscribeOn(AndroidSchedulers.from(looper))
             .unsubscribeOn(AndroidSchedulers.from(looper))
