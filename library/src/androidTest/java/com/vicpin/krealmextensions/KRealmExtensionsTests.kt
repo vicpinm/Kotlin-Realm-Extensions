@@ -437,6 +437,38 @@ class KRealmExtensionsTests {
         disposable.dispose()
     }
 
+    @Test fun testAllItemsAsSingle() {
+
+        val itemsCount = 5
+
+        populateDBWithTestEntity(numItems = itemsCount)
+
+        val disposable = TestEntity().allItemsAsFlowable().subscribe({
+            assertThat(it).hasSize(itemsCount)
+            assertThat(it[0].isManaged).isFalse()
+            release()
+        })
+
+        block()
+
+        disposable.dispose()
+    }
+
+    @Test fun testQueryAsSingle() {
+
+        populateDBWithTestEntityPK(numItems = 5)
+
+        val disposable = TestEntityPK().queryAsFlowable { query -> query.equalTo("id", 1) }.subscribe({
+            assertThat(it).hasSize(1)
+            assertThat(it[0].isManaged).isFalse()
+            release()
+        })
+
+        block()
+
+        disposable.dispose()
+    }
+
     /**
      * UTILITY TEST METHODS
      */

@@ -58,7 +58,7 @@ fun <T : RealmObject> T.queryAsFlowable(query: (RealmQuery<T>) -> Unit): Flowabl
             .unsubscribeOn(AndroidSchedulers.from(looper))
 }
 
-private fun getLooper(): Looper? {
+internal fun getLooper(): Looper? {
     return if (Looper.myLooper() != Looper.getMainLooper()) {
         val backgroundThread = BackgroundThread()
         backgroundThread.start()
