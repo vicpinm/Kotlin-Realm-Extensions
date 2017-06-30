@@ -5,6 +5,7 @@ import com.google.common.truth.Truth.assertThat
 import com.vicpin.krealmextensions.model.TestEntity
 import com.vicpin.krealmextensions.model.TestEntityPK
 import com.vicpin.krealmextensions.util.TestRealmConfigurationFactory
+import io.reactivex.disposables.Disposable
 import io.realm.Realm
 import io.realm.Sort
 import io.realm.exceptions.RealmPrimaryKeyConstraintException
@@ -13,6 +14,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import rx.Subscription
 import java.util.concurrent.CountDownLatch
 
 /**
@@ -25,6 +27,9 @@ class KRealmExtensionsTests {
     lateinit var realm: Realm
     lateinit var latch: CountDownLatch
     var latchReleased = false
+    var disposable: Disposable? = null
+    var subscription: Subscription? = null
+
 
     @Before fun setUp() {
         val realmConfig = configFactory.createConfiguration()
@@ -37,6 +42,8 @@ class KRealmExtensionsTests {
         TestEntityPK().deleteAll()
         realm.close()
         latchReleased = false
+        disposable = null
+        subscription = null
     }
 
     /**
@@ -147,8 +154,9 @@ class KRealmExtensionsTests {
     }
 
     @Test fun testAsyncQueryFirstObjectWithEmptyDBShouldReturnNull() {
-        TestEntity().queryFirstAsync { assertThat(it).isNull();release() }
-        block()
+        block {
+            TestEntity().queryFirstAsync { assertThat(it).isNull();release() }
+        }
     }
 
     @Test fun testQueryLastObjectWithEmptyDBShouldReturnNull() {
@@ -160,8 +168,9 @@ class KRealmExtensionsTests {
     }
 
     @Test fun testAsyncQueryLastObjectWithEmptyDBShouldReturnNull() {
-        TestEntity().queryLastAsync { assertThat(it).isNull(); release() }
-        block()
+        block {
+            TestEntity().queryLastAsync { assertThat(it).isNull(); release() }
+        }
     }
 
     @Test fun testAllItemsShouldReturnEmptyCollectionWhenDBIsEmpty() {
@@ -169,8 +178,9 @@ class KRealmExtensionsTests {
     }
 
     @Test fun testAllItemsAsyncShouldReturnEmptyCollectionWhenDBIsEmpty() {
-        TestEntity().queryAllAsync { assertThat(it).hasSize(0); release() }
-        block()
+        block {
+            TestEntity().queryAllAsync { assertThat(it).hasSize(0); release() }
+        }
     }
 
     @Test fun testQueryConditionalWhenDBIsEmpty() {
@@ -199,13 +209,14 @@ class KRealmExtensionsTests {
 
     @Test fun testAsyncQueryFirstItemShouldReturnFirstItemWhenDBIsNotEmpty() {
         populateDBWithTestEntityPK(numItems = 5)
-        TestEntityPK().queryFirstAsync {
-            assertThat(it).isNotNull()
-            assertThat(it?.id).isEqualTo(0)
-            release()
-        }
 
-        block()
+        block {
+            TestEntityPK().queryFirstAsync {
+                assertThat(it).isNotNull()
+                assertThat(it?.id).isEqualTo(0)
+                release()
+            }
+        }
     }
 
     @Test fun testQueryLastItemShouldReturnLastItemWhenDBIsNotEmpty() {
@@ -220,12 +231,13 @@ class KRealmExtensionsTests {
 
     @Test fun testAsyncQueryLastItemShouldReturnLastItemWhenDBIsNotEmpty() {
         populateDBWithTestEntityPK(numItems = 5)
-        TestEntityPK().queryLastAsync {
-            assertThat(it).isNotNull()
-            release()
-        }
 
-        block()
+        block {
+            TestEntityPK().queryLastAsync {
+                assertThat(it).isNotNull()
+                release()
+            }
+        }
     }
 
     @Test fun testQueryAllItemsShouldReturnAllItemsWhenDBIsNotEmpty() {
@@ -235,8 +247,10 @@ class KRealmExtensionsTests {
 
     @Test fun testAsyncQueryAllItemsShouldReturnAllItemsWhenDBIsNotEmpty() {
         populateDBWithTestEntity(numItems = 5)
-        TestEntity().queryAllAsync { assertThat(it).hasSize(5); release() }
-        block()
+
+        block {
+            TestEntity().queryAllAsync { assertThat(it).hasSize(5); release() }
+        }
     }
 
 
@@ -260,13 +274,14 @@ class KRealmExtensionsTests {
 
     @Test fun testAsyncWhereQueryShouldReturnExpectedItems() {
         populateDBWithTestEntityPK(numItems = 5)
-        TestEntityPK().queryAsync({ query -> query.equalTo("id", 1) }) { results ->
-            assertThat(results).hasSize(1)
-            assertThat(results.first().id).isEqualTo(1)
-            release()
-        }
 
-        block()
+        block {
+            TestEntityPK().queryAsync({ query -> query.equalTo("id", 1) }) { results ->
+                assertThat(results).hasSize(1)
+                assertThat(results.first().id).isEqualTo(1)
+                release()
+            }
+        }
     }
 
     @Test fun testWhereQueryShouldNotReturnAnyItem() {
@@ -278,12 +293,13 @@ class KRealmExtensionsTests {
 
     @Test fun testAsyncWhereQueryShouldNotReturnAnyItem() {
         populateDBWithTestEntityPK(numItems = 5)
-        TestEntityPK().queryAsync({ query -> query.equalTo("id", 6) }) { results ->
-            assertThat(results).hasSize(0)
-            release()
-        }
 
-        block()
+        block {
+            TestEntityPK().queryAsync({ query -> query.equalTo("id", 6) }) { results ->
+                assertThat(results).hasSize(0)
+                release()
+            }
+        }
     }
 
     @Test fun testFirstItemWhenDbIsNotEmpty() {
@@ -357,26 +373,27 @@ class KRealmExtensionsTests {
     /**
      * OBSERVABLE TESTS
      */
-    @Test fun testAllItemsAsObservable() {
+    @Test fun testQueryAllAsObservable() {
 
         var itemsCount = 5
 
         populateDBWithTestEntity(numItems = itemsCount)
 
-        val subscription = TestEntity().allItemsAsObservable().subscribe({
-            assertThat(it).hasSize(itemsCount)
-            release()
-        })
+        block {
+            subscription = TestEntity().queryAllAsObservable().subscribe({
+                assertThat(it).hasSize(itemsCount)
+                release()
+            })
 
-        block()
+        }
 
-        //Add one item more to db
-        ++itemsCount
-        populateDBWithTestEntity(numItems = 1)
+        block {
+            //Add one item more to db
+            ++itemsCount
+            populateDBWithTestEntity(numItems = 1)
+        }
 
-        block()
-
-        subscription.unsubscribe()
+        subscription?.unsubscribe()
 
     }
 
@@ -384,41 +401,42 @@ class KRealmExtensionsTests {
 
         populateDBWithTestEntityPK(numItems = 5)
 
-        val subscription = TestEntityPK().queryAsObservable { query -> query.equalTo("id", 1) }.subscribe({
-            assertThat(it).hasSize(1)
-            assertThat(it[0].isManaged).isFalse()
-            release()
-        })
+        block {
+            subscription = TestEntityPK().queryAsObservable { query -> query.equalTo("id", 1) }.subscribe({
+                assertThat(it).hasSize(1)
+                assertThat(it[0].isManaged).isFalse()
+                release()
+            })
+        }
 
-        block()
-
-        subscription.unsubscribe()
+        subscription?.unsubscribe()
     }
 
     /**
-     * FLOWABLE TESTS
+     * SINGLE AND FLOWABLE TESTS
      */
 
-    @Test fun testAllItemsAsFlowable() {
+    @Test fun testQueryAllAsFlowable() {
 
         var itemsCount = 5
+        var disposable: Disposable? = null
 
         populateDBWithTestEntity(numItems = itemsCount)
 
-        val disposable = TestEntity().allItemsAsFlowable().subscribe({
-            assertThat(it).hasSize(itemsCount)
-            release()
-        })
+        block {
+            disposable = TestEntity().queryAllAsFlowable().subscribe({
+                assertThat(it).hasSize(itemsCount)
+                release()
+            })
+        }
 
-        block()
+        block {
+            //Add one item more to db
+            ++itemsCount
+            populateDBWithTestEntity(numItems = 1)
+        }
 
-        //Add one item more to db
-        ++itemsCount
-        populateDBWithTestEntity(numItems = 1)
-
-        block()
-
-        disposable.dispose()
+        disposable?.dispose()
 
     }
 
@@ -426,48 +444,49 @@ class KRealmExtensionsTests {
 
         populateDBWithTestEntityPK(numItems = 5)
 
-        val disposable = TestEntityPK().queryAsFlowable { query -> query.equalTo("id", 1) }.subscribe({
-            assertThat(it).hasSize(1)
-            assertThat(it[0].isManaged).isFalse()
-            release()
-        })
+        block {
+            disposable = TestEntityPK().queryAsFlowable { query -> query.equalTo("id", 1) }.subscribe({
+                assertThat(it).hasSize(1)
+                assertThat(it[0].isManaged).isFalse()
+                release()
+            })
+        }
 
-        block()
-
-        disposable.dispose()
+        disposable?.dispose()
     }
 
-    @Test fun testAllItemsAsSingle() {
+     @Test fun testQueryAllAsSingle() {
 
-        val itemsCount = 5
+         var itemsCount = 5
 
-        populateDBWithTestEntity(numItems = itemsCount)
+         populateDBWithTestEntity(numItems = itemsCount)
 
-        val disposable = TestEntity().allItemsAsFlowable().subscribe({
-            assertThat(it).hasSize(itemsCount)
-            assertThat(it[0].isManaged).isFalse()
-            release()
-        })
+         block {
+             disposable = TestEntity().queryAllAsSingle().subscribe({ result ->
+                 assertThat(result).hasSize(itemsCount)
+                 assertThat(result[0].isManaged).isFalse()
+                 release()
+             })
 
-        block()
+         }
 
-        disposable.dispose()
-    }
+         assertThat(disposable?.isDisposed ?: false).isTrue()
+     }
 
-    @Test fun testQueryAsSingle() {
+     @Test fun testQueryAsSingle() {
 
-        populateDBWithTestEntityPK(numItems = 5)
+         populateDBWithTestEntityPK(numItems = 5)
 
-        val disposable = TestEntityPK().queryAsFlowable { query -> query.equalTo("id", 1) }.subscribe({
-            assertThat(it).hasSize(1)
-            assertThat(it[0].isManaged).isFalse()
-            release()
-        })
+         block {
+             disposable = TestEntityPK().queryAsSingle { query -> query.equalTo("id", 1) }.subscribe({ it ->
+                 assertThat(it).hasSize(1)
+                 assertThat(it[0].isManaged).isFalse()
+                 release()
+             })
+         }
 
-        block()
-
-        disposable.dispose()
-    }
+         assertThat(disposable?.isDisposed ?: false).isTrue()
+     }
 
     /**
      * UTILITY TEST METHODS
@@ -480,7 +499,7 @@ class KRealmExtensionsTests {
         (0..numItems - 1).forEach { TestEntityPK(it.toLong()).save() }
     }
 
-    private fun block() {
+    private fun blockLatch() {
         if (!latchReleased) {
             latch.await()
         }
@@ -493,4 +512,13 @@ class KRealmExtensionsTests {
     }
 
 
+    fun block(closure: () -> Unit) {
+        latchReleased = false
+        closure()
+        blockLatch()
+    }
+
+
 }
+
+

@@ -11,9 +11,9 @@ import io.realm.RealmQuery
 import io.realm.RealmResults
 
 /**
- * Query for all items and listen to changes returning an Flowable.
+ * Query for all items and listen to changes returning a Flowable.
  */
-fun <T : RealmObject> T.allItemsAsFlowable(): Flowable<List<T>> {
+fun <T : RealmObject> T.queryAllAsFlowable(): Flowable<List<T>> {
     val looper = getLooper()
     return Flowable.create<List<T>>({ emitter ->
         val realm = Realm.getDefaultInstance()
@@ -34,7 +34,7 @@ fun <T : RealmObject> T.allItemsAsFlowable(): Flowable<List<T>> {
 }
 
 /**
- * Queries for entities in database asynchronously, and observe changes returning an Flowable.
+ * Queries for entities in database asynchronously, and observe changes returning a Flowable.
  */
 fun <T : RealmObject> T.queryAsFlowable(query: (RealmQuery<T>) -> Unit): Flowable<List<T>> {
     val looper = getLooper()

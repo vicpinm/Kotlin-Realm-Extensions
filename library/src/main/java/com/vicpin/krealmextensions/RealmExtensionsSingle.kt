@@ -13,7 +13,7 @@ import io.realm.RealmResults
 /**
  * Query for all items and listen to changes returning an Single.
  */
-fun <T : RealmObject> T.allItemsAsSingle(): Single<List<T>> {
+fun <T : RealmObject> T.queryAllAsSingle(): Single<List<T>> {
     val looper = getLooper()
     return Single.create<List<T>>({ emitter ->
         val realm = Realm.getDefaultInstance()

@@ -21,10 +21,27 @@ import rx.android.schedulers.AndroidSchedulers
 /**
  * Query for all items and listen to changes returning an observable.
  */
+@Deprecated("Deprecated in 1.0.9, use queryAllAsObservable() method instead", ReplaceWith("this.queryAllAsObservable()"))
 fun <T : RealmObject> T.allItemsAsObservable(): Observable<List<T>> {
 
     return prepareObservableQuery { realm, subscriber ->
          RealmQuery.createQuery(realm, this.javaClass)
+                .findAllAsync()
+                .asObservable()
+                .filter { it.isLoaded }
+                .map { realm.copyFromRealm(it) }
+                .subscribe({ subscriber.onNext(it)
+                }, { subscriber.onError(it) })
+    }
+}
+
+/**
+ * Query for all items and listen to changes returning an observable.
+ */
+fun <T : RealmObject> T.queryAllAsObservable(): Observable<List<T>> {
+
+    return prepareObservableQuery { realm, subscriber ->
+        RealmQuery.createQuery(realm, this.javaClass)
                 .findAllAsync()
                 .asObservable()
                 .filter { it.isLoaded }
