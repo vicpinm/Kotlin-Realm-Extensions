@@ -1,5 +1,13 @@
+###1.0.9
+ - Added support for rxjava 2
+ - allItemsAsObservable method deprecated. Use queryAllAsObservable() instead. 
+ 
+###1.0.8
+ - Added count method to RealmObject
+ 
 ###1.0.7
  - Updated to Kotlin 1.1.2 and Realm 3.1.3
+ 
 ###1.0.6
  - firstItem property deprecated. Use queryFirst() instead. Same for async version. 
  - lastItem property deprecated. Use queryLast() instead. Same for async version. 
