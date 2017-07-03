@@ -277,5 +277,5 @@ You need to add these rules if you use proguard, for rxjava and realm:
 -keep @io.realm.annotations.RealmModule class *
 -keep class io.realm.internal.Keep
 -keep @io.realm.internal.Keep class *
--dontwarn io.realm.**````
+-dontwarn io.realm.**
 ```
