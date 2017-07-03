@@ -15,7 +15,7 @@ repositories {
     mavenCentral()
 }
 
-compile 'com.github.vicpinm:krealmextensions:1.0.8'
+compile 'com.github.vicpinm:krealmextensions:1.0.9'
 ```
 
 ## Download for Kotlin 1.0.x and Realm 2.2.1
@@ -214,7 +214,7 @@ Observable<List<Event>> obs =  realm.where(Event.class).findAllAsync()
 #### After (Kotlin + extensions)
 
 ```kotlin
-val obs = Event().allItemsAsObservable
+val obs = Event().queryAllAsObservable()
 ```
 
 #### Observe query with condition: Before (java)
@@ -235,6 +235,17 @@ val obs = Event().queryAsObservable { query -> query.equalTo("id",1) }
 ```
 
 These kind of observable queries have to be performed on a thread with a looper attached to it. If you perform an observable query on the main thread, it will run on this thread. If you perform the query on a background thread, a new thread with a looper attached will be created for you to perform the query. This thread will be listen for data changes and it will terminate when you call unsubscribe() on your subscription. 
+
+#### RxJava 2 Support (thanks to @SergiyKorotun)
+
+```kotlin
+val flow = Event().queryAllAsFlowable()
+val flow = Event().queryAsFlowable { query -> query.equalTo("id", 1) }
+
+val single = Event().queryAllAsSingle()
+val single = Event().queryAsSingle { query -> query.equalTo("id", 1) }
+
+```
 
 
 ### Proguard
