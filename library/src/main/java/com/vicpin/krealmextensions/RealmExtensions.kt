@@ -281,7 +281,12 @@ private fun <T : RealmObject> Realm.forEntity(instance : T) : RealmQuery<T>{
 
 private fun <T> T.withQuery(block: (T) -> Unit): T { block(this); return this }
 
-private fun <T : RealmObject> T.hasPrimaryKey(realm : Realm) = realm.schema.get(this.javaClass.simpleName).hasPrimaryKey()
+private fun <T : RealmObject> T.hasPrimaryKey(realm : Realm) : Boolean {
+    if(realm.schema.get(this.javaClass.simpleName) == null){
+        throw IllegalArgumentException(this.javaClass.simpleName + " is not part of the schema for this Realm. Did you added realm-android plugin in your build.gradle file?")
+    }
+    return realm.schema.get(this.javaClass.simpleName).hasPrimaryKey()
+}
 
 
 
