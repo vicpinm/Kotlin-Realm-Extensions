@@ -1,3 +1,7 @@
+###1.1.1
+ - Support for realm 3.5.0 and Kotlin 1.1.3
+ - Avoid NPE when RealmObject instance does not belong to realm instance
+ 
 ###1.0.9
  - Added support for rxjava 2
  - allItemsAsObservable method deprecated. Use queryAllAsObservable() instead. 
