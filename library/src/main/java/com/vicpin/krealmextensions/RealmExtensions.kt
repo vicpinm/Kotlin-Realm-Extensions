@@ -223,14 +223,11 @@ fun <T : RealmObject> T.saveManaged(realm: Realm): T {
     return result!!
 }
 
-inline fun <reified T : RealmObject> Collection<T>.saveAll() {
-    // todo run single transaction for all
-    forEach { v ->
-        RealmConfigStore.fetchConfiguration(v.javaClass).use { realm ->
-            realm.transaction { r ->
-                if (v.hasPrimaryKey(r)) r.copyToRealmOrUpdate(v) else r.copyToRealm(v)
-            }
-        }
+
+fun <T : Collection<out RealmObject>> T.saveAll() {
+    val realm = Realm.getDefaultInstance()
+    realm.transaction {
+        forEach { if (it.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(it) else realm.copyToRealm(it) }
     }
 }
 
@@ -242,14 +239,10 @@ fun <T : RealmObject> Collection<T>.saveAllManaged(realm: Realm): List<T> {
     return results
 }
 
-inline fun <reified T : RealmObject> Array<T>.saveAll() {
-    // todo run single transaction for all
-    forEach { v ->
-        RealmConfigStore.fetchConfiguration(v.javaClass).use { realm ->
-            realm.transaction {
-                if (v.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(v) else realm.copyToRealm(v)
-            }
-        }
+fun Array<out RealmObject>.saveAll() {
+    val realm = Realm.getDefaultInstance()
+    realm.transaction {
+        forEach { if (it.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(it) else realm.copyToRealm(it) }
     }
 }
 

@@ -136,7 +136,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun populateUserDb(numUsers: Int) {
-        Array(numUsers) { User("name_%d".format(it), Address("street_%d".format(it))) }.saveAll()
+        RealmConfigStore.fetchConfiguration(User::class.java).use { realm ->
+            Array(numUsers) { User("name_%d".format(it), Address("street_%d".format(it))) }.saveAllManaged(realm)
+        }
     }
 
     private fun populateDB(numItems: Int) {

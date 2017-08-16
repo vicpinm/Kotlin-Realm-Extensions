@@ -18,9 +18,9 @@ class RealmConfigStore {
             }
         }
 
-        fun fetchConfiguration(modelClass: Class<RealmObject>): RealmConfiguration {
-            var cfg = configMap.get(modelClass)
-            return configMap.get(modelClass) ?: RealmConfiguration.Builder().build()
+        fun <T : RealmObject> fetchConfiguration(modelClass: Class<T>): RealmConfiguration {
+            var cfg = configMap[modelClass]
+            return configMap[modelClass] ?: RealmConfiguration.Builder().build()
         }
     }
 
