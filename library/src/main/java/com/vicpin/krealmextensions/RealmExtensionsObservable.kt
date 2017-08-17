@@ -88,7 +88,7 @@ fun <T : Any> prepareObservableQuery(closure : (Realm, Subscriber<in T>) -> Subs
 
     return Observable.defer {
         Observable.create(Observable.OnSubscribe<T> {
-            realm = Realm.getDefaultInstance()
+            realm = Realm.getDefaultInstance() // TODO handle RealmConfigStore.fetchConfiguration(javaClass).realm()
             mySubscription = closure(realm!!, it)
         }).doOnUnsubscribe({
             realm?.close()

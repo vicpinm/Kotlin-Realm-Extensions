@@ -16,7 +16,7 @@ import io.realm.RealmResults
 fun <T : RealmObject> T.queryAllAsFlowable(): Flowable<List<T>> {
     val looper = getLooper()
     return Flowable.create<List<T>>({ emitter ->
-        val realm = Realm.getDefaultInstance()
+        val realm = RealmConfigStore.fetchConfiguration(javaClass).realm()
         val result: RealmResults<T> = RealmQuery.createQuery(realm, this.javaClass).findAllAsync()
         result.addChangeListener { it ->
             emitter.onNext(realm.copyFromRealm(it))
@@ -39,7 +39,7 @@ fun <T : RealmObject> T.queryAllAsFlowable(): Flowable<List<T>> {
 fun <T : RealmObject> T.queryAsFlowable(query: (RealmQuery<T>) -> Unit): Flowable<List<T>> {
     val looper = getLooper()
     return Flowable.create<List<T>>({ emitter ->
-        val realm = Realm.getDefaultInstance()
+        val realm = RealmConfigStore.fetchConfiguration(javaClass).realm()
         val realmQuery: RealmQuery<T> = RealmQuery.createQuery(realm, this.javaClass)
         query(realmQuery)
         val result = realmQuery.findAllAsync()

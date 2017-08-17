@@ -37,6 +37,13 @@ class MainActivity : AppCompatActivity() {
         performUserTest("main thread users") {
             Thread { performUserTest("background thread users") }.start()
         }
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        User().deleteAll()
+        Item().deleteAll()
     }
 
     private fun performUserTest(threadName: String, finishCallback: (() -> Unit)? = null) {
@@ -81,9 +88,13 @@ class MainActivity : AppCompatActivity() {
         wait(if (isMainThread()) 4 else 1) {
             subscription.unsubscribe()
             addMessage("Subscription finished")
+            var defaultRealm = Realm.getDefaultInstance();
+            var userRealm = Realm.getInstance(RealmConfigStore.fetchConfiguration(User::class.java))
+            var defaultCount = defaultRealm.where(User::class.java).count()
+            var userCount = userRealm.where(User::class.java).count()
 
-            addMessage("All users from default configuration : ${Realm.getDefaultInstance().where(User::class.java).findAll().size}")
-            addMessage("All users from configured : ${User().queryAll().size}")
+            addMessage("All users from default configuration : ${defaultCount}")
+            addMessage("All users from configured : $userCount")
             finishCallback?.invoke()
         }
 
@@ -136,13 +147,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun populateUserDb(numUsers: Int) {
-        RealmConfigStore.fetchConfiguration(User::class.java).use { realm ->
-            Array(numUsers) { User("name_%d".format(it), Address("street_%d".format(it))) }.saveAllManaged(realm)
-        }
+        Array(numUsers) { User("name_%d".format(it), Address("street_%d".format(it))) }.toList().saveAll()
     }
 
     private fun populateDB(numItems: Int) {
-        Array(numItems) { Item() }.saveAll()
+        Array(numItems) { Item() }.toList().saveAll()
     }
 
     private fun addMessage(message: String, important: Boolean = false) {

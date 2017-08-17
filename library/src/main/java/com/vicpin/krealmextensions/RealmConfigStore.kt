@@ -5,9 +5,9 @@ import io.realm.RealmConfiguration
 import io.realm.RealmObject
 
 /**
+ * Realm configuration store per class
  * Created by magillus on 8/14/2017.
  */
-
 class RealmConfigStore {
     companion object {
         private var configMap: MutableMap<Class<out RealmObject>, RealmConfiguration> = HashMap()
@@ -19,11 +19,13 @@ class RealmConfigStore {
         }
 
         fun <T : RealmObject> fetchConfiguration(modelClass: Class<T>): RealmConfiguration {
-            var cfg = configMap[modelClass]
             return configMap[modelClass] ?: RealmConfiguration.Builder().build()
         }
     }
+}
 
+inline fun RealmConfiguration.realm(): Realm {
+    return Realm.getInstance(this)
 }
 
 inline fun <T> RealmConfiguration.use(block: (Realm) -> T): T {

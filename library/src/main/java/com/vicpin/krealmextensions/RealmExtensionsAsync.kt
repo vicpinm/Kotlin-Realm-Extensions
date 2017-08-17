@@ -20,7 +20,7 @@ import io.realm.RealmResults
 fun <T : RealmObject> T.firstItemAsync(callback: (T?) -> Unit) {
     mainThread {
 
-        var realm = Realm.getDefaultInstance()
+        var realm = RealmConfigStore.fetchConfiguration(javaClass).realm()
 
         var result = RealmQuery.createQuery(realm, this.javaClass).findFirstAsync()
         result.addChangeListener<T> { it ->
@@ -39,7 +39,7 @@ fun <T : RealmObject> T.firstItemAsync(callback: (T?) -> Unit) {
 fun <T : RealmObject> T.queryFirstAsync(callback: (T?) -> Unit) {
     mainThread {
 
-        var realm = Realm.getDefaultInstance()
+        var realm = RealmConfigStore.fetchConfiguration(javaClass).realm()
 
         var result = RealmQuery.createQuery(realm, this.javaClass).findFirstAsync()
         result.addChangeListener<T> { it ->
@@ -74,7 +74,7 @@ fun <T : RealmObject> T.queryLastAsync(callback: (T?) -> Unit) {
 fun <T : RealmObject> T.allItemsAsync(callback: (List<T>) -> Unit) {
     mainThread {
 
-        var realm = Realm.getDefaultInstance()
+        var realm = RealmConfigStore.fetchConfiguration(javaClass).realm()
 
         var result: RealmResults<T> = RealmQuery.createQuery(realm, this.javaClass).findAllAsync()
         result.addChangeListener { it ->
@@ -92,7 +92,7 @@ fun <T : RealmObject> T.allItemsAsync(callback: (List<T>) -> Unit) {
 fun <T : RealmObject> T.queryAllAsync(callback: (List<T>) -> Unit) {
     mainThread {
 
-        var realm = Realm.getDefaultInstance()
+        var realm = RealmConfigStore.fetchConfiguration(javaClass).realm()
 
         var result: RealmResults<T> = RealmQuery.createQuery(realm, this.javaClass).findAllAsync()
 
@@ -110,7 +110,7 @@ fun <T : RealmObject> T.queryAllAsync(callback: (List<T>) -> Unit) {
 fun <T : RealmObject> T.queryAsync(query: (RealmQuery<T>) -> Unit, callback: (List<T>) -> Unit) {
     mainThread {
 
-        val realm = Realm.getDefaultInstance()
+        val realm = RealmConfigStore.fetchConfiguration(javaClass).realm()
         val realmQuery: RealmQuery<T> = RealmQuery.createQuery(realm, this.javaClass)
         query(realmQuery)
         val result = realmQuery.findAllAsync()
