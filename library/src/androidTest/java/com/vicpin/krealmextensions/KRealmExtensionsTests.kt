@@ -412,6 +412,57 @@ class KRealmExtensionsTests {
         subscription?.unsubscribe()
     }
 
+    @Test fun testQueryAllSortedAsObservable() {
+
+        populateDBWithTestEntityPK(numItems = 5)
+
+        block {
+            subscription = TestEntityPK().querySortedAsObservable("id", Sort.DESCENDING).subscribe({
+                assertThat(it).hasSize(5)
+                assertThat(it[0].isManaged).isFalse()
+                assertThat(it[0].id).isEqualTo(4)
+                release()
+            })
+        }
+
+        subscription?.unsubscribe()
+    }
+
+    @Test fun testQueryAllSortedAsObservableTwoSortingFields() {
+
+        populateDBWithTestEntityPK(numItems = 5)
+
+        block {
+            subscription = TestEntityPK().querySortedAsObservable(listOf("id","name"), listOf(Sort.DESCENDING, Sort.DESCENDING)).subscribe({
+                assertThat(it).hasSize(5)
+                assertThat(it[0].isManaged).isFalse()
+                assertThat(it[0].id).isEqualTo(4)
+                release()
+            })
+        }
+
+        subscription?.unsubscribe()
+    }
+
+    @Test fun testQuerySortedAsObservable() {
+
+        populateDBWithTestEntityPK(numItems = 5)
+
+        block {
+            subscription = TestEntityPK().querySortedAsObservable("id", Sort.DESCENDING) {
+                query ->  query.equalTo("id", 3)
+            }.subscribe({
+                assertThat(it).hasSize(1)
+                assertThat(it[0].isManaged).isFalse()
+                assertThat(it[0].id).isEqualTo(3)
+                release()
+            })
+        }
+
+        subscription?.unsubscribe()
+    }
+
+
     /**
      * SINGLE AND FLOWABLE TESTS
      */
@@ -487,6 +538,71 @@ class KRealmExtensionsTests {
 
          assertThat(disposable?.isDisposed ?: false).isTrue()
      }
+
+    @Test fun testQuerySortedAsFlowable() {
+
+        populateDBWithTestEntityPK(numItems = 5)
+
+        block {
+            disposable = TestEntityPK().querySortedAsFlowable("id", Sort.DESCENDING).subscribe({
+                assertThat(it).hasSize(5)
+                assertThat(it[0].isManaged).isFalse()
+                assertThat(it[0].id).isEqualTo(4)
+                release()
+            })
+        }
+
+        disposable?.dispose()
+    }
+
+    @Test fun testQuerySortedAsFlowableWithQuery() {
+
+        populateDBWithTestEntityPK(numItems = 5)
+
+        block {
+            disposable = TestEntityPK().querySortedAsFlowable("id", Sort.DESCENDING) { query -> query.equalTo("id", 1) }.subscribe({
+                assertThat(it).hasSize(1)
+                assertThat(it[0].isManaged).isFalse()
+                assertThat(it[0].id).isEqualTo(1)
+                release()
+            })
+        }
+
+        disposable?.dispose()
+    }
+
+
+    @Test fun testQuerySortedAsSingle() {
+
+        populateDBWithTestEntityPK(numItems = 5)
+
+        block {
+            disposable = TestEntityPK().querySortedAsSingle("id", Sort.DESCENDING).subscribe({ it ->
+                assertThat(it).hasSize(5)
+                assertThat(it[0].isManaged).isFalse()
+                assertThat(it[0].id).isEqualTo(4)
+                release()
+            })
+        }
+
+        assertThat(disposable?.isDisposed ?: false).isTrue()
+    }
+
+    @Test fun testQuerySortedAsSingleWithQuery() {
+
+        populateDBWithTestEntityPK(numItems = 5)
+
+        block {
+            disposable = TestEntityPK().querySortedAsSingle("id", Sort.DESCENDING) { query -> query.equalTo("id", 1) }.subscribe({ it ->
+                assertThat(it).hasSize(1)
+                assertThat(it[0].isManaged).isFalse()
+                assertThat(it[0].id).isEqualTo(1)
+                release()
+            })
+        }
+
+        assertThat(disposable?.isDisposed ?: false).isTrue()
+    }
 
     /**
      * UTILITY TEST METHODS
