@@ -73,7 +73,7 @@ fun <T : RealmObject> T.queryAsObservable(query: (RealmQuery<T>) -> Unit): Obser
 class BackgroundThread : HandlerThread("Scheduler-Realm-BackgroundThread",
     Process.THREAD_PRIORITY_BACKGROUND)
 
-fun <T : Any> prepareObservableQuery(closure : (Realm, Subscriber<in T>) -> Subscription) : Observable<T> {
+inline fun <reified T : Any> prepareObservableQuery(crossinline closure: (Realm, Subscriber<in T>) -> Subscription): Observable<T> {
     var realm : Realm? = null
     var mySubscription: Subscription? = null
 
@@ -88,7 +88,11 @@ fun <T : Any> prepareObservableQuery(closure : (Realm, Subscriber<in T>) -> Subs
 
     return Observable.defer {
         Observable.create(Observable.OnSubscribe<T> {
-            realm = Realm.getDefaultInstance() // TODO handle RealmConfigStore.fetchConfiguration(javaClass).realm()
+            if (T::class.java == RealmObject::class.java) {
+                realm = RealmConfigStore.fetchConfiguration(T::class.java as Class<RealmObject>).realm()
+            } else {
+                realm = Realm.getDefaultInstance()
+            }
             mySubscription = closure(realm!!, it)
         }).doOnUnsubscribe({
             realm?.close()
