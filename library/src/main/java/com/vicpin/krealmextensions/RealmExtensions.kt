@@ -4,6 +4,7 @@ import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.RealmQuery
 import io.realm.Sort
+typealias Query<T> = (RealmQuery<T>) -> Unit
 
 /**
  * Created by victor on 2/1/17.
@@ -11,43 +12,9 @@ import io.realm.Sort
  */
 
 /**
- * Computed variable for getting first entity in database
- */
-@Deprecated("Deprecated in 1.0.6, use queryFirst() method instead", ReplaceWith("this.queryFirst()"))
-val <T : RealmObject> T.firstItem: T?
-    get() {
-        RealmConfigStore.fetchConfiguration(javaClass).use { realm ->
-            val item: T? = realm.forEntity(this).findFirst()
-            return if (item != null && item.isValid) realm.copyFromRealm(item) else null
-        }
-    }
-
-/**
- * Computed variable for getting last entity in database
- */
-@Deprecated("Deprecated in 1.0.6, use queryLast() method instead", ReplaceWith("this.queryLast()"))
-val <T : RealmObject> T.lastItem: T?
-    get() {
-        return if (queryAll().isNotEmpty() && queryAll().last().isValid) queryAll().last() else null
-    }
-
-
-/**
- * Computed variable for getting all entities in database
- */
-@Deprecated("Deprecated in 1.0.6, use queryAll() method instead", ReplaceWith("this.queryAll()"))
-val <T : RealmObject> T.allItems: List<T>
-    get() {
-        RealmConfigStore.fetchConfiguration(javaClass).use { realm ->
-            val result: List<T> = realm.forEntity(this).findAll()
-            return realm.copyFromRealm(result)
-        }
-    }
-
-/**
  * Query to the database with RealmQuery instance as argument
  */
-fun <T : RealmObject> T.query(query: (RealmQuery<T>) -> Unit): List<T> {
+fun <T : RealmObject> T.query(query: Query<T>): List<T> {
 
     RealmConfigStore.fetchConfiguration(javaClass).use { realm ->
         val result = realm.forEntity(this).withQuery(query).findAll()
@@ -80,11 +47,10 @@ fun <T : RealmObject> T.queryFirst(): T? {
 /**
  * Query to the database with RealmQuery instance as argument. Return first result, or null.
  */
-fun <T : RealmObject> T.queryFirst(query: (RealmQuery<T>) -> Unit): T? {
-
-    RealmConfigStore.fetchConfiguration(javaClass).use { realm ->
-        val item: T? = realm.forEntity(this).withQuery(query).findFirst()
-        return if (item != null && item.isValid) realm.copyFromRealm(item) else null
+fun <T : RealmObject> T.queryFirst(query: Query<T>): T? {
+    RealmConfigStore.fetchConfiguration(javaClass).use {
+        val item : T? = it.forEntity(this).withQuery(query).findFirst()
+        return if(item != null && item.isValid) it.copyFromRealm(item) else null
     }
 }
 
@@ -101,17 +67,17 @@ fun <T : RealmObject> T.queryLast(): T? {
 /**
  * Query to the database with RealmQuery instance as argument. Return last result, or null.
  */
-fun <T : RealmObject> T.queryLast(query: (RealmQuery<T>) -> Unit): T? {
-    RealmConfigStore.fetchConfiguration(javaClass).use { realm ->
-        val result = realm.forEntity(this).withQuery(query).findAll()
-        return if (result != null && result.isNotEmpty()) realm.copyFromRealm(result.last()) else null
+fun <T : RealmObject> T.queryLast(query: Query<T>): T? {
+    RealmConfigStore.fetchConfiguration(javaClass).use {
+        val result = it.forEntity(this).withQuery(query).findAll()
+        return if(result != null && result.isNotEmpty()) it.copyFromRealm(result.last()) else null
     }
 }
 
 /**
  * Query to the database with RealmQuery instance as argument
  */
-fun <T : RealmObject> T.querySorted(fieldName: String, order: Sort, query: (RealmQuery<T>) -> Unit): List<T> {
+fun <T : RealmObject> T.querySorted(fieldName : String, order : Sort, query: Query<T>): List<T> {
 
     RealmConfigStore.fetchConfiguration(javaClass).use { realm ->
         val result = realm.forEntity(this).withQuery(query).findAll().sort(fieldName, order)
@@ -122,11 +88,11 @@ fun <T : RealmObject> T.querySorted(fieldName: String, order: Sort, query: (Real
 /**
  * Query to the database with a specific order and a RealmQuery instance as argument
  */
-fun <T : RealmObject> T.querySorted(fieldName: List<String>, order: List<Sort>, query: (RealmQuery<T>) -> Unit): List<T> {
+fun <T : RealmObject> T.querySorted(fieldName : List<String>, order : List<Sort>, query: Query<T>): List<T> {
 
-    RealmConfigStore.fetchConfiguration(javaClass).use {
-        val result = it.forEntity(this).withQuery(query).findAll().sort(fieldName.toTypedArray(), order.toTypedArray())
-        return it.copyFromRealm(result)
+    RealmConfigStore.fetchConfiguration(javaClass).use { realm ->
+        val result = realm.forEntity(this).withQuery(query).findAll().sort(fieldName.toTypedArray(), order.toTypedArray())
+        return realm.copyFromRealm(result)
     }
 }
 
@@ -267,11 +233,9 @@ fun <T : RealmObject> T.deleteAll() {
 /**
  * Delete all entries returned by the specified query
  */
-fun <T : RealmObject> T.delete(myQuery: (RealmQuery<T>) -> Unit) {
-    RealmConfigStore.fetchConfiguration(javaClass).use { realm ->
-        realm.transaction {
-            it.forEntity(this).withQuery(myQuery).findAll().deleteAllFromRealm()
-        }
+fun <T : RealmObject> T.delete(myQuery: Query<T>) {
+    RealmConfigStore.fetchConfiguration(javaClass).transaction {
+        it.forEntity(this).withQuery(myQuery).findAll().deleteAllFromRealm()
     }
 }
 
