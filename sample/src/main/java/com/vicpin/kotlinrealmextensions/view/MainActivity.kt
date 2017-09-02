@@ -11,6 +11,9 @@ import com.vicpin.kotlinrealmextensions.extensions.isMainThread
 import com.vicpin.kotlinrealmextensions.extensions.wait
 import com.vicpin.kotlinrealmextensions.model.Address
 import com.vicpin.kotlinrealmextensions.model.Item
+import com.vicpin.krealmextensions.deleteAll
+import com.vicpin.krealmextensions.queryAll
+import com.vicpin.krealmextensions.saveAll
 import com.vicpin.kotlinrealmextensions.model.User
 import com.vicpin.krealmextensions.*
 import io.realm.Realm
@@ -123,10 +126,6 @@ class MainActivity : AppCompatActivity() {
 
         addMessage("Observing table changes...")
 
-        val subscription = Item().queryAllAsObservable().subscribe {
-            addMessage("Changes received on ${if (Looper.myLooper() == Looper.getMainLooper()) "main thread" else "background thread"}, total items: " + it.size)
-        }
-
         wait(1) {
             populateDB(numItems = 10)
         }
@@ -139,8 +138,7 @@ class MainActivity : AppCompatActivity() {
             populateDB(numItems = 10)
         }
 
-        wait(if (isMainThread()) 4 else 1) {
-            subscription.unsubscribe()
+        wait(if(isMainThread()) 4 else 1) {
             addMessage("Subscription finished")
             finishCallback?.invoke()
         }
