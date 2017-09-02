@@ -11,11 +11,11 @@ import com.vicpin.kotlinrealmextensions.extensions.isMainThread
 import com.vicpin.kotlinrealmextensions.extensions.wait
 import com.vicpin.kotlinrealmextensions.model.Address
 import com.vicpin.kotlinrealmextensions.model.Item
+import com.vicpin.kotlinrealmextensions.model.User
+import com.vicpin.krealmextensions.RealmConfigStore
 import com.vicpin.krealmextensions.deleteAll
 import com.vicpin.krealmextensions.queryAll
 import com.vicpin.krealmextensions.saveAll
-import com.vicpin.kotlinrealmextensions.model.User
-import com.vicpin.krealmextensions.*
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -72,10 +72,6 @@ class MainActivity : AppCompatActivity() {
 
         addMessage("Observing table changes...")
 
-        val subscription = User().queryAllAsObservable().subscribe {
-            addMessage("Changes received on ${if (Looper.myLooper() == Looper.getMainLooper()) "main thread" else "background thread"}, total users: " + it.size)
-        }
-
         wait(1) {
             populateUserDb(10)
         }
@@ -89,7 +85,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         wait(if (isMainThread()) 4 else 1) {
-            subscription.unsubscribe()
             addMessage("Subscription finished")
             var defaultRealm = Realm.getDefaultInstance();
             var userRealm = Realm.getInstance(RealmConfigStore.fetchConfiguration(User::class.java))
