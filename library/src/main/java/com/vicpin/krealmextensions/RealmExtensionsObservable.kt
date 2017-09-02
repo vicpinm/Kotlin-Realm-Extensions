@@ -84,8 +84,8 @@ inline fun <reified T : Any> prepareObservableQuery(crossinline closure: (Realm,
             }
             mySubscription = closure(realm!!, it)
         }).doOnUnsubscribe({
-            realm?.close()
-            mySubscription?.unsubscribe()
+            if (mySubscription?.isUnsubscribed?.not() == true) mySubscription?.unsubscribe()
+            if (realm?.isClosed?.not() == true) realm?.close()
             backgroundThread?.interrupt()
 
         }).unsubscribeOn(AndroidSchedulers.from(looper))

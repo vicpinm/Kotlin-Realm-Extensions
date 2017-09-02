@@ -24,10 +24,10 @@ class RealmConfigStore {
     }
 }
 
-inline fun RealmConfiguration.realm(): Realm {
+fun RealmConfiguration.realm(): Realm {
     return Realm.getInstance(this)
 }
 
-inline fun <T> RealmConfiguration.use(block: (Realm) -> T): T {
-    return Realm.getInstance(this).use { return block(it) }
+fun <T> RealmConfiguration.use(block: (Realm) -> T): T {
+    return Realm.getInstance(this).use { return@use block(it) }
 }

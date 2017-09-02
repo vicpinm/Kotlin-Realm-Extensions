@@ -123,7 +123,7 @@ class MainActivity : AppCompatActivity() {
 
         addMessage("Observing table changes...")
 
-        val subscription = Item().allItemsAsObservable().subscribe {
+        val subscription = Item().queryAllAsObservable().subscribe {
             addMessage("Changes received on ${if (Looper.myLooper() == Looper.getMainLooper()) "main thread" else "background thread"}, total items: " + it.size)
         }
 
