@@ -10,7 +10,9 @@ import com.vicpin.kotlinrealmextensions.R
 import com.vicpin.kotlinrealmextensions.extensions.isMainThread
 import com.vicpin.kotlinrealmextensions.extensions.wait
 import com.vicpin.kotlinrealmextensions.model.Item
-import com.vicpin.krealmextensions.*
+import com.vicpin.krealmextensions.deleteAll
+import com.vicpin.krealmextensions.queryAll
+import com.vicpin.krealmextensions.saveAll
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -53,10 +55,6 @@ class MainActivity : AppCompatActivity() {
 
         addMessage("Observing table changes...")
 
-        val subscription = Item().queryAllAsObservable().subscribe {
-            addMessage("Changes received on ${if(Looper.myLooper() == Looper.getMainLooper()) "main thread" else "background thread"}, total items: " + it.size)
-        }
-
         wait(1) {
             populateDB(numItems = 10)
         }
@@ -70,7 +68,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         wait(if(isMainThread()) 4 else 1) {
-            subscription.unsubscribe()
             addMessage("Subscription finished")
             finishCallback?.invoke()
         }
