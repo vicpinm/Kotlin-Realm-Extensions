@@ -10,7 +10,10 @@ import com.vicpin.kotlinrealmextensions.R
 import com.vicpin.kotlinrealmextensions.extensions.isMainThread
 import com.vicpin.kotlinrealmextensions.extensions.wait
 import com.vicpin.kotlinrealmextensions.model.Item
-import com.vicpin.krealmextensions.*
+import com.vicpin.krealmextensions.deleteAll
+import com.vicpin.krealmextensions.queryAll
+import com.vicpin.krealmextensions.rx.queryAllAsObservable
+import com.vicpin.krealmextensions.saveAll
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {

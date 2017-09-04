@@ -14,7 +14,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import rx.Subscription
 import java.util.concurrent.CountDownLatch
 
 /**
@@ -28,7 +27,6 @@ class KRealmExtensionsTests {
     lateinit var latch: CountDownLatch
     var latchReleased = false
     var disposable: Disposable? = null
-    var subscription: Subscription? = null
 
 
     @Before fun setUp() {
@@ -43,7 +41,6 @@ class KRealmExtensionsTests {
         realm.close()
         latchReleased = false
         disposable = null
-        subscription = null
     }
 
     /**
@@ -369,99 +366,6 @@ class KRealmExtensionsTests {
 
         assertThat(TestEntityPK().queryAll()).hasSize(4)
     }
-
-    /**
-     * OBSERVABLE TESTS
-     */
-    @Test fun testQueryAllAsObservable() {
-
-        var itemsCount = 5
-
-        populateDBWithTestEntity(numItems = itemsCount)
-
-        block {
-            subscription = TestEntity().queryAllAsObservable().subscribe({
-                assertThat(it).hasSize(itemsCount)
-                release()
-            })
-
-        }
-
-        block {
-            //Add one item more to db
-            ++itemsCount
-            populateDBWithTestEntity(numItems = 1)
-        }
-
-        subscription?.unsubscribe()
-
-    }
-
-    @Test fun testQueryAsObservable() {
-
-        populateDBWithTestEntityPK(numItems = 5)
-
-        block {
-            subscription = TestEntityPK().queryAsObservable { query -> query.equalTo("id", 1) }.subscribe({
-                assertThat(it).hasSize(1)
-                assertThat(it[0].isManaged).isFalse()
-                release()
-            })
-        }
-
-        subscription?.unsubscribe()
-    }
-
-    @Test fun testQueryAllSortedAsObservable() {
-
-        populateDBWithTestEntityPK(numItems = 5)
-
-        block {
-            subscription = TestEntityPK().querySortedAsObservable("id", Sort.DESCENDING).subscribe({
-                assertThat(it).hasSize(5)
-                assertThat(it[0].isManaged).isFalse()
-                assertThat(it[0].id).isEqualTo(4)
-                release()
-            })
-        }
-
-        subscription?.unsubscribe()
-    }
-
-    @Test fun testQueryAllSortedAsObservableTwoSortingFields() {
-
-        populateDBWithTestEntityPK(numItems = 5)
-
-        block {
-            subscription = TestEntityPK().querySortedAsObservable(listOf("id","name"), listOf(Sort.DESCENDING, Sort.DESCENDING)).subscribe({
-                assertThat(it).hasSize(5)
-                assertThat(it[0].isManaged).isFalse()
-                assertThat(it[0].id).isEqualTo(4)
-                release()
-            })
-        }
-
-        subscription?.unsubscribe()
-    }
-
-    @Test fun testQuerySortedAsObservable() {
-
-        populateDBWithTestEntityPK(numItems = 5)
-
-        block {
-            subscription = TestEntityPK().querySortedAsObservable("id", Sort.DESCENDING) {
-                query ->  query.equalTo("id", 3)
-            }.subscribe({
-                assertThat(it).hasSize(1)
-                assertThat(it[0].isManaged).isFalse()
-                assertThat(it[0].id).isEqualTo(3)
-                release()
-            })
-        }
-
-        subscription?.unsubscribe()
-    }
-
 
     /**
      * SINGLE AND FLOWABLE TESTS

@@ -1,4 +1,4 @@
-package com.vicpin.krealmextensions
+package com.vicpin.krealmextensions.rx
 
 import android.os.HandlerThread
 import android.os.Looper

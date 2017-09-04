@@ -1,6 +1,8 @@
 package com.vicpin.krealmextensions
 
+import android.os.HandlerThread
 import android.os.Looper
+import android.os.Process
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -70,7 +72,8 @@ private fun <T: RealmObject> T.performQuery(fieldName : List<String>? = null, or
 
 internal fun getLooper(): Looper? {
     return if (Looper.myLooper() != Looper.getMainLooper()) {
-        val backgroundThread = BackgroundThread()
+        val backgroundThread = HandlerThread("Scheduler-Realm-BackgroundThread",
+                Process.THREAD_PRIORITY_BACKGROUND)
         backgroundThread.start()
         backgroundThread.looper
     } else {
