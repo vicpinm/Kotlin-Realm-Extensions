@@ -5,7 +5,6 @@ import com.google.common.truth.Truth.assertThat
 import com.vicpin.krealmextensions.model.TestEntity
 import com.vicpin.krealmextensions.model.TestEntityPK
 import com.vicpin.krealmextensions.util.TestRealmConfigurationFactory
-import io.reactivex.disposables.Disposable
 import io.realm.Realm
 import io.realm.Sort
 import io.realm.exceptions.RealmPrimaryKeyConstraintException
@@ -22,11 +21,11 @@ import java.util.concurrent.CountDownLatch
 @RunWith(AndroidJUnit4::class)
 class KRealmExtensionsTests {
 
+
     @get:Rule var configFactory = TestRealmConfigurationFactory()
     lateinit var realm: Realm
     lateinit var latch: CountDownLatch
     var latchReleased = false
-    var disposable: Disposable? = null
 
 
     @Before fun setUp() {
@@ -40,7 +39,6 @@ class KRealmExtensionsTests {
         TestEntityPK().deleteAll()
         realm.close()
         latchReleased = false
-        disposable = null
     }
 
     /**
@@ -367,146 +365,6 @@ class KRealmExtensionsTests {
         assertThat(TestEntityPK().queryAll()).hasSize(4)
     }
 
-    /**
-     * SINGLE AND FLOWABLE TESTS
-     */
-
-    @Test fun testQueryAllAsFlowable() {
-
-        var itemsCount = 5
-        var disposable: Disposable? = null
-
-        populateDBWithTestEntity(numItems = itemsCount)
-
-        block {
-            disposable = TestEntity().queryAllAsFlowable().subscribe({
-                assertThat(it).hasSize(itemsCount)
-                release()
-            })
-        }
-
-        block {
-            //Add one item more to db
-            ++itemsCount
-            populateDBWithTestEntity(numItems = 1)
-        }
-
-        disposable?.dispose()
-
-    }
-
-    @Test fun testQueryAsFlowable() {
-
-        populateDBWithTestEntityPK(numItems = 5)
-
-        block {
-            disposable = TestEntityPK().queryAsFlowable { query -> query.equalTo("id", 1) }.subscribe({
-                assertThat(it).hasSize(1)
-                assertThat(it[0].isManaged).isFalse()
-                release()
-            })
-        }
-
-        disposable?.dispose()
-    }
-
-     @Test fun testQueryAllAsSingle() {
-
-         var itemsCount = 5
-
-         populateDBWithTestEntity(numItems = itemsCount)
-
-         block {
-             disposable = TestEntity().queryAllAsSingle().subscribe({ result ->
-                 assertThat(result).hasSize(itemsCount)
-                 assertThat(result[0].isManaged).isFalse()
-                 release()
-             })
-
-         }
-
-         assertThat(disposable?.isDisposed ?: false).isTrue()
-     }
-
-     @Test fun testQueryAsSingle() {
-
-         populateDBWithTestEntityPK(numItems = 5)
-
-         block {
-             disposable = TestEntityPK().queryAsSingle { query -> query.equalTo("id", 1) }.subscribe({ it ->
-                 assertThat(it).hasSize(1)
-                 assertThat(it[0].isManaged).isFalse()
-                 release()
-             })
-         }
-
-         assertThat(disposable?.isDisposed ?: false).isTrue()
-     }
-
-    @Test fun testQuerySortedAsFlowable() {
-
-        populateDBWithTestEntityPK(numItems = 5)
-
-        block {
-            disposable = TestEntityPK().querySortedAsFlowable("id", Sort.DESCENDING).subscribe({
-                assertThat(it).hasSize(5)
-                assertThat(it[0].isManaged).isFalse()
-                assertThat(it[0].id).isEqualTo(4)
-                release()
-            })
-        }
-
-        disposable?.dispose()
-    }
-
-    @Test fun testQuerySortedAsFlowableWithQuery() {
-
-        populateDBWithTestEntityPK(numItems = 5)
-
-        block {
-            disposable = TestEntityPK().querySortedAsFlowable("id", Sort.DESCENDING) { query -> query.equalTo("id", 1) }.subscribe({
-                assertThat(it).hasSize(1)
-                assertThat(it[0].isManaged).isFalse()
-                assertThat(it[0].id).isEqualTo(1)
-                release()
-            })
-        }
-
-        disposable?.dispose()
-    }
-
-
-    @Test fun testQuerySortedAsSingle() {
-
-        populateDBWithTestEntityPK(numItems = 5)
-
-        block {
-            disposable = TestEntityPK().querySortedAsSingle("id", Sort.DESCENDING).subscribe({ it ->
-                assertThat(it).hasSize(5)
-                assertThat(it[0].isManaged).isFalse()
-                assertThat(it[0].id).isEqualTo(4)
-                release()
-            })
-        }
-
-        assertThat(disposable?.isDisposed ?: false).isTrue()
-    }
-
-    @Test fun testQuerySortedAsSingleWithQuery() {
-
-        populateDBWithTestEntityPK(numItems = 5)
-
-        block {
-            disposable = TestEntityPK().querySortedAsSingle("id", Sort.DESCENDING) { query -> query.equalTo("id", 1) }.subscribe({ it ->
-                assertThat(it).hasSize(1)
-                assertThat(it[0].isManaged).isFalse()
-                assertThat(it[0].id).isEqualTo(1)
-                release()
-            })
-        }
-
-        assertThat(disposable?.isDisposed ?: false).isTrue()
-    }
 
     /**
      * UTILITY TEST METHODS

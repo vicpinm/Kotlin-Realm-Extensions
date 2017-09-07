@@ -1,4 +1,4 @@
-package com.vicpin.krealmextensions
+package com.vicpin.krealmextensions.rx2
 
 import android.os.Looper
 import io.reactivex.Single

@@ -1,4 +1,4 @@
-package com.vicpin.krealmextensions
+package com.vicpin.krealmextensions.rx2
 
 import android.os.HandlerThread
 import android.os.Looper
@@ -11,6 +11,7 @@ import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.RealmQuery
 import io.realm.Sort
+typealias Query<T> = (RealmQuery<T>) -> Unit
 
 /**
  * Created by victor on 2/1/17.

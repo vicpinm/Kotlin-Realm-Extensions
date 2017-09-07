@@ -34,5 +34,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile project(':library')
 	compile project(':library-rx')
+    compile project(':library-rx2')
 
 }
