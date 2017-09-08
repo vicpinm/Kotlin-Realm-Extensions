@@ -14,30 +14,30 @@ typealias Query<T> = (RealmQuery<T>) -> Unit
 /**
  * Query to the database with RealmQuery instance as argument
  */
-fun <T : RealmObject> T.query(query: Query<T>): List<T> {
+fun <T : RealmObject> T.query(query: Query<T>, realm: Realm = Realm.getDefaultInstance()): List<T> {
 
-    Realm.getDefaultInstance().use { realm ->
-        val result = realm.forEntity(this).withQuery(query).findAll()
-        return realm.copyFromRealm(result)
+    realm.use {
+        val result = it.forEntity(this).withQuery(query).findAll()
+        return it.copyFromRealm(result)
     }
 }
 
 /**
  * Query to the database with RealmQuery instance as argument and returns all items founded
  */
-fun <T : RealmObject> T.queryAll(): List<T> {
+fun <T : RealmObject> T.queryAll(realm: Realm = Realm.getDefaultInstance()): List<T> {
 
-    Realm.getDefaultInstance().use { realm ->
-        val result = realm.forEntity(this).findAll()
-        return realm.copyFromRealm(result)
+    realm.use {
+        val result = it.forEntity(this).findAll()
+        return it.copyFromRealm(result)
     }
 }
 
 /**
  * Query to the database with RealmQuery instance as argument. Return first result, or null.
  */
-fun <T : RealmObject> T.queryFirst(): T? {
-    Realm.getDefaultInstance().use {
+fun <T : RealmObject> T.queryFirst(realm: Realm = Realm.getDefaultInstance()): T? {
+    realm.use {
         val item : T? = it.forEntity(this).findFirst()
         return if(item != null && item.isValid) it.copyFromRealm(item) else null
     }
@@ -46,8 +46,8 @@ fun <T : RealmObject> T.queryFirst(): T? {
 /**
  * Query to the database with RealmQuery instance as argument. Return first result, or null.
  */
-fun <T : RealmObject> T.queryFirst(query: Query<T>): T? {
-    Realm.getDefaultInstance().use {
+fun <T : RealmObject> T.queryFirst(query: Query<T>, realm: Realm = Realm.getDefaultInstance()): T? {
+    realm.use {
         val item : T? = it.forEntity(this).withQuery(query).findFirst()
         return if(item != null && item.isValid) it.copyFromRealm(item) else null
     }
@@ -56,8 +56,8 @@ fun <T : RealmObject> T.queryFirst(query: Query<T>): T? {
 /**
  * Query to the database with RealmQuery instance as argument. Return last result, or null.
  */
-fun <T : RealmObject> T.queryLast(): T? {
-    Realm.getDefaultInstance().use {
+fun <T : RealmObject> T.queryLast(realm: Realm = Realm.getDefaultInstance()): T? {
+    realm.use {
         val result = it.forEntity(this).findAll()
         return if(result != null && result.isNotEmpty()) it.copyFromRealm(result.last()) else null
     }
@@ -66,8 +66,8 @@ fun <T : RealmObject> T.queryLast(): T? {
 /**
  * Query to the database with RealmQuery instance as argument. Return last result, or null.
  */
-fun <T : RealmObject> T.queryLast(query: Query<T>): T? {
-    Realm.getDefaultInstance().use {
+fun <T : RealmObject> T.queryLast(query: Query<T>, realm: Realm = Realm.getDefaultInstance()): T? {
+    realm.use {
         val result = it.forEntity(this).withQuery(query).findAll()
         return if(result != null && result.isNotEmpty()) it.copyFromRealm(result.last()) else null
     }
@@ -76,44 +76,44 @@ fun <T : RealmObject> T.queryLast(query: Query<T>): T? {
 /**
  * Query to the database with RealmQuery instance as argument
  */
-fun <T : RealmObject> T.querySorted(fieldName : String, order : Sort, query: Query<T>): List<T> {
+fun <T : RealmObject> T.querySorted(fieldName : String, order : Sort, query: Query<T>, realm: Realm = Realm.getDefaultInstance()): List<T> {
 
-    Realm.getDefaultInstance().use { realm ->
-        val result = realm.forEntity(this).withQuery(query).findAll().sort(fieldName, order)
-        return realm.copyFromRealm(result)
+    realm.use {
+        val result = it.forEntity(this).withQuery(query).findAll().sort(fieldName, order)
+        return it.copyFromRealm(result)
     }
 }
 
 /**
  * Query to the database with a specific order and a RealmQuery instance as argument
  */
-fun <T : RealmObject> T.querySorted(fieldName : List<String>, order : List<Sort>, query: Query<T>): List<T> {
+fun <T : RealmObject> T.querySorted(fieldName : List<String>, order : List<Sort>, query: Query<T>, realm: Realm = Realm.getDefaultInstance()): List<T> {
 
-    Realm.getDefaultInstance().use { realm ->
-        val result = realm.forEntity(this).withQuery(query).findAll().sort(fieldName.toTypedArray(), order.toTypedArray())
-        return realm.copyFromRealm(result)
+    realm.use {
+        val result = it.forEntity(this).withQuery(query).findAll().sort(fieldName.toTypedArray(), order.toTypedArray())
+        return it.copyFromRealm(result)
     }
 }
 
 /**
  * Query to the database with a specific order
  */
-fun <T : RealmObject> T.querySorted(fieldName : String, order : Sort): List<T> {
+fun <T : RealmObject> T.querySorted(fieldName : String, order : Sort, realm: Realm = Realm.getDefaultInstance()): List<T> {
 
-    Realm.getDefaultInstance().use { realm ->
-        val result = realm.forEntity(this).findAll().sort(fieldName, order)
-        return realm.copyFromRealm(result)
+    realm.use {
+        val result = it.forEntity(this).findAll().sort(fieldName, order)
+        return it.copyFromRealm(result)
     }
 }
 
 /**
  * Query to the database with a specific order
  */
-fun <T : RealmObject> T.querySorted(fieldName : List<String>, order : List<Sort>): List<T> {
+fun <T : RealmObject> T.querySorted(fieldName : List<String>, order : List<Sort>, realm: Realm = Realm.getDefaultInstance()): List<T> {
 
-    Realm.getDefaultInstance().use { realm ->
-        val result = realm.forEntity(this).findAll().sort(fieldName.toTypedArray(), order.toTypedArray())
-        return realm.copyFromRealm(result)
+    realm.use {
+        val result = it.forEntity(this).findAll().sort(fieldName.toTypedArray(), order.toTypedArray())
+        return it.copyFromRealm(result)
     }
 }
 
@@ -126,10 +126,10 @@ fun Realm.transaction(action: (Realm) -> Unit) {
 }
 
 /**
- * Creates a new entry in database. Usefull for RealmObject with no primary key.
+ * Creates a new entry in database. Useful for RealmObject with no primary key.
  */
-fun <T : RealmObject> T.create() {
-    Realm.getDefaultInstance().transaction {
+fun <T : RealmObject> T.create(realm: Realm = Realm.getDefaultInstance()) {
+    realm.transaction {
         it.copyToRealm(this)
     }
 }
@@ -147,8 +147,8 @@ fun <T : RealmObject> T.createManaged(realm: Realm): T {
 /**
  * Creates or updates a entry in database. Requires a RealmObject with primary key, or IllegalArgumentException will be thrown
  */
-fun <T : RealmObject> T.createOrUpdate() {
-    Realm.getDefaultInstance().transaction { it.copyToRealmOrUpdate(this) }
+fun <T : RealmObject> T.createOrUpdate(realm: Realm = Realm.getDefaultInstance()) {
+    realm.transaction { it.copyToRealmOrUpdate(this) }
 }
 
 /**
@@ -165,8 +165,8 @@ fun <T : RealmObject> T.createOrUpdateManaged(realm: Realm): T {
  * Creates a new entry in database or updates an existing one. If entity has no primary key, always create a new one.
  * If has primary key, it tries to updates an existing one.
  */
-fun <T : RealmObject> T.save() {
-    Realm.getDefaultInstance().transaction {
+fun <T : RealmObject> T.save(realm: Realm = Realm.getDefaultInstance()) {
+    realm.transaction {
         if(this.hasPrimaryKey(it)) it.copyToRealmOrUpdate(this) else it.copyToRealm(this)
     }
 }
@@ -184,8 +184,7 @@ fun <T : RealmObject> T.saveManaged(realm: Realm): T {
     return result!!
 }
 
-fun <T : Collection<out RealmObject>> T.saveAll() {
-    val realm = Realm.getDefaultInstance()
+fun <T : Collection<RealmObject>> T.saveAll(realm: Realm = Realm.getDefaultInstance()) {
     realm.transaction {
         forEach { if(it.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(it) else realm.copyToRealm(it) }
     }
@@ -199,8 +198,7 @@ fun <T : RealmObject> Collection<T>.saveAllManaged(realm: Realm): List<T> {
     return results
 }
 
-fun  Array<out RealmObject>.saveAll() {
-    val realm = Realm.getDefaultInstance()
+fun  Array<out RealmObject>.saveAll(realm: Realm = Realm.getDefaultInstance()) {
     realm.transaction {
         forEach { if(it.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(it) else realm.copyToRealm(it) }
     }
@@ -217,15 +215,15 @@ fun <T : RealmObject> Array<T>.saveAllManaged(realm: Realm): List<T> {
 /**
  * Delete all entries of this type in database
  */
-fun <T : RealmObject> T.deleteAll() {
-    Realm.getDefaultInstance().transaction { it.forEntity(this).findAll().deleteAllFromRealm() }
+fun <T : RealmObject> T.deleteAll(realm: Realm = Realm.getDefaultInstance()) {
+    realm.transaction { it.forEntity(this).findAll().deleteAllFromRealm() }
 }
 
 /**
  * Delete all entries returned by the specified query
  */
-fun <T : RealmObject> T.delete(myQuery: Query<T>) {
-    Realm.getDefaultInstance().transaction {
+fun <T : RealmObject> T.delete(myQuery: Query<T>, realm: Realm = Realm.getDefaultInstance()) {
+    realm.transaction {
         it.forEntity(this).withQuery(myQuery).findAll().deleteAllFromRealm()
     }
 }
@@ -233,9 +231,10 @@ fun <T : RealmObject> T.delete(myQuery: Query<T>) {
 /**
  * Get count of entries
  */
-inline fun <reified T: RealmObject> T.count(): Long {
-    val realm = Realm.getDefaultInstance()
-    return realm.where(T::class.java).count()
+inline fun <reified T: RealmObject> T.count(realm: Realm = Realm.getDefaultInstance()): Long {
+    realm.use {
+      return it.where(T::class.java).count()
+    }
 }
 
 

@@ -150,7 +150,7 @@ class KRealmExtensionsTests {
 
     @Test fun testAsyncQueryFirstObjectWithEmptyDBShouldReturnNull() {
         block {
-            TestEntity().queryFirstAsync { assertThat(it).isNull();release() }
+            TestEntity().queryFirstAsync({ assertThat(it).isNull();release() })
         }
     }
 
@@ -159,12 +159,12 @@ class KRealmExtensionsTests {
     }
 
     @Test fun testQueryLastObjectWithConditionAndEmptyDBShouldReturnNull() {
-        assertThat(TestEntity().queryLast { it.equalTo("name", "test") }).isNull()
+        assertThat(TestEntity().queryLast({ it.equalTo("name", "test") })).isNull()
     }
 
     @Test fun testAsyncQueryLastObjectWithEmptyDBShouldReturnNull() {
         block {
-            TestEntity().queryLastAsync { assertThat(it).isNull(); release() }
+            TestEntity().queryLastAsync({ assertThat(it).isNull(); release() })
         }
     }
 
@@ -174,22 +174,23 @@ class KRealmExtensionsTests {
 
     @Test fun testAllItemsAsyncShouldReturnEmptyCollectionWhenDBIsEmpty() {
         block {
-            TestEntity().queryAllAsync { assertThat(it).hasSize(0); release() }
+            TestEntity().queryAllAsync({ assertThat(it).hasSize(0); release() })
         }
     }
 
     @Test fun testQueryConditionalWhenDBIsEmpty() {
-        val result = TestEntity().query { it.equalTo("name", "test") }
+        val result = TestEntity().query({ it.equalTo("name", "test") })
         assertThat(result).hasSize(0)
     }
 
     @Test fun testQueryFirstItemWhenDBIsEmpty() {
-        val result = TestEntity().queryFirst { it.equalTo("name", "test") }
+        val result = TestEntity().queryFirst({ it.equalTo("name", "test") })
         assertThat(result).isNull()
     }
 
     @Test fun testQuerySortedWhenDBIsEmpty() {
-        val result = TestEntity().querySorted("name", Sort.ASCENDING) { it.equalTo("name", "test") }
+        val result = TestEntity().querySorted(fieldName = "name", order =  Sort.ASCENDING,
+            query = { it.equalTo("name", "test") })
         assertThat(result).hasSize(0)
     }
 
@@ -206,11 +207,11 @@ class KRealmExtensionsTests {
         populateDBWithTestEntityPK(numItems = 5)
 
         block {
-            TestEntityPK().queryFirstAsync {
+            TestEntityPK().queryFirstAsync({
                 assertThat(it).isNotNull()
                 assertThat(it?.id).isEqualTo(0)
                 release()
-            }
+            })
         }
     }
 
@@ -221,17 +222,17 @@ class KRealmExtensionsTests {
 
     @Test fun testQueryLastItemWithConditionShouldReturnLastItemWhenDBIsNotEmpty() {
         populateDBWithTestEntityPK(numItems = 5)
-        assertThat(TestEntityPK().queryLast { it.equalTo("id", 3) }?.id).isEqualTo(3)
+        assertThat(TestEntityPK().queryLast({ it.equalTo("id", 3) })?.id).isEqualTo(3)
     }
 
     @Test fun testAsyncQueryLastItemShouldReturnLastItemWhenDBIsNotEmpty() {
         populateDBWithTestEntityPK(numItems = 5)
 
         block {
-            TestEntityPK().queryLastAsync {
+            TestEntityPK().queryLastAsync({
                 assertThat(it).isNotNull()
                 release()
-            }
+            })
         }
     }
 
@@ -244,7 +245,7 @@ class KRealmExtensionsTests {
         populateDBWithTestEntity(numItems = 5)
 
         block {
-            TestEntity().queryAllAsync { assertThat(it).hasSize(5); release() }
+            TestEntity().queryAllAsync({ assertThat(it).hasSize(5); release() })
         }
     }
 
@@ -261,7 +262,7 @@ class KRealmExtensionsTests {
      */
     @Test fun testWhereQueryShouldReturnExpectedItems() {
         populateDBWithTestEntityPK(numItems = 5)
-        val results = TestEntityPK().query { query -> query.equalTo("id", 1) }
+        val results = TestEntityPK().query({ query -> query.equalTo("id", 1) })
 
         assertThat(results).hasSize(1)
         assertThat(results.first().id).isEqualTo(1)
@@ -271,17 +272,18 @@ class KRealmExtensionsTests {
         populateDBWithTestEntityPK(numItems = 5)
 
         block {
-            TestEntityPK().queryAsync({ query -> query.equalTo("id", 1) }) { results ->
-                assertThat(results).hasSize(1)
-                assertThat(results.first().id).isEqualTo(1)
-                release()
-            }
+            TestEntityPK().queryAsync(query = { query -> query.equalTo("id", 1) },
+                callback = { results ->
+                  assertThat(results).hasSize(1)
+                  assertThat(results.first().id).isEqualTo(1)
+                  release()
+                })
         }
     }
 
     @Test fun testWhereQueryShouldNotReturnAnyItem() {
         populateDBWithTestEntityPK(numItems = 5)
-        val results = TestEntityPK().query { query -> query.equalTo("id", 6) }
+        val results = TestEntityPK().query({ query -> query.equalTo("id", 6) })
 
         assertThat(results).hasSize(0)
     }
@@ -290,17 +292,18 @@ class KRealmExtensionsTests {
         populateDBWithTestEntityPK(numItems = 5)
 
         block {
-            TestEntityPK().queryAsync({ query -> query.equalTo("id", 6) }) { results ->
+          TestEntityPK().queryAsync(query = { query -> query.equalTo("id", 6) },
+              callback = { results ->
                 assertThat(results).hasSize(0)
                 release()
-            }
+              })
         }
     }
 
     @Test fun testFirstItemWhenDbIsNotEmpty() {
         populateDBWithTestEntityPK(numItems = 5)
 
-        val result = TestEntityPK().queryFirst { it.equalTo("id", 2) }
+        val result = TestEntityPK().queryFirst({ it.equalTo("id", 2) })
 
         assertThat(result).isNotNull()
         assertThat(result?.id).isEqualTo(2)
@@ -329,9 +332,10 @@ class KRealmExtensionsTests {
     @Test fun testQueryDescendingWithFilterShouldReturnOrderedResults() {
         populateDBWithTestEntityPK(numItems = 5)
 
-        val result = TestEntityPK().querySorted("id", Sort.DESCENDING) {
-            it.lessThan("id", 3).greaterThan("id", 0)
-        }
+        val result = TestEntityPK().querySorted(fieldName = "id", order = Sort.DESCENDING,
+            query = {
+              it.lessThan("id", 3).greaterThan("id", 0)
+            })
 
         assertThat(result).hasSize(2)
         assertThat(result.first().id).isEqualTo(2)
@@ -360,7 +364,7 @@ class KRealmExtensionsTests {
     @Test fun testDeleteEntitiesWithStatement() {
         populateDBWithTestEntityPK(numItems = 5)
 
-        TestEntityPK().delete { query -> query.equalTo("id", 1) }
+        TestEntityPK().delete({ query -> query.equalTo("id", 1) })
 
         assertThat(TestEntityPK().queryAll()).hasSize(4)
     }
