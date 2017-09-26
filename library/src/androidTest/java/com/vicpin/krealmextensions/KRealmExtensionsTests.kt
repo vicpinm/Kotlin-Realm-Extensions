@@ -3,6 +3,7 @@ package com.vicpin.krealmextensions
 import android.support.test.runner.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
 import com.vicpin.krealmextensions.model.TestEntity
+import com.vicpin.krealmextensions.model.TestEntityAutoPK
 import com.vicpin.krealmextensions.model.TestEntityPK
 import com.vicpin.krealmextensions.util.TestRealmConfigurationFactory
 import io.realm.Realm
@@ -37,6 +38,7 @@ class KRealmExtensionsTests {
     @After fun tearDown() {
         TestEntity().deleteAll()
         TestEntityPK().deleteAll()
+        TestEntityAutoPK().deleteAll()
         realm.close()
         latchReleased = false
     }
@@ -88,6 +90,7 @@ class KRealmExtensionsTests {
     @Test fun testPersistEntityWithSaveMethodManaged() {
         val result = TestEntity().saveManaged(realm) //No exception expected
         assertThat(result.isManaged)
+        assertThat(TestEntity().count(realm)).isEqualTo(1)
     }
 
     @Test fun testPersistPKEntityWithSaveMethod() {
@@ -97,6 +100,7 @@ class KRealmExtensionsTests {
     @Test fun testPersistPKEntityWithSaveMethodManaged() {
         val result = TestEntityPK(1).saveManaged(realm) //No exception expected
         assertThat(result.isManaged).isTrue()
+        assertThat(TestEntityPK().count(realm)).isEqualTo(1)
     }
 
     @Test(expected = RealmPrimaryKeyConstraintException::class)
@@ -139,6 +143,59 @@ class KRealmExtensionsTests {
         val list = listOf(TestEntity(), TestEntity(), TestEntity())
         list.saveAll()
         assertThat(TestEntity().count()).isEqualTo(3)
+    }
+
+    /**
+     *  PERSISTENCE TEST WITH AUTO PRIMARY KEY
+     */
+    @Test fun testPersistAutoPKEntityWithSaveMethod() {
+        TestEntityAutoPK().save() //No exception expected
+    }
+
+    @Test fun testPersistAutoPKEntityWithSaveMethodShouldHavePK() {
+        TestEntityAutoPK().save()
+        assertThat(TestEntityAutoPK().count()).isEqualTo(1)
+        assertThat(TestEntityAutoPK().queryLast()?.id).isEqualTo(1)
+        TestEntityAutoPK().save()
+        assertThat(TestEntityAutoPK().count()).isEqualTo(2)
+        assertThat(TestEntityAutoPK().queryLast()?.id).isEqualTo(2)
+        TestEntityAutoPK().save()
+        assertThat(TestEntityAutoPK().count()).isEqualTo(3)
+        assertThat(TestEntityAutoPK().queryLast()?.id).isEqualTo(3)
+    }
+
+    @Test fun testPersistAutoPKEntityWithSaveManagedMethod() {
+        val result = TestEntityAutoPK().saveManaged(realm)
+        assertThat(result.isManaged)
+        assertThat(TestEntityAutoPK().count(realm)).isEqualTo(1)
+    }
+
+    @Test fun testPersistAutoPKEntityListWithSaveMethod() {
+        val list = listOf(TestEntityAutoPK(), TestEntityAutoPK(), TestEntityAutoPK())
+        list.saveAll()
+        assertThat(TestEntityAutoPK().count()).isEqualTo(3)
+        assertThat(TestEntityAutoPK().queryFirst()?.id).isEqualTo(1)
+        assertThat(TestEntityAutoPK().queryLast()?.id).isEqualTo(3)
+    }
+
+    @Test fun testPersistAutoPKEntityArrayWithSaveMethod() {
+        val list = arrayOf(TestEntityAutoPK(), TestEntityAutoPK(), TestEntityAutoPK())
+        list.saveAll()
+        assertThat(TestEntityAutoPK().count()).isEqualTo(3)
+        assertThat(TestEntityAutoPK().queryFirst()?.id).isEqualTo(1)
+        assertThat(TestEntityAutoPK().queryLast()?.id).isEqualTo(3)
+    }
+
+    @Test fun testPersistAutoPKEntityListWithSaveManagedMethod() {
+        val list = listOf(TestEntityAutoPK(), TestEntityAutoPK(), TestEntityAutoPK())
+        list.saveAllManaged(realm)
+        assertThat(TestEntityAutoPK().count(realm)).isEqualTo(3)
+    }
+
+    @Test fun testPersistAutoPKEntityArrayWithSavemanagedMethod() {
+        val list = arrayOf(TestEntityAutoPK(), TestEntityAutoPK(), TestEntityAutoPK())
+        list.saveAllManaged(realm)
+        assertThat(TestEntityAutoPK().count(realm)).isEqualTo(3)
     }
 
     /**
