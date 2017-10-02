@@ -130,7 +130,7 @@ fun Realm.transaction(action: (Realm) -> Unit) {
  */
 fun <T : RealmObject> T.create() {
     RealmConfigStore.fetchConfiguration(javaClass).use {
-        it.copyToRealm(this)
+        it.transaction { it.copyToRealm(this) }
     }
 }
 
@@ -194,8 +194,8 @@ inline fun <reified T : RealmObject> T.saveManaged(realm: Realm): T {
     return result!!
 }
 
-inline fun <reified D:RealmObject, T : Collection<D>> T.saveAll() {
-    if(size > 0) {
+inline fun <reified D : RealmObject, T : Collection<D>> T.saveAll() {
+    if (size > 0) {
         RealmConfigStore.fetchConfiguration(D::class.java).use { realm ->
             realm.transaction {
                 if (first().isAutoIncrementPK()) {
@@ -265,7 +265,7 @@ inline fun <reified T : RealmObject> T.count(): Long {
     }
 }
 
-inline fun <reified T: RealmObject> T.count(realm: Realm): Long {
+inline fun <reified T : RealmObject> T.count(realm: Realm): Long {
     return realm.where(T::class.java).count()
 }
 
@@ -282,33 +282,32 @@ private fun <T> T.withQuery(block: (T) -> Unit): T {
 }
 
 inline fun <reified T : RealmObject> T.hasPrimaryKey(realm : Realm) : Boolean {
-    if(realm.schema.get(this.javaClass.simpleName) == null){
+    if (realm.schema.get(this.javaClass.simpleName) == null){
         throw IllegalArgumentException(this.javaClass.simpleName + " is not part of the schema for this Realm. Did you added realm-android plugin in your build.gradle file?")
     }
     return realm.schema.get(this.javaClass.simpleName).hasPrimaryKey()
 }
 
-inline fun <reified T: RealmObject> T.getLastPk(realm: Realm): Long {
+inline fun <reified T : RealmObject> T.getLastPk(realm: Realm): Long {
     val result = realm.where(this.javaClass).max(getPrimaryKeyFieldName(realm))
     return result?.toLong() ?: 0
 }
 
 
-inline fun <reified T: RealmObject> T.getPrimaryKeyFieldName(realm: Realm): String {
+inline fun <reified T : RealmObject> T.getPrimaryKeyFieldName(realm: Realm): String {
     return realm.schema.get(this.javaClass.simpleName).primaryKey
 }
 
-inline fun <reified T: RealmObject> T.setPk(realm: Realm, value: Long) {
+inline fun <reified T : RealmObject> T.setPk(realm: Realm, value: Long) {
     val fieldName = realm.schema.get(this.javaClass.simpleName).primaryKey
     val f1 = javaClass.getDeclaredField(fieldName)
     try {
         val accesible = f1.isAccessible
         f1.isAccessible = true
         f1.set(this, value)
-        Log.d("testet","testet seteado pk  " + value)
+        Log.d("testet", "testet seteado pk  " + value)
         f1.isAccessible = accesible
-    }
-    catch (ex: IllegalArgumentException){
+    } catch (ex: IllegalArgumentException) {
         throw IllegalArgumentException("Primary key field $fieldName must be of type Long to set a primary key automatically")
     }
 }
@@ -331,7 +330,7 @@ fun RealmObject.initPk(realm: Realm) {
     setPk(realm, getLastPk(realm) + 1)
 }
 
-inline fun <reified T: RealmObject> T.isAutoIncrementPK() : Boolean {
+inline fun <reified T : RealmObject> T.isAutoIncrementPK(): Boolean {
     return this.javaClass.declaredAnnotations.filter { it.annotationClass == AutoIncrementPK::class }.isNotEmpty()
 
 }
