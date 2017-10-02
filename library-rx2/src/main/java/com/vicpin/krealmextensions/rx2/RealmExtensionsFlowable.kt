@@ -3,11 +3,12 @@ package com.vicpin.krealmextensions.rx2
 import android.os.HandlerThread
 import android.os.Looper
 import android.os.Process
+import com.vicpin.krealmextensions.RealmConfigStore
+import com.vicpin.krealmextensions.realm
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposables
-import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.RealmQuery
 import io.realm.Sort
@@ -44,7 +45,7 @@ private fun <T: RealmObject> T.performQuery(fieldName : List<String>? = null, or
 
     return Flowable.create<List<T>>({ emitter ->
 
-        val realm = Realm.getDefaultInstance()
+        val realm = RealmConfigStore.fetchConfiguration(javaClass).realm()
         val realmQuery: RealmQuery<T> = RealmQuery.createQuery(realm, this.javaClass)
         query?.invoke(realmQuery)
 
