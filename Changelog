@@ -1,3 +1,6 @@
+###1.1.5
+ - Separated library into modules.
+
 ###1.1.2
  - Removed deprecated methods
  - Code cleaned up and refactored

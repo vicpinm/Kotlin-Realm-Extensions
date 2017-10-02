@@ -97,6 +97,7 @@ public class TestRealmConfigurationFactory extends TemporaryFolder {
     public RealmConfiguration createConfiguration() {
         RealmConfiguration configuration = new RealmConfiguration.Builder()
                 .directory(getRoot())
+                .deleteRealmIfMigrationNeeded()
                 .build();
 
         configurations.add(configuration);

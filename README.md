@@ -15,7 +15,13 @@ repositories {
     mavenCentral()
 }
 
-compile 'com.github.vicpinm:krealmextensions:1.1.2'
+compile "com.github.vicpinm:krealmextensions:1.1.5"
+
+//For Observable queries:
+compile 'com.github.vicpinm:krealmextensions-rxjava:1.1.5'
+
+//For Single and Flowable queries:
+compile 'com.github.vicpinm:krealmextensions-rxjava2:1.1.5'
 ```
 ## Download for Kotlin 1.1.x and Realm 3.1.3
 

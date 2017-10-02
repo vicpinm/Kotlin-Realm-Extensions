@@ -1,5 +1,6 @@
 package com.vicpin.krealmextensions
 
+import android.util.Log
 import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.RealmQuery
@@ -166,11 +167,11 @@ fun <T : RealmObject> T.createOrUpdateManaged(realm: Realm): T {
  * Creates a new entry in database or updates an existing one. If entity has no primary key, always create a new one.
  * If has primary key, it tries to updates an existing one.
  */
-fun <T : RealmObject> T.save() {
-    RealmConfigStore.fetchConfiguration(javaClass).use { realm ->
-        realm.transaction {
-            if (this.hasPrimaryKey(it)) it.copyToRealmOrUpdate(this) else it.copyToRealm(this)
-        }
+inline fun <reified T : RealmObject> T.save() {
+    val realm = RealmConfigStore.fetchConfiguration(javaClass)
+    realm.transaction {
+        if(isAutoIncrementPK()) { initPk(realm) }
+        if(this.hasPrimaryKey(it)) it.copyToRealmOrUpdate(this) else it.copyToRealm(this)
     }
 }
 
@@ -179,42 +180,55 @@ fun <T : RealmObject> T.save() {
  * If has primary key, it tries to update an existing one.
  * @return a managed version of a saved object
  */
-fun <T : RealmObject> T.saveManaged(realm: Realm): T {
+inline fun <reified T : RealmObject> T.saveManaged(realm: Realm): T {
     var result: T? = null
     realm.executeTransaction {
-        result = if (this.hasPrimaryKey(it)) it.copyToRealmOrUpdate(this) else it.copyToRealm(this)
+        Log.d("testet","testet " + isAutoIncrementPK())
+        if(isAutoIncrementPK()) { initPk(realm) }
+
+        result = if(this.hasPrimaryKey(it)) it.copyToRealmOrUpdate(this) else it.copyToRealm(this)
     }
     return result!!
 }
 
-inline fun <reified D : RealmObject, T : Collection<D>> T.saveAll() {
-    RealmConfigStore.fetchConfiguration(D::class.java).use { realm ->
-        realm.transaction {
-            forEach { if (it.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(it) else realm.copyToRealm(it) }
+inline fun <reified D:RealmObject, T : Collection<D>> T.saveAll() {
+    if(size > 0) {
+        RealmConfigStore.fetchConfiguration(D::class.java).use { realm ->
+            realm.transaction {
+                if (first().isAutoIncrementPK()) {
+                    initPk(realm)
+                }
+                forEach { if (it.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(it) else realm.copyToRealm(it) }
+            }
         }
     }
 }
 
-fun <T : RealmObject> Collection<T>.saveAllManaged(realm: Realm): List<T> {
+inline fun <reified T : RealmObject> Collection<T>.saveAllManaged(realm: Realm): List<T> {
     val results = mutableListOf<T>()
     realm.executeTransaction {
-        forEach { results += if (it.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(it) else realm.copyToRealm(it) }
+        if (first().isAutoIncrementPK()) { initPk(realm) }
+        forEach { results += if(it.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(it) else realm.copyToRealm(it) }
     }
     return results
 }
 
-inline fun <reified D : RealmObject> Array<D>.saveAll() {
+inline fun Array<reified D : RealmObject>.saveAll() {
     RealmConfigStore.fetchConfiguration(D::class.java).use { realm ->
         realm.transaction {
+            if (first().isAutoIncrementPK()) {
+                initPk(realm)
+            }
             forEach { if (it.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(it) else realm.copyToRealm(it) }
         }
     }
 }
 
-fun <T : RealmObject> Array<T>.saveAllManaged(realm: Realm): List<T> {
+inline fun <reified T : RealmObject> Array<T>.saveAllManaged(realm: Realm): List<T> {
     val results = mutableListOf<T>()
     realm.executeTransaction {
-        forEach { results += if (it.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(it) else realm.copyToRealm(it) }
+        if (first().isAutoIncrementPK()) { initPk(realm) }
+        forEach { results += if(it.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(it) else realm.copyToRealm(it) }
     }
     return results
 }
@@ -248,6 +262,10 @@ inline fun <reified T : RealmObject> T.count(): Long {
     }
 }
 
+inline fun <reified T: RealmObject> T.count(realm: Realm): Long {
+    return realm.where(T::class.java).count()
+}
+
 
 /**
  * UTILITY METHODS
@@ -260,11 +278,59 @@ private fun <T> T.withQuery(block: (T) -> Unit): T {
     block(this); return this
 }
 
-fun <T : RealmObject> T.hasPrimaryKey(realm: Realm): Boolean {
-    if (realm.schema.get(this.javaClass.simpleName) == null) {
+inline fun <reified T : RealmObject> T.hasPrimaryKey(realm : Realm) : Boolean {
+    if(realm.schema.get(this.javaClass.simpleName) == null){
         throw IllegalArgumentException(this.javaClass.simpleName + " is not part of the schema for this Realm. Did you added realm-android plugin in your build.gradle file?")
     }
     return realm.schema.get(this.javaClass.simpleName).hasPrimaryKey()
+}
+
+inline fun <reified T: RealmObject> T.getLastPk(realm: Realm): Long {
+    val result = realm.where(this.javaClass).max(getPrimaryKeyFieldName(realm))
+    return result?.toLong() ?: 0
+}
+
+
+inline fun <reified T: RealmObject> T.getPrimaryKeyFieldName(realm: Realm): String {
+    return realm.schema.get(this.javaClass.simpleName).primaryKey
+}
+
+inline fun <reified T: RealmObject> T.setPk(realm: Realm, value: Long) {
+    val fieldName = realm.schema.get(this.javaClass.simpleName).primaryKey
+    val f1 = javaClass.getDeclaredField(fieldName)
+    try {
+        val accesible = f1.isAccessible
+        f1.isAccessible = true
+        f1.set(this, value)
+        Log.d("testet","testet seteado pk  " + value)
+        f1.isAccessible = accesible
+    }
+    catch (ex: IllegalArgumentException){
+        throw IllegalArgumentException("Primary key field $fieldName must be of type Long to set a primary key automatically")
+    }
+}
+
+fun Collection<RealmObject>.initPk(realm: Realm) {
+    val nextPk = first().getLastPk(realm) + 1
+    for ((index, value) in withIndex()) {
+        value.setPk(realm, nextPk + index)
+    }
+}
+
+fun Array<out RealmObject>.initPk(realm: Realm) {
+    val nextPk = first().getLastPk(realm) + 1
+    for ((index, value) in withIndex()) {
+        value.setPk(realm, nextPk + index)
+    }
+}
+
+fun RealmObject.initPk(realm: Realm) {
+    setPk(realm, getLastPk(realm) + 1)
+}
+
+inline fun <reified T: RealmObject> T.isAutoIncrementPK() : Boolean {
+    return this.javaClass.declaredAnnotations.filter { it.annotationClass == AutoIncrementPK::class }.isNotEmpty()
+
 }
 
 
