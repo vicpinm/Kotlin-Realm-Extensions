@@ -168,10 +168,13 @@ fun <T : RealmObject> T.createOrUpdateManaged(realm: Realm): T {
  * If has primary key, it tries to updates an existing one.
  */
 inline fun <reified T : RealmObject> T.save() {
-    val realm = RealmConfigStore.fetchConfiguration(javaClass)
-    realm.transaction {
-        if(isAutoIncrementPK()) { initPk(realm) }
-        if(this.hasPrimaryKey(it)) it.copyToRealmOrUpdate(this) else it.copyToRealm(this)
+    RealmConfigStore.fetchConfiguration(javaClass).use { realm ->
+        realm.transaction {
+            if (isAutoIncrementPK()) {
+                initPk(realm)
+            }
+            if (this.hasPrimaryKey(it)) it.copyToRealmOrUpdate(this) else it.copyToRealm(this)
+        }
     }
 }
 
@@ -213,7 +216,7 @@ inline fun <reified T : RealmObject> Collection<T>.saveAllManaged(realm: Realm):
     return results
 }
 
-inline fun Array<reified D : RealmObject>.saveAll() {
+inline fun <reified D : RealmObject> Array<D>.saveAll() {
     RealmConfigStore.fetchConfiguration(D::class.java).use { realm ->
         realm.transaction {
             if (first().isAutoIncrementPK()) {
