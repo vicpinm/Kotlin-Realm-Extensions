@@ -12,6 +12,8 @@ import io.reactivex.disposables.Disposables
 import io.realm.RealmObject
 import io.realm.RealmQuery
 import io.realm.Sort
+import io.realm.Realm
+
 typealias Query<T> = (RealmQuery<T>) -> Unit
 
 /**
@@ -45,7 +47,7 @@ private fun <T: RealmObject> T.performQuery(fieldName : List<String>? = null, or
 
     return Flowable.create<List<T>>({ emitter ->
 
-        val realm = RealmConfigStore.fetchConfiguration(javaClass).realm()
+        val realm = RealmConfigStore.fetchConfiguration(javaClass)?.realm() ?: Realm.getDefaultInstance()
         val realmQuery: RealmQuery<T> = RealmQuery.createQuery(realm, this.javaClass)
         query?.invoke(realmQuery)
 

@@ -12,13 +12,13 @@ import com.vicpin.kotlinrealmextensions.extensions.wait
 import com.vicpin.kotlinrealmextensions.model.Address
 import com.vicpin.kotlinrealmextensions.model.Item
 import com.vicpin.kotlinrealmextensions.model.User
-import com.vicpin.krealmextensions.RealmConfigStore
 import com.vicpin.krealmextensions.deleteAll
+import com.vicpin.krealmextensions.getRealm
 import com.vicpin.krealmextensions.queryAll
+import com.vicpin.krealmextensions.rx.queryAllAsObservable
 import com.vicpin.krealmextensions.saveAll
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
-
 class MainActivity : AppCompatActivity() {
 
     val dbSize = 100
@@ -33,13 +33,15 @@ class MainActivity : AppCompatActivity() {
         //***********************************
 
         performTest("main thread") {
-            Thread { performTest("background thread items") }.start()
+            Thread { performTest("background thread items") {
+                // User perform Test
+                performUserTest("main thread users") {
+                    Thread { performUserTest("background thread users") }.start()
+                }
+            } }.start()
         }
 
-        // User perform Test
-        performUserTest("main thread users") {
-            Thread { performUserTest("background thread users") }.start()
-        }
+
 
     }
 
@@ -51,7 +53,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun performUserTest(threadName: String, finishCallback: (() -> Unit)? = null) {
 
-        addMessage("Starting test on $threadName with User realm configuration")
+        addMessage("Starting test on $threadName with User realm configuration", important = true)
 
         User().deleteAll()
         populateUserDb(userSize)
@@ -72,6 +74,10 @@ class MainActivity : AppCompatActivity() {
 
         addMessage("Observing table changes...")
 
+        val subscription = User().queryAllAsObservable().subscribe {
+            addMessage("Changes received on ${if(Looper.myLooper() == Looper.getMainLooper()) "main thread" else "background thread"}, total items: " + it.size)
+        }
+
         wait(1) {
             populateUserDb(10)
         }
@@ -85,14 +91,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         wait(if (isMainThread()) 4 else 1) {
+            subscription.unsubscribe()
             addMessage("Subscription finished")
-            var defaultRealm = Realm.getDefaultInstance();
-            var userRealm = Realm.getInstance(RealmConfigStore.fetchConfiguration(User::class.java))
-            var defaultCount = defaultRealm.where(User::class.java).count()
-            var userCount = userRealm.where(User::class.java).count()
+            var defaultCount = Realm.getDefaultInstance().where(User::class.java).count()
+            var userCount = User().getRealm().where(User::class.java).count()
 
-            addMessage("All users from default configuration : ${defaultCount}")
-            addMessage("All users from configured : $userCount")
+            addMessage("All users from default configuration : $defaultCount")
+            addMessage("All users from user configuration : $userCount")
             finishCallback?.invoke()
         }
 
@@ -121,6 +126,9 @@ class MainActivity : AppCompatActivity() {
 
         addMessage("Observing table changes...")
 
+        val subscription = Item().queryAllAsObservable().subscribe {
+            addMessage("Changes received on ${if(Looper.myLooper() == Looper.getMainLooper()) "main thread" else "background thread"}, total items: " + it.size)
+        }
         wait(1) {
             populateDB(numItems = 10)
         }
@@ -134,17 +142,18 @@ class MainActivity : AppCompatActivity() {
         }
 
         wait(if(isMainThread()) 4 else 1) {
+            subscription.unsubscribe()
             addMessage("Subscription finished")
             finishCallback?.invoke()
         }
     }
 
     private fun populateUserDb(numUsers: Int) {
-        Array(numUsers) { User("name_%d".format(it), Address("street_%d".format(it))) }.toList().saveAll()
+        Array(numUsers) { User("name_%d".format(it), Address("street_%d".format(it))) }.saveAll()
     }
 
     private fun populateDB(numItems: Int) {
-        Array(numItems) { Item() }.toList().saveAll()
+        Array(numItems) { Item() }.saveAll()
     }
 
     private fun addMessage(message: String, important: Boolean = false) {
@@ -153,6 +162,7 @@ class MainActivity : AppCompatActivity() {
             if (important) view.typeface = Typeface.DEFAULT_BOLD
             view.text = message
             mainContainer.addView(view)
+            scroll.smoothScrollBy(0,1000)
         }
     }
 

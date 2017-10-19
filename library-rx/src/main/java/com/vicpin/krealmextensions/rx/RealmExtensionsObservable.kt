@@ -3,8 +3,7 @@ package com.vicpin.krealmextensions.rx
 import android.os.HandlerThread
 import android.os.Looper
 import android.os.Process
-import com.vicpin.krealmextensions.RealmConfigStore
-import com.vicpin.krealmextensions.realm
+import com.vicpin.krealmextensions.getRealm
 import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.RealmQuery
@@ -79,7 +78,7 @@ private fun <D : RealmObject, T : Any> prepareObservableQuery(clazz: Class<D>, c
 
     return Observable.defer {
         Observable.create(Observable.OnSubscribe<T> {
-            realm = RealmConfigStore.fetchConfiguration(clazz).realm()
+            realm = getRealm(clazz)
             mySubscription = closure(realm!!, it)
         }).doOnUnsubscribe({
             realm?.close()

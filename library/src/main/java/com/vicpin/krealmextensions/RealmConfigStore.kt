@@ -18,16 +18,28 @@ class RealmConfigStore {
             }
         }
 
-        fun <T : RealmObject> fetchConfiguration(modelClass: Class<T>): RealmConfiguration {
-            return configMap[modelClass] ?: RealmConfiguration.Builder().build()
+        fun <T : RealmObject> fetchConfiguration(modelClass: Class<T>): RealmConfiguration? {
+            return configMap[modelClass]
         }
     }
 }
 
-fun RealmConfiguration.realm(): Realm {
-    return Realm.getInstance(this)
+fun <T : RealmObject> T.getRealm() : Realm {
+    return RealmConfigStore.fetchConfiguration(this::class.java)?.realm() ?: Realm.getDefaultInstance()
 }
 
-fun <T> RealmConfiguration.use(block: (Realm) -> T): T {
-    return Realm.getInstance(this).use { return@use block(it) }
+fun <T : RealmObject> getRealm(clazz : Class<T>) : Realm {
+    return RealmConfigStore.fetchConfiguration(clazz)?.realm() ?: Realm.getDefaultInstance()
+}
+
+inline fun <reified D : RealmObject, T : Collection<D>> T.getRealm() : Realm {
+    return RealmConfigStore.fetchConfiguration(D::class.java)?.realm() ?: Realm.getDefaultInstance()
+}
+
+inline fun <reified D : RealmObject> Array<D>.getRealm() : Realm {
+    return RealmConfigStore.fetchConfiguration(D::class.java)?.realm() ?: Realm.getDefaultInstance()
+}
+
+fun RealmConfiguration.realm(): Realm {
+    return Realm.getInstance(this)
 }

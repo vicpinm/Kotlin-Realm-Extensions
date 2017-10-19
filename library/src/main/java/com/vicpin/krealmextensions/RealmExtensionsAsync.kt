@@ -2,7 +2,6 @@ package com.vicpin.krealmextensions
 
 import android.os.Handler
 import android.os.Looper
-import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.RealmQuery
 import io.realm.RealmResults
@@ -20,9 +19,9 @@ import io.realm.RealmResults
 fun <T : RealmObject> T.queryFirstAsync(callback: (T?) -> Unit) {
     mainThread {
 
-        var realm = RealmConfigStore.fetchConfiguration(javaClass).realm()
+        val realm = getRealm()
 
-        var result = RealmQuery.createQuery(realm, this.javaClass).findFirstAsync()
+        val result = RealmQuery.createQuery(realm, this.javaClass).findFirstAsync()
         result.addChangeListener<T> { it ->
             callback(if(it != null && it.isValid) realm.copyFromRealm(it) else null)
             result.removeChangeListeners()
@@ -45,9 +44,9 @@ fun <T : RealmObject> T.queryLastAsync(callback: (T?) -> Unit) {
 fun <T : RealmObject> T.queryAllAsync(callback: (List<T>) -> Unit) {
     mainThread {
 
-        var realm = RealmConfigStore.fetchConfiguration(javaClass).realm()
+        val realm = getRealm()
 
-        var result: RealmResults<T> = RealmQuery.createQuery(realm, this.javaClass).findAllAsync()
+        val result: RealmResults<T> = RealmQuery.createQuery(realm, this.javaClass).findAllAsync()
 
         result.addChangeListener { it ->
             callback(realm.copyFromRealm(it))
@@ -63,7 +62,7 @@ fun <T : RealmObject> T.queryAllAsync(callback: (List<T>) -> Unit) {
 fun <T : RealmObject> T.queryAsync(query: Query<T>, callback: (List<T>) -> Unit) {
     mainThread {
 
-        val realm = RealmConfigStore.fetchConfiguration(javaClass).realm()
+        val realm = getRealm()
         val realmQuery: RealmQuery<T> = RealmQuery.createQuery(realm, this.javaClass)
         query(realmQuery)
         val result = realmQuery.findAllAsync()

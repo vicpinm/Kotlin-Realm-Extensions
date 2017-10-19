@@ -36,7 +36,7 @@ private fun <T : RealmObject> T.performQuery(fieldName : List<String>? = null, o
     val looper = getLooper()
     return Single.create<List<T>>({ emitter ->
 
-        val realm = RealmConfigStore.fetchConfiguration(javaClass).realm()
+        val realm = RealmConfigStore.fetchConfiguration(javaClass)?.realm() ?: Realm.getDefaultInstance()
         val realmQuery: RealmQuery<T> = RealmQuery.createQuery(realm, this.javaClass)
         query?.invoke(realmQuery)
 
