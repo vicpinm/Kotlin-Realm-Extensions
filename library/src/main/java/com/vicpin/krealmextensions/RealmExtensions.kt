@@ -244,6 +244,21 @@ fun <T : RealmObject> T.delete(myQuery: Query<T>) {
 }
 
 /**
+ * Update first entry returned by the specified query
+ */
+fun <T : RealmObject> T.update(query: Query<T>, modify: (T) -> Unit) {
+    val item : T? = Realm.getDefaultInstance().forEntity(this).withQuery(query).findFirst()
+    if(item != null && item.isValid) item.commit(modify)
+}
+
+private fun <T: RealmObject> T.commit(modify: (T) -> Unit) {
+    val realm = Realm.getDefaultInstance()
+    realm.beginTransaction()
+    modify(this)
+    realm.commitTransaction()
+}
+
+/**
  * Get count of entries
  */
 fun <T : RealmObject> T.count(): Long {
