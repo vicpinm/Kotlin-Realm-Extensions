@@ -198,6 +198,28 @@ class KRealmExtensionsTests {
         assertThat(TestEntityAutoPK().count(realm)).isEqualTo(3)
     }
 
+    @Test fun testUpdateEntity() {
+        TestEntity("test").save()
+        TestEntity().queryAndUpdate({it.equalTo("name","test")}){
+            it.name = "updated"
+        }
+
+        val result = TestEntity().queryFirst { it.equalTo("name","updated") }
+        assertThat(result).isNotNull()
+        assertThat(result?.name).isEqualTo("updated")
+    }
+
+    @Test fun testUpdatePKEntity() {
+        TestEntityPK(1,"test").save()
+        TestEntityPK().queryAndUpdate({it.equalTo("name","test")}){
+            it.name = "updated"
+        }
+
+        val result = TestEntityPK().queryFirst { it.equalTo("name","updated") }
+        assertThat(result).isNotNull()
+        assertThat(result?.name).isEqualTo("updated")
+    }
+
     /**
      * QUERY TESTS WITH EMPTY DB
      */

@@ -18,6 +18,7 @@ import com.vicpin.krealmextensions.queryAll
 import com.vicpin.krealmextensions.rx.queryAllAsObservable
 import com.vicpin.krealmextensions.saveAll
 import io.realm.Realm
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
