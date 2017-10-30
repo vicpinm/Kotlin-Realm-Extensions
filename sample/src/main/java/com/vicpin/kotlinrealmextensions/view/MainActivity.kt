@@ -18,7 +18,7 @@ import com.vicpin.krealmextensions.queryAll
 import com.vicpin.krealmextensions.rx.queryAllAsObservable
 import com.vicpin.krealmextensions.saveAll
 import io.realm.Realm
-import kotlinx.android.synthetic.main.activity_main.*
+
 class MainActivity : AppCompatActivity() {
 
     val dbSize = 100
@@ -33,15 +33,15 @@ class MainActivity : AppCompatActivity() {
         //***********************************
 
         performTest("main thread") {
-            Thread { performTest("background thread items") {
-                // User perform Test
-                performUserTest("main thread users") {
-                    Thread { performUserTest("background thread users") }.start()
+            Thread {
+                performTest("background thread items") {
+                    // User perform Test
+                    performUserTest("main thread users") {
+                        Thread { performUserTest("background thread users") }.start()
+                    }
                 }
-            } }.start()
+            }.start()
         }
-
-
 
     }
 
@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         addMessage("Observing table changes...")
 
         val subscription = User().queryAllAsObservable().subscribe {
-            addMessage("Changes received on ${if(Looper.myLooper() == Looper.getMainLooper()) "main thread" else "background thread"}, total items: " + it.size)
+            addMessage("Changes received on ${if (Looper.myLooper() == Looper.getMainLooper()) "main thread" else "background thread"}, total items: " + it.size)
         }
 
         wait(1) {
@@ -127,7 +127,7 @@ class MainActivity : AppCompatActivity() {
         addMessage("Observing table changes...")
 
         val subscription = Item().queryAllAsObservable().subscribe {
-            addMessage("Changes received on ${if(Looper.myLooper() == Looper.getMainLooper()) "main thread" else "background thread"}, total items: " + it.size)
+            addMessage("Changes received on ${if (Looper.myLooper() == Looper.getMainLooper()) "main thread" else "background thread"}, total items: " + it.size)
         }
         wait(1) {
             populateDB(numItems = 10)
@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity() {
             populateDB(numItems = 10)
         }
 
-        wait(if(isMainThread()) 4 else 1) {
+        wait(if (isMainThread()) 4 else 1) {
             subscription.unsubscribe()
             addMessage("Subscription finished")
             finishCallback?.invoke()
@@ -162,7 +162,7 @@ class MainActivity : AppCompatActivity() {
             if (important) view.typeface = Typeface.DEFAULT_BOLD
             view.text = message
             mainContainer.addView(view)
-            scroll.smoothScrollBy(0,1000)
+            scroll.smoothScrollBy(0, 1000)
         }
     }
 
