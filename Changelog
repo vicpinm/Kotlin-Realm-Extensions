@@ -1,3 +1,7 @@
+###1.2.0
+ - Support for different realm configurations
+ - New method queryAndUpdate
+ 
 ###1.1.5
  - Separated library into modules.
 
