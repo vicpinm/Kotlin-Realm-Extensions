@@ -177,6 +177,7 @@ try{
 #### Get entities with conditions: After (Kotlin + extensions)
 ```kotlin
 val events = Event().query { query -> query.equalTo("id",1) }
+//NOTE: If you have a compilation problems in equalTo method (overload ambiguity error), you can use equalToValue("id",1) instead
 ```
 
 If you only need the first or last result, you can also use:
