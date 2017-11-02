@@ -6,6 +6,10 @@
 
 Simplify your code to its minimum expression with this set of Kotlin extensions for Realm. Forget all boilerplate related with Realm API and perform database operations in one line of code with this lightweight library. Full test coverage.
 
+## Download for Kotlin 1.1.x and Realm 4.1.1
+
+    Coming soon...
+    
 ## Download for Kotlin 1.1.x and Realm 3.5.0
 
 Grab via Gradle:
@@ -15,13 +19,13 @@ repositories {
     mavenCentral()
 }
 
-compile "com.github.vicpinm:krealmextensions:1.1.5"
+compile "com.github.vicpinm:krealmextensions:1.2.0"
 
 //For Observable queries:
-compile 'com.github.vicpinm:krealmextensions-rxjava:1.1.5'
+compile 'com.github.vicpinm:krealmextensions-rxjava:1.2.0'
 
 //For Single and Flowable queries:
-compile 'com.github.vicpinm:krealmextensions-rxjava2:1.1.5'
+compile 'com.github.vicpinm:krealmextensions-rxjava2:1.2.0'
 ```
 ## Download for Kotlin 1.1.x and Realm 3.1.3
 
@@ -55,6 +59,9 @@ Forget about:
 - Boilerplate related with Realm API
 
 ## Usage
+
+All methods below use Realm default configuration. You can use different Realm configurations per model with RealmConfigStore.init(Entity::class.java, myConfiguration). See application class from sample for details. Thanks to @magillus for its PR.
+
 ### Store entities
 
 All your entities should extend RealmObject.
