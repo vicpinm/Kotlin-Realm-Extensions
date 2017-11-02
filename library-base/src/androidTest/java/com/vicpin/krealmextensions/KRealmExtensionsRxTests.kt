@@ -2,10 +2,9 @@ package com.vicpin.krealmextensions.rx2
 
 import android.support.test.runner.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
-import com.vicpin.krealmextensions.deleteAll
+import com.vicpin.krealmextensions.*
 import com.vicpin.krealmextensions.model.TestEntity
 import com.vicpin.krealmextensions.model.TestEntityPK
-import com.vicpin.krealmextensions.save
 import com.vicpin.krealmextensions.util.TestRealmConfigurationFactory
 import io.reactivex.disposables.Disposable
 import io.realm.Realm
@@ -21,7 +20,7 @@ import java.util.concurrent.CountDownLatch
  * Created by victor on 10/1/17.
  */
 @RunWith(AndroidJUnit4::class)
-class KRealmExtensionsTestsRx2 {
+class KRealmExtensionsRxTests {
 
     @get:Rule var configFactory = TestRealmConfigurationFactory()
     lateinit var realm: Realm
@@ -77,7 +76,7 @@ class KRealmExtensionsTestsRx2 {
         populateDBWithTestEntityPK(numItems = 5)
 
         block {
-            disposable = TestEntityPK().queryAsFlowable { query -> query.equalTo("id", 1) }.subscribe({
+            disposable = TestEntityPK().queryAsFlowable { query -> query.equalToValue("id", 1) }.subscribe({
                 assertThat(it).hasSize(1)
                 assertThat(it[0].isManaged).isFalse()
                 release()
@@ -110,7 +109,7 @@ class KRealmExtensionsTestsRx2 {
         populateDBWithTestEntityPK(numItems = 5)
 
         block {
-            disposable = TestEntityPK().queryAsSingle { query -> query.equalTo("id", 1) }.subscribe({ it ->
+            disposable = TestEntityPK().queryAsSingle { query -> query.equalToValue("id", 1) }.subscribe({ it ->
                 assertThat(it).hasSize(1)
                 assertThat(it[0].isManaged).isFalse()
                 release()
@@ -141,7 +140,7 @@ class KRealmExtensionsTestsRx2 {
         populateDBWithTestEntityPK(numItems = 5)
 
         block {
-            disposable = TestEntityPK().querySortedAsFlowable("id", Sort.DESCENDING) { query -> query.equalTo("id", 1) }.subscribe({
+            disposable = TestEntityPK().querySortedAsFlowable("id", Sort.DESCENDING) { query -> query.equalToValue("id", 1) }.subscribe({
                 assertThat(it).hasSize(1)
                 assertThat(it[0].isManaged).isFalse()
                 assertThat(it[0].id).isEqualTo(1)
@@ -174,7 +173,7 @@ class KRealmExtensionsTestsRx2 {
         populateDBWithTestEntityPK(numItems = 5)
 
         block {
-            disposable = TestEntityPK().querySortedAsSingle("id", Sort.DESCENDING) { query -> query.equalTo("id", 1) }.subscribe({ it ->
+            disposable = TestEntityPK().querySortedAsSingle("id", Sort.DESCENDING) { query -> query.equalToValue("id", 1) }.subscribe({ it ->
                 assertThat(it).hasSize(1)
                 assertThat(it[0].isManaged).isFalse()
                 assertThat(it[0].id).isEqualTo(1)

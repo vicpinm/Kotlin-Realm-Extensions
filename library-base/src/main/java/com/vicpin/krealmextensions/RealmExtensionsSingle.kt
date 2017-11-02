@@ -1,8 +1,5 @@
-package com.vicpin.krealmextensions.rx2
+package com.vicpin.krealmextensions
 
-import android.os.Looper
-import com.vicpin.krealmextensions.RealmConfigStore
-import com.vicpin.krealmextensions.realm
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposables
@@ -36,8 +33,8 @@ private fun <T : RealmObject> T.performQuery(fieldName : List<String>? = null, o
     val looper = getLooper()
     return Single.create<List<T>>({ emitter ->
 
-        val realm = RealmConfigStore.fetchConfiguration(javaClass)?.realm() ?: Realm.getDefaultInstance()
-        val realmQuery: RealmQuery<T> = RealmQuery.createQuery(realm, this.javaClass)
+        val realm = com.vicpin.krealmextensions.RealmConfigStore.Companion.fetchConfiguration(javaClass)?.realm() ?: Realm.getDefaultInstance()
+        val realmQuery: RealmQuery<T> = realm.where(this.javaClass)
         query?.invoke(realmQuery)
 
         val result = if(fieldName != null && order != null ) {
@@ -54,7 +51,7 @@ private fun <T : RealmObject> T.performQuery(fieldName : List<String>? = null, o
         emitter.setDisposable(Disposables.fromAction {
             result.removeAllChangeListeners()
             realm.close()
-            if (Looper.getMainLooper() != looper) {
+            if (android.os.Looper.getMainLooper() != looper) {
                 looper?.thread?.interrupt()
             }
         })

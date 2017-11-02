@@ -12,11 +12,7 @@ import com.vicpin.kotlinrealmextensions.extensions.wait
 import com.vicpin.kotlinrealmextensions.model.Address
 import com.vicpin.kotlinrealmextensions.model.Item
 import com.vicpin.kotlinrealmextensions.model.User
-import com.vicpin.krealmextensions.deleteAll
-import com.vicpin.krealmextensions.getRealm
-import com.vicpin.krealmextensions.queryAll
-import com.vicpin.krealmextensions.rx.queryAllAsObservable
-import com.vicpin.krealmextensions.saveAll
+import com.vicpin.krealmextensions.*
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -75,7 +71,7 @@ class MainActivity : AppCompatActivity() {
 
         addMessage("Observing table changes...")
 
-        val subscription = User().queryAllAsObservable().subscribe {
+        val subscription = User().queryAllAsFlowable().subscribe {
             addMessage("Changes received on ${if (Looper.myLooper() == Looper.getMainLooper()) "main thread" else "background thread"}, total items: " + it.size)
         }
 
@@ -92,10 +88,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         wait(if (isMainThread()) 4 else 1) {
-            subscription.unsubscribe()
+            subscription.dispose()
             addMessage("Subscription finished")
             var defaultCount = Realm.getDefaultInstance().where(User::class.java).count()
-            var userCount = User().getRealm().where(User::class.java).count()
+            var userCount = User().getRealmInstance().where(User::class.java).count()
 
             addMessage("All users from default configuration : $defaultCount")
             addMessage("All users from user configuration : $userCount")
@@ -127,7 +123,7 @@ class MainActivity : AppCompatActivity() {
 
         addMessage("Observing table changes...")
 
-        val subscription = Item().queryAllAsObservable().subscribe {
+        val subscription = Item().queryAllAsFlowable().subscribe {
             addMessage("Changes received on ${if (Looper.myLooper() == Looper.getMainLooper()) "main thread" else "background thread"}, total items: " + it.size)
         }
         wait(1) {
@@ -143,7 +139,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         wait(if (isMainThread()) 4 else 1) {
-            subscription.unsubscribe()
+            subscription.dispose()
             addMessage("Subscription finished")
             finishCallback?.invoke()
         }

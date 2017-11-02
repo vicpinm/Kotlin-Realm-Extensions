@@ -24,19 +24,19 @@ class RealmConfigStore {
     }
 }
 
-fun <T : RealmObject> T.getRealm() : Realm {
+fun <T : RealmObject> T.getRealmInstance() : Realm {
     return RealmConfigStore.fetchConfiguration(this::class.java)?.realm() ?: Realm.getDefaultInstance()
 }
 
-fun <T : RealmObject> getRealm(clazz : Class<T>) : Realm {
+fun <T : RealmObject> getRealmInstance(clazz : Class<T>) : Realm {
     return RealmConfigStore.fetchConfiguration(clazz)?.realm() ?: Realm.getDefaultInstance()
 }
 
-inline fun <reified D : RealmObject, T : Collection<D>> T.getRealm() : Realm {
+inline fun <reified D : RealmObject, T : Collection<D>> T.getRealmInstance() : Realm {
     return RealmConfigStore.fetchConfiguration(D::class.java)?.realm() ?: Realm.getDefaultInstance()
 }
 
-inline fun <reified D : RealmObject> Array<D>.getRealm() : Realm {
+inline fun <reified D : RealmObject> Array<D>.getRealmInstance() : Realm {
     return RealmConfigStore.fetchConfiguration(D::class.java)?.realm() ?: Realm.getDefaultInstance()
 }
 
