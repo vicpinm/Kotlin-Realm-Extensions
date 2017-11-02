@@ -6,7 +6,7 @@
 
 Simplify your code to its minimum expression with this set of Kotlin extensions for Realm. Forget all boilerplate related with Realm API and perform database operations in one line of code with this lightweight library. Full test coverage.
 
-## Download for Kotlin 1.1.x and Realm 4.1.1
+## Download for Kotlin 1.1.x and Realm 4.1.x
 
 Grab via Gradle:
 
