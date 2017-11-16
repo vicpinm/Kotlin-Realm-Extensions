@@ -5,7 +5,7 @@ apply plugin: 'realm-android'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.1"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.vicpin.kotlinrealmextensions"
         minSdkVersion 15
@@ -22,6 +22,7 @@ android {
     }
     packagingOptions {
         exclude 'META-INF/rxjava.properties'
+        exclude 'META-INF/sample_debug.kotlin_module'
     }
 }
 

@@ -158,7 +158,7 @@ fun <T : RealmObject> T.createOrUpdateManaged(realm: Realm): T {
  * Creates a new entry in database or updates an existing one. If entity has no primary key, always create a new one.
  * If has primary key, it tries to updates an existing one.
  */
-inline fun <reified T : RealmObject> T.save() {
+fun <T : RealmObject> T.save() {
         getRealmInstance().transaction { realm ->
             if (isAutoIncrementPK()) {
                 initPk(realm)
@@ -273,7 +273,7 @@ private fun <T> T.withQuery(block: (T) -> Unit): T {
     block(this); return this
 }
 
-inline fun <reified T : RealmObject> T.hasPrimaryKey(realm: Realm): Boolean {
+fun <T : RealmObject> T.hasPrimaryKey(realm: Realm): Boolean {
     if (realm.schema.get(this.javaClass.simpleName) == null) {
         throw IllegalArgumentException(this.javaClass.simpleName + " is not part of the schema for this Realm. Did you added realm-android plugin in your build.gradle file?")
     }
@@ -323,7 +323,7 @@ fun RealmObject.initPk(realm: Realm) {
     setPk(realm, getLastPk(realm) + 1)
 }
 
-inline fun <reified T : RealmObject> T.isAutoIncrementPK(): Boolean {
+fun <T : RealmObject> T.isAutoIncrementPK(): Boolean {
     return this.javaClass.declaredAnnotations.filter { it.annotationClass == AutoIncrementPK::class }.isNotEmpty()
 
 }
