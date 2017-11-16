@@ -23,7 +23,7 @@ class Application : android.app.Application() {
         Realm.deleteRealm(Realm.getDefaultConfiguration())
         Realm.deleteRealm(userAddressConfig)
 
-        RealmConfigStore.initModule(UserModule(), userAddressConfig)
+        RealmConfigStore.init(User::class.java, userAddressConfig)
         RealmConfigStore.init(Address::class.java, userAddressConfig)
     }
 }
