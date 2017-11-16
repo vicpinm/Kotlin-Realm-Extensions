@@ -3,33 +3,30 @@ package com.vicpin.krealmextensions
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposables
-import io.realm.Realm
-import io.realm.RealmObject
-import io.realm.RealmQuery
-import io.realm.Sort
+import io.realm.*
 
 
 /**
  * Query for all items and listen to changes returning an Single.
  */
-fun <T : RealmObject> T.queryAllAsSingle() = performQuery()
+fun <T : RealmModel> T.queryAllAsSingle() = performQuery()
 
 /**
  * Queries for entities in database asynchronously, and observe changes returning an Single.
  */
-fun <T : RealmObject> T.queryAsSingle(query: Query<T>) = performQuery(query = query)
+fun <T : RealmModel> T.queryAsSingle(query: Query<T>) = performQuery(query = query)
 
 /**
  * Query for sorted entities and observe changes returning a Single.
  */
-fun <T : RealmObject> T.querySortedAsSingle(fieldName : List<String>, order : List<Sort>, query: Query<T>? = null) = performQuery(fieldName, order, query)
+fun <T : RealmModel> T.querySortedAsSingle(fieldName : List<String>, order : List<Sort>, query: Query<T>? = null) = performQuery(fieldName, order, query)
 
 /**
  * Query for sorted entities and observe changes returning a Single.
  */
-fun <T : RealmObject> T.querySortedAsSingle(fieldName : String, order : Sort, query: Query<T>? = null) = performQuery(listOf(fieldName), listOf(order), query)
+fun <T : RealmModel> T.querySortedAsSingle(fieldName : String, order : Sort, query: Query<T>? = null) = performQuery(listOf(fieldName), listOf(order), query)
 
-private fun <T : RealmObject> T.performQuery(fieldName : List<String>? = null, order : List<Sort>? = null, query: Query<T>? = null): Single<List<T>> {
+private fun <T : RealmModel> T.performQuery(fieldName : List<String>? = null, order : List<Sort>? = null, query: Query<T>? = null): Single<List<T>> {
     val looper = getLooper()
     return Single.create<List<T>>({ emitter ->
 

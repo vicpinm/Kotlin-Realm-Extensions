@@ -10,6 +10,7 @@ import io.reactivex.FlowableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.realm.Realm
+import io.realm.RealmModel
 import io.realm.RealmObject
 import io.realm.Sort
 
@@ -21,24 +22,24 @@ import io.realm.Sort
 /**
  * Query for all entities and observe changes returning a Flowable.
  */
-fun <T : RealmObject> T.queryAllAsFlowable() = performQuery()
+fun <T : RealmModel> T.queryAllAsFlowable() = performQuery()
 
 /**
  * Query for entities in database asynchronously and observe changes returning a Flowable.
  */
-fun <T : RealmObject> T.queryAsFlowable(query: Query<T>) = performQuery(query = query)
+fun <T : RealmModel> T.queryAsFlowable(query: Query<T>) = performQuery(query = query)
 
 /**
  * Query for sorted entities and observe changes returning a Flowable.
  */
-fun <T : RealmObject> T.querySortedAsFlowable(fieldName: List<String>, order: List<Sort>, query: Query<T>? = null) = performQuery(fieldName, order, query)
+fun <T : RealmModel> T.querySortedAsFlowable(fieldName: List<String>, order: List<Sort>, query: Query<T>? = null) = performQuery(fieldName, order, query)
 
 /**
  * Query for sorted entities and observe changes returning a Flowable.
  */
-fun <T : RealmObject> T.querySortedAsFlowable(fieldName: String, order: Sort, query: Query<T>? = null) = performQuery(listOf(fieldName), listOf(order), query)
+fun <T : RealmModel> T.querySortedAsFlowable(fieldName: String, order: Sort, query: Query<T>? = null) = performQuery(listOf(fieldName), listOf(order), query)
 
-private fun <T : RealmObject> T.performQuery(fieldName: List<String>? = null, order: List<Sort>? = null, query: Query<T>? = null): Flowable<List<T>> {
+private fun <T : RealmModel> T.performQuery(fieldName: List<String>? = null, order: List<Sort>? = null, query: Query<T>? = null): Flowable<List<T>> {
 
     return prepareObservableQuery(javaClass, { realm, subscriber ->
         val realmQuery = realm.where(this.javaClass)
@@ -62,7 +63,7 @@ private fun <T : RealmObject> T.performQuery(fieldName: List<String>? = null, or
 class BackgroundThread : HandlerThread("Scheduler-Realm-BackgroundThread",
         Process.THREAD_PRIORITY_BACKGROUND)
 
-private fun <D : RealmObject, T : Any> prepareObservableQuery(clazz: Class<D>, closure: (Realm, FlowableEmitter<in T>) -> Disposable): Flowable<T> {
+private fun <D : RealmModel, T : Any> prepareObservableQuery(clazz: Class<D>, closure: (Realm, FlowableEmitter<in T>) -> Disposable): Flowable<T> {
     var realm: Realm? = null
     var mySubscription: Disposable? = null
 
