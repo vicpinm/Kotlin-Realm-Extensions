@@ -69,6 +69,7 @@ Forget about:
 - Transactions
 - Threads limitations
 - Boilerplate related with Realm API
+- From 2.0 version, your database entities can either extend from RealmObject or implement RealmModule interface.
 
 ## Usage
 
