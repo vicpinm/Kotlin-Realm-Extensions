@@ -164,6 +164,18 @@ class KRealmExtensionsTests {
         assertThat(TestEntityAutoPK().queryLast()?.id).isEqualTo(3)
     }
 
+    @Test fun testPersistAutoPkEntityWithPkShouldNotBeOverrided(){
+        TestEntityAutoPK(4, "").save()
+        assertThat(TestEntityAutoPK().count()).isEqualTo(1)
+        assertThat(TestEntityAutoPK().queryLast()?.id).isEqualTo(4)
+        TestEntityAutoPK(10, "").save()
+        assertThat(TestEntityAutoPK().count()).isEqualTo(2)
+        assertThat(TestEntityAutoPK().queryLast()?.id).isEqualTo(10)
+        TestEntityAutoPK(12, "").save()
+        assertThat(TestEntityAutoPK().count()).isEqualTo(3)
+        assertThat(TestEntityAutoPK().queryLast()?.id).isEqualTo(12)
+    }
+
     @Test fun testPersistAutoPKEntityWithSaveManagedMethod() {
         val result = TestEntityAutoPK().saveManaged(realm)
         assertThat(result.isManaged)

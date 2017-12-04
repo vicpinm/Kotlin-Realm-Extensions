@@ -28,7 +28,9 @@ android {
     }
     packagingOptions {
         exclude 'META-INF/rxjava.properties'
+        exclude 'META-INF/library-base_debug.kotlin_module'
     }
+
 }
 
 dependencies {

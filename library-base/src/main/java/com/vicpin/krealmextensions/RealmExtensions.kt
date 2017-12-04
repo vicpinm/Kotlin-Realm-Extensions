@@ -1,6 +1,7 @@
 package com.vicpin.krealmextensions
 
 import io.realm.*
+import java.lang.reflect.Field
 
 typealias Query<T> = (RealmQuery<T>) -> Unit
 
@@ -295,7 +296,10 @@ inline fun <reified T : RealmModel> T.setPk(realm: Realm, value: Long) {
         try {
             val accesible = f1.isAccessible
             f1.isAccessible = true
-            f1.set(this, value)
+            if(f1.isNullFor(this)) {
+                //We only set pk value if it does not have any value previously
+                f1.set(this, value)
+            }
             f1.isAccessible = accesible
         } catch (ex: IllegalArgumentException) {
             throw IllegalArgumentException("Primary key field $fieldName must be of type Long to set a primary key automatically")
@@ -329,6 +333,13 @@ fun <T : RealmModel> T.isAutoIncrementPK(): Boolean {
 
 fun <T> RealmQuery<T>.equalToValue(fieldName: String, value: Int) = equalTo(fieldName, value)
 fun <T> RealmQuery<T>.equalToValue(fieldName: String, value: Long) = equalTo(fieldName, value)
+
+
+fun Field.isNullFor(obj: Any) = try {
+        get(obj) == null
+    } catch (ex: NullPointerException) {
+        true
+    }
 
 
 
