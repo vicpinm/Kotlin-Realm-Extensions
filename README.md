@@ -15,7 +15,7 @@ repositories {
     mavenCentral()
 }
 
-compile "com.github.vicpinm:krealmextensions:2.0.0-beta2"
+compile "com.github.vicpinm:krealmextensions:2.0.0-beta4"
 
 //For Single and Flowable queries:
 compile 'io.reactivex.rxjava2:rxjava:2.1.4'
@@ -69,6 +69,7 @@ Forget about:
 - Transactions
 - Threads limitations
 - Boilerplate related with Realm API
+- From 2.0 version, your database entities can either extend from RealmObject or implement RealmModule interface.
 
 ## Usage
 
