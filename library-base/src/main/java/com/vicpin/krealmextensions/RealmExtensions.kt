@@ -4,6 +4,7 @@ import io.realm.*
 import java.lang.reflect.Field
 
 typealias Query<T> = (RealmQuery<T>) -> Unit
+typealias QueryBlock<T> = RealmQuery<T>.() -> Unit
 
 /**
  * Created by victor on 2/1/17.
@@ -15,7 +16,18 @@ typealias Query<T> = (RealmQuery<T>) -> Unit
  */
 fun <T : RealmModel> T.query(query: Query<T>): List<T> {
     getRealmInstance().use { realm ->
-        val result = realm.where(this.javaClass).withQuery(query).findAll()
+        val where = realm.where(this.javaClass)
+        val result = where.withQuery(query).findAll()
+        return realm.copyFromRealm(result)
+    }
+}
+
+/**
+ * Query to the database with RealmQuery instance as argument
+ */
+inline fun <reified T: RealmModel> query(query: QueryBlock<T>): List<T> {
+    getRealmInstance<T>().use { realm ->
+        val result = realm.where(T::class.java).runQuery(query).findAll()
         return realm.copyFromRealm(result)
     }
 }
@@ -268,6 +280,13 @@ inline fun <reified T : RealmModel> T.count(realm: Realm): Long {
  * UTILITY METHODS
  */
 private fun <T> T.withQuery(block: (T) -> Unit): T {
+    block(this); return this
+}
+
+/**
+ * UTILITY METHODS
+ */
+inline fun <reified T:RealmModel> RealmQuery<T>.runQuery(block: RealmQuery<T>.() -> Unit): RealmQuery<T> {
     block(this); return this
 }
 
