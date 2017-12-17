@@ -41,7 +41,7 @@ fun <T : RealmModel> T.queryAll(): List<T> {
     }
 }
 
-inline fun <reified T : RealmModel> queryAll(query: QueryBlock<T>): List<T> {
+inline fun <reified T : RealmModel> queryAll(): List<T> {
     getRealmInstance<T>().use { realm ->
         val result = realm.where(T::class.java).findAll()
         return realm.copyFromRealm(result)
@@ -351,7 +351,7 @@ inline fun <reified T : RealmModel> count(): Long {
     }
 }
 
-inline fun <reified T : RealmModel> T.count(realm: Realm): Long {
+inline fun <reified T : RealmModel> count(realm: Realm): Long {
     return realm.where(T::class.java).count()
 }
 

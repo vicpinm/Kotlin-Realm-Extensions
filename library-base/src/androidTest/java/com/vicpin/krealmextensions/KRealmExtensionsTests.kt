@@ -100,7 +100,7 @@ class KRealmExtensionsTests {
 	fun testPersistEntityWithSaveMethodManaged() {
 		val result = TestEntity().saveManaged(realm) //No exception expected
 		assertThat(result.isManaged)
-		assertThat(TestEntity().count(realm)).isEqualTo(1)
+        assertThat(count<TestEntity>(realm)).isEqualTo(1)
 	}
 
 	@Test
@@ -112,7 +112,7 @@ class KRealmExtensionsTests {
 	fun testPersistPKEntityWithSaveMethodManaged() {
 		val result = TestEntityPK(1).saveManaged(realm) //No exception expected
 		assertThat(result.isManaged).isTrue()
-		assertThat(TestEntityPK().count(realm)).isEqualTo(1)
+        assertThat(count<TestEntityPK>(realm)).isEqualTo(1)
 	}
 
 	@Test(expected = RealmPrimaryKeyConstraintException::class)
@@ -200,7 +200,7 @@ class KRealmExtensionsTests {
 	fun testPersistAutoPKEntityWithSaveManagedMethod() {
 		val result = TestEntityAutoPK().saveManaged(realm)
 		assertThat(result.isManaged)
-		assertThat(TestEntityAutoPK().count(realm)).isEqualTo(1)
+        assertThat(count<TestEntityAutoPK>(realm)).isEqualTo(1)
 	}
 
 	@Test
@@ -209,7 +209,9 @@ class KRealmExtensionsTests {
 		list.saveAll()
 		assertThat(TestEntityAutoPK().count()).isEqualTo(3)
 		assertThat(TestEntityAutoPK().queryFirst()?.id).isEqualTo(1)
+        assertThat(queryFirst<TestEntityAutoPK>()?.id).isEqualTo(1)
 		assertThat(TestEntityAutoPK().queryLast()?.id).isEqualTo(3)
+        assertThat(queryLast<TestEntityAutoPK>()?.id).isEqualTo(3)
 	}
 
 	@Test
@@ -218,21 +220,23 @@ class KRealmExtensionsTests {
 		list.saveAll()
 		assertThat(TestEntityAutoPK().count()).isEqualTo(3)
 		assertThat(TestEntityAutoPK().queryFirst()?.id).isEqualTo(1)
+        assertThat(queryFirst<TestEntityAutoPK>()?.id).isEqualTo(1)
 		assertThat(TestEntityAutoPK().queryLast()?.id).isEqualTo(3)
+        assertThat(queryLast<TestEntityAutoPK>()?.id).isEqualTo(3)
 	}
 
 	@Test
 	fun testPersistAutoPKEntityListWithSaveManagedMethod() {
 		val list = listOf(TestEntityAutoPK(), TestEntityAutoPK(), TestEntityAutoPK())
 		list.saveAllManaged(realm)
-		assertThat(TestEntityAutoPK().count(realm)).isEqualTo(3)
+        assertThat(count<TestEntityAutoPK>(realm)).isEqualTo(3)
 	}
 
 	@Test
 	fun testPersistAutoPKEntityArrayWithSavemanagedMethod() {
 		val list = arrayOf(TestEntityAutoPK(), TestEntityAutoPK(), TestEntityAutoPK())
 		list.saveAllManaged(realm)
-		assertThat(TestEntityAutoPK().count(realm)).isEqualTo(3)
+        assertThat(count<TestEntityAutoPK>(realm)).isEqualTo(3)
 	}
 
 	@Test
@@ -265,6 +269,7 @@ class KRealmExtensionsTests {
 	@Test
 	fun testQueryFirstObjectWithEmptyDBShouldReturnNull() {
 		assertThat(TestEntity().queryFirst()).isNull()
+        assertThat(queryFirst<TestEntity>()).isNull()
 	}
 
 	@Test
@@ -328,7 +333,9 @@ class KRealmExtensionsTests {
 	fun testQueryFirstItemShouldReturnFirstItemWhenDBIsNotEmpty() {
 		populateDBWithTestEntityPK(numItems = 5)
 		assertThat(TestEntityPK().queryFirst()).isNotNull()
+        assertThat(queryFirst<TestEntityPK>()).isNotNull()
 		assertThat(TestEntityPK().queryFirst()?.id).isEqualTo(0)
+        assertThat(queryFirst<TestEntityPK>()?.id).isEqualTo(0)
 	}
 
 	@Test
@@ -372,6 +379,7 @@ class KRealmExtensionsTests {
 	fun testQueryAllItemsShouldReturnAllItemsWhenDBIsNotEmpty() {
 		populateDBWithTestEntity(numItems = 5)
 		assertThat(TestEntity().queryAll()).hasSize(5)
+        assertThat(queryAll<TestEntity>()).hasSize(5)
 	}
 
 	@Test
