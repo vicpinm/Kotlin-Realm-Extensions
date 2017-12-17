@@ -16,8 +16,7 @@ typealias QueryBlock<T> = RealmQuery<T>.() -> Unit
  */
 fun <T : RealmModel> T.query(query: Query<T>): List<T> {
     getRealmInstance().use { realm ->
-        val where = realm.where(this.javaClass)
-        val result = where.withQuery(query).findAll()
+        val result = realm.where(javaClass).withQuery(query).findAll()
         return realm.copyFromRealm(result)
     }
 }
@@ -25,7 +24,7 @@ fun <T : RealmModel> T.query(query: Query<T>): List<T> {
 /**
  * Query to the database with RealmQuery instance as argument
  */
-inline fun <reified T: RealmModel> query(query: QueryBlock<T>): List<T> {
+inline fun <reified T : RealmModel> query(query: QueryBlock<T>): List<T> {
     getRealmInstance<T>().use { realm ->
         val result = realm.where(T::class.java).runQuery(query).findAll()
         return realm.copyFromRealm(result)
@@ -42,12 +41,26 @@ fun <T : RealmModel> T.queryAll(): List<T> {
     }
 }
 
+inline fun <reified T : RealmModel> queryAll(query: QueryBlock<T>): List<T> {
+    getRealmInstance<T>().use { realm ->
+        val result = realm.where(T::class.java).findAll()
+        return realm.copyFromRealm(result)
+    }
+}
+
 /**
  * Query to the database with RealmQuery instance as argument. Return first result, or null.
  */
 fun <T : RealmModel> T.queryFirst(): T? {
     getRealmInstance().use { realm ->
         val item: T? = realm.where(this.javaClass).findFirst()
+        return if (item != null && RealmObject.isValid(item)) realm.copyFromRealm(item) else null
+    }
+}
+
+inline fun <reified T : RealmModel> queryFirst(): T? {
+    getRealmInstance<T>().use { realm ->
+        val item: T? = realm.where(T::class.java).findFirst()
         return if (item != null && RealmObject.isValid(item)) realm.copyFromRealm(item) else null
     }
 }
@@ -62,6 +75,13 @@ fun <T : RealmModel> T.queryFirst(query: Query<T>): T? {
     }
 }
 
+inline fun <reified T : RealmModel> queryFirst(query: QueryBlock<T>): T? {
+    getRealmInstance<T>().use { realm ->
+        val item: T? = realm.where(T::class.java).runQuery(query).findFirst()
+        return if (item != null && RealmObject.isValid(item)) realm.copyFromRealm(item) else null
+    }
+}
+
 /**
  * Query to the database with RealmQuery instance as argument. Return last result, or null.
  */
@@ -69,6 +89,13 @@ fun <T : RealmModel> T.queryLast(): T? {
     getRealmInstance().use { realm ->
         val result = realm.where(this.javaClass).findAll()
         return if (result != null && result.isNotEmpty()) realm.copyFromRealm(result.last()) else null
+    }
+}
+
+inline fun <reified T : RealmModel> queryLast(): T? {
+    getRealmInstance<T>().use { realm ->
+        val result: RealmResults<T> = realm.where(T::class.java).findAll()
+        return if (result.isNotEmpty()) realm.copyFromRealm(result.last()) else null
     }
 }
 
@@ -82,12 +109,27 @@ fun <T : RealmModel> T.queryLast(query: Query<T>): T? {
     }
 }
 
+inline fun <reified T : RealmModel> queryLast(query: QueryBlock<T>): T? {
+    getRealmInstance<T>().use { realm ->
+        val result: RealmResults<T> = realm.where(T::class.java).runQuery(query).findAll()
+        return if (result.isNotEmpty()) realm.copyFromRealm(result.last()) else null
+    }
+}
+
+
 /**
  * Query to the database with RealmQuery instance as argument
  */
 fun <T : RealmModel> T.querySorted(fieldName: String, order: Sort, query: Query<T>): List<T> {
     getRealmInstance().use { realm ->
         val result = realm.where(this.javaClass).withQuery(query).findAll().sort(fieldName, order)
+        return realm.copyFromRealm(result)
+    }
+}
+
+inline fun <reified T : RealmModel> querySorted(fieldName: String, order: Sort, query: QueryBlock<T>): List<T> {
+    getRealmInstance<T>().use { realm ->
+        val result = realm.where(T::class.java).runQuery(query).findAll().sort(fieldName, order)
         return realm.copyFromRealm(result)
     }
 }
@@ -102,6 +144,13 @@ fun <T : RealmModel> T.querySorted(fieldName: List<String>, order: List<Sort>, q
     }
 }
 
+inline fun <reified T : RealmModel> querySorted(fieldName: List<String>, order: List<Sort>, query: QueryBlock<T>): List<T> {
+    getRealmInstance<T>().use { realm ->
+        val result = realm.where(T::class.java).runQuery(query).findAll().sort(fieldName.toTypedArray(), order.toTypedArray())
+        return realm.copyFromRealm(result)
+    }
+}
+
 /**
  * Query to the database with a specific order
  */
@@ -112,12 +161,26 @@ fun <T : RealmModel> T.querySorted(fieldName: String, order: Sort): List<T> {
     }
 }
 
+inline fun <reified T : RealmModel> querySorted(fieldName: String, order: Sort): List<T> {
+    getRealmInstance<T>().use { realm ->
+        val result = realm.where(T::class.java).findAll().sort(fieldName, order)
+        return realm.copyFromRealm(result)
+    }
+}
+
 /**
  * Query to the database with a specific order
  */
 fun <T : RealmModel> T.querySorted(fieldName: List<String>, order: List<Sort>): List<T> {
     getRealmInstance().use { realm ->
         val result = realm.where(this.javaClass).findAll().sort(fieldName.toTypedArray(), order.toTypedArray())
+        return realm.copyFromRealm(result)
+    }
+}
+
+inline fun <reified T : RealmModel> querySorted(fieldName: List<String>, order: List<Sort>): List<T> {
+    getRealmInstance<T>().use { realm ->
+        val result = realm.where(T::class.java).findAll().sort(fieldName.toTypedArray(), order.toTypedArray())
         return realm.copyFromRealm(result)
     }
 }
@@ -169,12 +232,12 @@ fun <T : RealmModel> T.createOrUpdateManaged(realm: Realm): T {
  * If has primary key, it tries to updates an existing one.
  */
 fun <T : RealmModel> T.save() {
-        getRealmInstance().transaction { realm ->
-            if (isAutoIncrementPK()) {
-                initPk(realm)
-            }
-            if (this.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(this) else realm.copyToRealm(this)
+    getRealmInstance().transaction { realm ->
+        if (isAutoIncrementPK()) {
+            initPk(realm)
         }
+        if (this.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(this) else realm.copyToRealm(this)
+    }
 }
 
 /**
@@ -244,12 +307,22 @@ fun <T : RealmModel> T.deleteAll() {
     getRealmInstance().transaction { it.where(this.javaClass).findAll().deleteAllFromRealm() }
 }
 
+inline fun <reified T : RealmModel> deleteAll() {
+    getRealmInstance<T>().transaction { it.where(T::class.java).findAll().deleteAllFromRealm() }
+}
+
 /**
  * Delete all entries returned by the specified query
  */
 fun <T : RealmModel> T.delete(myQuery: Query<T>) {
     getRealmInstance().transaction {
         it.where(this.javaClass).withQuery(myQuery).findAll().deleteAllFromRealm()
+    }
+}
+
+inline fun <reified T : RealmModel> delete(crossinline query: QueryBlock<T>) {
+    getRealmInstance<T>().transaction {
+        it.where(T::class.java).runQuery(query).findAll().deleteAllFromRealm()
     }
 }
 
@@ -272,9 +345,22 @@ fun <T : RealmModel> T.count(): Long {
     }
 }
 
+inline fun <reified T : RealmModel> count(): Long {
+    getRealmInstance<T>().use { realm ->
+        return realm.where(T::class.java).count()
+    }
+}
+
 inline fun <reified T : RealmModel> T.count(realm: Realm): Long {
     return realm.where(T::class.java).count()
 }
+
+inline fun <reified T : RealmModel> count(query: QueryBlock<T>): Long {
+    getRealmInstance<T>().use { realm ->
+        return realm.where(T::class.java).runQuery(query).count()
+    }
+}
+
 
 /**
  * UTILITY METHODS
@@ -286,7 +372,7 @@ private fun <T> T.withQuery(block: (T) -> Unit): T {
 /**
  * UTILITY METHODS
  */
-inline fun <reified T:RealmModel> RealmQuery<T>.runQuery(block: RealmQuery<T>.() -> Unit): RealmQuery<T> {
+inline fun <reified T : RealmModel> RealmQuery<T>.runQuery(block: RealmQuery<T>.() -> Unit): RealmQuery<T> {
     block(this); return this
 }
 
@@ -298,9 +384,24 @@ fun <T : RealmModel> T.hasPrimaryKey(realm: Realm): Boolean {
     return realm.schema.get(this.javaClass.simpleName)?.hasPrimaryKey() ?: false
 }
 
+inline fun <reified T : RealmModel> hasPrimaryKey(realm: Realm): Boolean {
+    val simpleName = T::class.java.simpleName
+    if (realm.schema[simpleName] == null) {
+        throw IllegalArgumentException("$simpleName is not part of the schema for this Realm. Did you add realm-android plugin in your build.gradle file?")
+    }
+    return realm.schema[simpleName]?.hasPrimaryKey() ?: false
+}
+
 inline fun <reified T : RealmModel> T.getLastPk(realm: Realm): Long {
     getPrimaryKeyFieldName(realm).let { fieldName ->
         val result = realm.where(this.javaClass).max(fieldName)
+        return result?.toLong() ?: 0
+    }
+}
+
+inline fun <reified T : RealmModel> getLastPk(realm: Realm): Long {
+    getPrimaryKeyFieldName<T>(realm).let { fieldName ->
+        val result = realm.where(T::class.java).max(fieldName)
         return result?.toLong() ?: 0
     }
 }
@@ -309,13 +410,17 @@ inline fun <reified T : RealmModel> T.getPrimaryKeyFieldName(realm: Realm): Stri
     return realm.schema.get(this.javaClass.simpleName)?.primaryKey
 }
 
+inline fun <reified T : RealmModel> getPrimaryKeyFieldName(realm: Realm): String? {
+    return realm.schema.get(T::class.java.simpleName)?.primaryKey
+}
+
 inline fun <reified T : RealmModel> T.setPk(realm: Realm, value: Long) {
     getPrimaryKeyFieldName(realm).let { fieldName ->
         val f1 = javaClass.getDeclaredField(fieldName)
         try {
             val accesible = f1.isAccessible
             f1.isAccessible = true
-            if(f1.isNullFor(this)) {
+            if (f1.isNullFor(this)) {
                 //We only set pk value if it does not have any value previously
                 f1.set(this, value)
             }
@@ -345,7 +450,7 @@ fun RealmModel.initPk(realm: Realm) {
 }
 
 fun <T : RealmModel> T.isAutoIncrementPK(): Boolean {
-    return this.javaClass.declaredAnnotations.filter { it.annotationClass == AutoIncrementPK::class }.isNotEmpty()
+    return this.javaClass.declaredAnnotations.any { it.annotationClass == AutoIncrementPK::class }
 
 }
 
@@ -355,10 +460,10 @@ fun <T> RealmQuery<T>.equalToValue(fieldName: String, value: Long) = equalTo(fie
 
 
 fun Field.isNullFor(obj: Any) = try {
-        get(obj) == null
-    } catch (ex: NullPointerException) {
-        true
-    }
+    get(obj) == null
+} catch (ex: NullPointerException) {
+    true
+}
 
 
 
