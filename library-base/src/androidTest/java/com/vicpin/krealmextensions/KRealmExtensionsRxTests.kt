@@ -22,22 +22,25 @@ import java.util.concurrent.CountDownLatch
 @RunWith(AndroidJUnit4::class)
 class KRealmExtensionsRxTests {
 
-    @get:Rule var configFactory = TestRealmConfigurationFactory()
+    @get:Rule
+    var configFactory = TestRealmConfigurationFactory()
     lateinit var realm: Realm
     lateinit var latch: CountDownLatch
     var latchReleased = false
     var disposable: Disposable? = null
 
 
-    @Before fun setUp() {
+    @Before
+    fun setUp() {
         val realmConfig = configFactory.createConfiguration()
         realm = Realm.getInstance(realmConfig)
         latch = CountDownLatch(1)
     }
 
-    @After fun tearDown() {
-        TestEntity().deleteAll()
-        TestEntityPK().deleteAll()
+    @After
+    fun tearDown() {
+        deleteAll<TestEntity>()
+        deleteAll<TestEntityPK>()
         realm.close()
         latchReleased = false
         disposable = null
@@ -47,7 +50,8 @@ class KRealmExtensionsRxTests {
      * SINGLE AND FLOWABLE TESTS
      */
 
-    @Test fun testQueryAllAsFlowable() {
+    @Test
+    fun testQueryAllAsFlowable() {
 
         var itemsCount = 5
         var disposable: Disposable? = null
@@ -71,7 +75,8 @@ class KRealmExtensionsRxTests {
 
     }
 
-    @Test fun testQueryAsFlowable() {
+    @Test
+    fun testQueryAsFlowable() {
 
         populateDBWithTestEntityPK(numItems = 5)
 
@@ -86,7 +91,8 @@ class KRealmExtensionsRxTests {
         disposable?.dispose()
     }
 
-    @Test fun testQueryAllAsSingle() {
+    @Test
+    fun testQueryAllAsSingle() {
 
         var itemsCount = 5
 
@@ -104,7 +110,8 @@ class KRealmExtensionsRxTests {
         assertThat(disposable?.isDisposed ?: false).isTrue()
     }
 
-    @Test fun testQueryAsSingle() {
+    @Test
+    fun testQueryAsSingle() {
 
         populateDBWithTestEntityPK(numItems = 5)
 
@@ -119,7 +126,8 @@ class KRealmExtensionsRxTests {
         assertThat(disposable?.isDisposed ?: false).isTrue()
     }
 
-    @Test fun testQuerySortedAsFlowable() {
+    @Test
+    fun testQuerySortedAsFlowable() {
 
         populateDBWithTestEntityPK(numItems = 5)
 
@@ -135,7 +143,8 @@ class KRealmExtensionsRxTests {
         disposable?.dispose()
     }
 
-    @Test fun testQuerySortedAsFlowableWithQuery() {
+    @Test
+    fun testQuerySortedAsFlowableWithQuery() {
 
         populateDBWithTestEntityPK(numItems = 5)
 
@@ -152,7 +161,8 @@ class KRealmExtensionsRxTests {
     }
 
 
-    @Test fun testQuerySortedAsSingle() {
+    @Test
+    fun testQuerySortedAsSingle() {
 
         populateDBWithTestEntityPK(numItems = 5)
 
@@ -168,7 +178,8 @@ class KRealmExtensionsRxTests {
         assertThat(disposable?.isDisposed ?: false).isTrue()
     }
 
-    @Test fun testQuerySortedAsSingleWithQuery() {
+    @Test
+    fun testQuerySortedAsSingleWithQuery() {
 
         populateDBWithTestEntityPK(numItems = 5)
 
