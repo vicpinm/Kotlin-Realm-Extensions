@@ -22,7 +22,21 @@ fun <T : RealmModel> T.queryFirstAsync(callback: (T?) -> Unit) {
 
 		val result = realm.where(this.javaClass).findFirstAsync()
 		RealmObject.addChangeListener(result, { it ->
-			callback(if (it != null && RealmObject.isValid(it)) realm.copyFromRealm(it) else null)
+			callback(if (RealmObject.isValid(it)) realm.copyFromRealm(it) else null)
+			RealmObject.removeAllChangeListeners(result)
+			realm.close()
+		})
+	}
+}
+
+inline fun <reified T : RealmModel> queryFirstAsync(crossinline callback: (T?) -> Unit) {
+	mainThread {
+
+		val realm = getRealmInstance(T::class.java)
+
+		val result = realm.where(T::class.java).findFirstAsync()
+		RealmObject.addChangeListener(result, { it ->
+			callback(if (RealmObject.isValid(it)) realm.copyFromRealm(it) else null)
 			RealmObject.removeAllChangeListeners(result)
 			realm.close()
 		})
@@ -38,6 +52,12 @@ fun <T : RealmModel> T.queryLastAsync(callback: (T?) -> Unit) {
 	}
 }
 
+inline fun <reified T : RealmModel> queryLastAsync(crossinline callback: (T?) -> Unit) {
+	queryAllAsync<T> {
+		callback(if (it.isNotEmpty() && RealmObject.isValid(it.last())) it.last() else null)
+	}
+}
+
 /**
  * Returns all entities in database asynchronously.
  */
@@ -47,6 +67,20 @@ fun <T : RealmModel> T.queryAllAsync(callback: (List<T>) -> Unit) {
 		val realm = getRealmInstance()
 
 		val result = realm.where(this.javaClass).findAllAsync()
+
+		result.addChangeListener { it ->
+			callback(realm.copyFromRealm(it))
+			result.removeAllChangeListeners()
+			realm.close()
+		}
+	}
+}
+inline fun <reified T : RealmModel> queryAllAsync(crossinline callback: (List<T>) -> Unit) {
+	mainThread {
+
+		val realm = getRealmInstance(T::class.java)
+
+		val result = realm.where(T::class.java).findAllAsync()
 
 		result.addChangeListener { it ->
 			callback(realm.copyFromRealm(it))
