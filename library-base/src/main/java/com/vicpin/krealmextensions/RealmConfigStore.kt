@@ -4,6 +4,7 @@ import android.util.Log
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.RealmModel
+import io.realm.RealmObject
 import io.realm.annotations.RealmModule
 
 /**
@@ -24,21 +25,29 @@ class RealmConfigStore {
                 configMap.put(modelClass, realmCfg)
             }
         }
+
         fun <T : Any> initModule(cls: Class<T>, realmCfg: RealmConfiguration) {
-            var annotation = cls.annotations.filter { it.annotationClass.qualifiedName == RealmModule::classes.name }
+            // check if class of the module
+            var annotation = cls.annotations.filter { it.annotationClass.java.name == RealmModule::class.java.name }
                     .firstOrNull()
+
             if (annotation != null) {
                 Log.i("RealmConfigStore", "Got annotation in module " + annotation)
                 var v: RealmModule = annotation as RealmModule
                 v.classes.filter { cls ->
-                    cls.isInstance(RealmObject::class)
+                    cls.java.interfaces.contains(RealmModel::class.java)
                 }.forEach { cls ->
-
-                    init(cls as Class<RealmObject>, realmCfg)
+                    init(cls.java as Class<RealmModel>, realmCfg)
+                }
+                v.classes.filter { cls ->
+                    cls.java.superclass == RealmObject::class.java
+                }.forEach { cls ->
+                    init(cls.java as Class<RealmObject>, realmCfg)
                 }
 
             }
         }
+
         /**
          * Fetches realm configuration for class.
          */
