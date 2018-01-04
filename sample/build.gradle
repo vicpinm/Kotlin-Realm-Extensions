@@ -5,7 +5,7 @@ apply plugin: 'realm-android'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.1"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.vicpin.kotlinrealmextensions"
         minSdkVersion 15
@@ -22,18 +22,17 @@ android {
     }
     packagingOptions {
         exclude 'META-INF/rxjava.properties'
+        exclude 'META-INF/sample_debug.kotlin_module'
     }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'
-    compile project(':library')
-	compile project(':library-rx')
-    compile project(':library-rx2')
+    compile project(':library-base')
+    compile 'io.reactivex.rxjava2:rxjava:2.1.4'
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+
 
 }

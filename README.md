@@ -6,6 +6,22 @@
 
 Simplify your code to its minimum expression with this set of Kotlin extensions for Realm. Forget all boilerplate related with Realm API and perform database operations in one line of code with this lightweight library. Full test coverage.
 
+## Download for Kotlin 1.1.x and Realm 4.1.x
+
+Grab via Gradle:
+
+```groovy
+repositories {
+    mavenCentral()
+}
+
+compile "com.github.vicpinm:krealmextensions:2.0.0"
+
+//For Single and Flowable queries:
+compile 'io.reactivex.rxjava2:rxjava:2.1.4'
+compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+```
+    
 ## Download for Kotlin 1.1.x and Realm 3.5.0
 
 Grab via Gradle:
@@ -15,13 +31,13 @@ repositories {
     mavenCentral()
 }
 
-compile "com.github.vicpinm:krealmextensions:1.1.5"
+compile "com.github.vicpinm:krealmextensions:1.2.0"
 
 //For Observable queries:
-compile 'com.github.vicpinm:krealmextensions-rxjava:1.1.5'
+compile 'com.github.vicpinm:krealmextensions-rxjava:1.2.0'
 
 //For Single and Flowable queries:
-compile 'com.github.vicpinm:krealmextensions-rxjava2:1.1.5'
+compile 'com.github.vicpinm:krealmextensions-rxjava2:1.2.0'
 ```
 ## Download for Kotlin 1.1.x and Realm 3.1.3
 
@@ -53,8 +69,12 @@ Forget about:
 - Transactions
 - Threads limitations
 - Boilerplate related with Realm API
+- From 2.0 version, your database entities can either extend from RealmObject or implement RealmModule interface.
 
 ## Usage
+
+All methods below use Realm default configuration. You can use different Realm configurations per model with RealmConfigStore.init(Entity::class.java, myConfiguration). See application class from sample for details. Thanks to @magillus for its PR.
+
 ### Store entities
 
 All your entities should extend RealmObject.
@@ -158,6 +178,7 @@ try{
 #### Get entities with conditions: After (Kotlin + extensions)
 ```kotlin
 val events = Event().query { query -> query.equalTo("id",1) }
+//NOTE: If you have a compilation problems in equalTo method (overload ambiguity error), you can use equalToValue("id",1) instead
 ```
 
 If you only need the first or last result, you can also use:
@@ -221,8 +242,8 @@ Event().delete { query -> query.equalTo("id", 1) }
 
 ```java
 Realm realm = Realm.getDefaultInstance();
-Observable<List<Event>> obs =  realm.where(Event.class).findAllAsync()
-.asObservable()
+Flowable<List<Event>> obs =  realm.where(Event.class).findAllAsync()
+.asFlowable()
 .filter(RealmResults::isLoaded)
 .map(realm::copyFromRealm)
 .doOnUnsubscribe(() -> realm.close());
@@ -231,15 +252,15 @@ Observable<List<Event>> obs =  realm.where(Event.class).findAllAsync()
 #### After (Kotlin + extensions)
 
 ```kotlin
-val obs = Event().queryAllAsObservable()
+val obs = Event().queryAllAsFlowable()
 ```
 
 #### Observe query with condition: Before (java)
 
 ```java
 Realm realm = Realm.getDefaultInstance();
-Observable<List<Event>> obs =  realm.where(Event.class).equalTo("id",1).findAllAsync()
-.asObservable()
+Flowable<List<Event>> obs =  realm.where(Event.class).equalTo("id",1).findAllAsync()
+.asFlowable()
 .filter(RealmResults::isLoaded)
 .map(realm::copyFromRealm)
 .doOnUnsubscribe(() -> realm.close());
@@ -248,17 +269,14 @@ Observable<List<Event>> obs =  realm.where(Event.class).equalTo("id",1).findAllA
 #### Observe query with condition: After (Kotlin + extensions)
 
 ```kotlin
-val obs = Event().queryAsObservable { query -> query.equalTo("id",1) }
+val obs = Event().queryAsFlowable { query -> query.equalTo("id",1) }
 ```
 
 These kind of observable queries have to be performed on a thread with a looper attached to it. If you perform an observable query on the main thread, it will run on this thread. If you perform the query on a background thread, a new thread with a looper attached will be created for you to perform the query. This thread will be listen for data changes and it will terminate when you call unsubscribe() on your subscription. 
 
-#### RxJava 2 Support (thanks to @SergiyKorotun)
+#### RxJava 2 Single support (thanks to @SergiyKorotun)
 
 ```kotlin
-val flow = Event().queryAllAsFlowable()
-val flow = Event().queryAsFlowable { query -> query.equalTo("id", 1) }
-
 val single = Event().queryAllAsSingle()
 val single = Event().queryAsSingle { query -> query.equalTo("id", 1) }
 

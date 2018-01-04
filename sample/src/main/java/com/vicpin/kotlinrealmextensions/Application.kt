@@ -4,6 +4,7 @@ import com.vicpin.kotlinrealmextensions.model.UserModule
 import com.vicpin.krealmextensions.RealmConfigStore
 import io.realm.Realm
 import io.realm.RealmConfiguration
+import io.realm.annotations.RealmModule
 
 /**
  * Created by victor on 2/1/17.

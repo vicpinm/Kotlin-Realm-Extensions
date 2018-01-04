@@ -1,3 +1,14 @@
+###2.0.0
+ - Added Realm 4.0 support
+ - Removed rxjava1 support
+ - Removed -rxjava and -rxjava2 library versions, library is provided with rxjava2 support by default. 
+ - Added equalToValue() method in query builder. It seems to be a kotlin compiler related error which produces an overload ambiguity error with equalTo method in realm 4.0.
+ - Added @AutoIncrementPk annotation class for automatic primary key generation.
+ 
+###1.2.0
+ - Support for different realm configurations
+ - New method queryAndUpdate
+ 
 ###1.1.5
  - Separated library into modules.
 
