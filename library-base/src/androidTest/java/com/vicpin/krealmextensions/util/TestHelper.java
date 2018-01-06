@@ -1,7 +1,5 @@
 package com.vicpin.krealmextensions.util;
 
-import android.util.Log;
-
 import io.realm.internal.async.RealmThreadPoolExecutor;
 
 import static junit.framework.Assert.fail;
@@ -30,7 +28,7 @@ public class TestHelper {
             }
             counter--;
         }
-        fail("'BaseRealm.asyncTaskExecutor' is not finished in " + counter/10 + " seconds");
+        fail("'BaseRealm.asyncTaskExecutor' is not finished in " + counter / 10 + " seconds");
     }
 
 

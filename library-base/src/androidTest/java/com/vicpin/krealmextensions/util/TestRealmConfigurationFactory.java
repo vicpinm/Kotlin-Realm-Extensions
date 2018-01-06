@@ -45,9 +45,9 @@ import io.realm.RealmConfiguration;
  * The temp directory will be deleted regardless if the {@link Realm#deleteRealm(RealmConfiguration)} fails or not.
  */
 public class TestRealmConfigurationFactory extends TemporaryFolder {
+    protected boolean unitTestFailed = false;
     private Map<RealmConfiguration, Boolean> map = new ConcurrentHashMap<RealmConfiguration, Boolean>();
     private Set<RealmConfiguration> configurations = Collections.newSetFromMap(map);
-    protected boolean unitTestFailed = false;
 
     @Override
     public Statement apply(final Statement base, Description description) {
