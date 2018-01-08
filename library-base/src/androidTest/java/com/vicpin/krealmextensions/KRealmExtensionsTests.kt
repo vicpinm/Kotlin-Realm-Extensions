@@ -295,6 +295,8 @@ class KRealmExtensionsTests {
     fun testAsyncQueryFirstObjectWithEmptyDBShouldReturnNull() {
         block {
             TestEntity().queryFirstAsync { assertThat(it).isNull();release() }
+            //Parametrised method produces same result
+            queryFirstAsync<TestEntity> { assertThat(it).isNull();release() }
         }
     }
 
@@ -314,6 +316,8 @@ class KRealmExtensionsTests {
     fun testAsyncQueryLastObjectWithEmptyDBShouldReturnNull() {
         block {
             TestEntity().queryLastAsync { assertThat(it).isNull(); release() }
+            //Parametrised method produces same result
+            queryLastAsync<TestEntity> { assertThat(it).isNull();release() }
         }
     }
 
@@ -327,6 +331,8 @@ class KRealmExtensionsTests {
     fun testAllItemsAsyncShouldReturnEmptyCollectionWhenDBIsEmpty() {
         block {
             TestEntity().queryAllAsync { assertThat(it).hasSize(0); release() }
+            //Parametrised method produces same result
+            queryAllAsync<TestEntity> { assertThat(it).hasSize(0); release() }
         }
     }
 
@@ -376,7 +382,18 @@ class KRealmExtensionsTests {
                 assertThat(it?.id).isEqualTo(0)
                 release()
             }
+
+
         }
+        block {
+            //Parametrised method produces same result
+            queryFirstAsync<TestEntityPK> {
+                assertThat(it).isNotNull()
+                assertThat(it?.id).isEqualTo(0)
+                release()
+            }
+        }
+
     }
 
     @Test
@@ -402,6 +419,12 @@ class KRealmExtensionsTests {
                 assertThat(it).isNotNull()
                 release()
             }
+
+            //Parametrised method produces same result
+            queryLastAsync<TestEntityPK> {
+                assertThat(it).isNotNull()
+                release()
+            }
         }
     }
 
@@ -418,6 +441,8 @@ class KRealmExtensionsTests {
 
         block {
             TestEntity().queryAllAsync { assertThat(it).hasSize(5); release() }
+            //Parametrised method produces same result
+            queryAllAsync<TestEntity> { assertThat(it).hasSize(5); release() }
         }
     }
 
@@ -458,6 +483,9 @@ class KRealmExtensionsTests {
                 release()
             }
 
+
+        }
+        block {
             //Parametrised method produces same result
             queryAsync<TestEntityPK>({
                 equalToValue("id", 1)
@@ -487,6 +515,11 @@ class KRealmExtensionsTests {
 
         block {
             TestEntityPK().queryAsync({ query -> query.equalToValue("id", 6) }) { results ->
+                assertThat(results).hasSize(0)
+                release()
+            }
+            //Parametrised method produces same result
+            queryAsync<TestEntityPK>({ equalToValue("id", 6) }) { results ->
                 assertThat(results).hasSize(0)
                 release()
             }

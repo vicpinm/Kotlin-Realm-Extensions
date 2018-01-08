@@ -65,7 +65,6 @@ private fun <T : RealmModel> T.performQuery(fieldName: List<String>? = null, ord
     })
 }
 
-@SuppressLint("CheckResult")
 inline fun <reified T : RealmModel> performQuery(fieldName: List<String>? = null, order: List<Sort>? = null, noinline query: Query<T>? = null): Flowable<List<T>> {
 
     return prepareObservableQuery(T::class.java, { realm, subscriber ->
