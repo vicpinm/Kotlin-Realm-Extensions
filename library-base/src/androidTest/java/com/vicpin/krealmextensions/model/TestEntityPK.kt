@@ -9,15 +9,16 @@ import io.realm.annotations.PrimaryKey
  */
 open class TestEntityPK() : RealmObject() {
 
-    @PrimaryKey var id : Long? = null
+    @PrimaryKey
+    var id: Long? = null
 
     var name: String = ""
 
-    constructor(id: Long) : this(){
+    constructor(id: Long) : this() {
         this.id = id
     }
 
-    constructor(id: Long, name : String) : this(){
+    constructor(id: Long, name: String) : this() {
         this.id = id
         this.name = name
     }

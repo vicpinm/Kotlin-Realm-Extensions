@@ -34,7 +34,8 @@ class RealmConfigStore {
 }
 
 fun <T : RealmModel> T.getRealmInstance(): Realm {
-    return RealmConfigStore.fetchConfiguration(this::class.java)?.realm() ?: Realm.getDefaultInstance()
+    return RealmConfigStore.fetchConfiguration(
+            this::class.java)?.realm() ?: Realm.getDefaultInstance()
 }
 
 fun <T : RealmModel> getRealmInstance(clazz: Class<T>): Realm {
@@ -43,6 +44,10 @@ fun <T : RealmModel> getRealmInstance(clazz: Class<T>): Realm {
 
 inline fun <reified D : RealmModel, T : Collection<D>> T.getRealmInstance(): Realm {
     return RealmConfigStore.fetchConfiguration(D::class.java)?.realm() ?: Realm.getDefaultInstance()
+}
+
+inline fun <reified T : RealmModel> getRealmInstance(): Realm {
+    return RealmConfigStore.fetchConfiguration(T::class.java)?.realm() ?: Realm.getDefaultInstance()
 }
 
 inline fun <reified D : RealmModel> Array<D>.getRealmInstance(): Realm {

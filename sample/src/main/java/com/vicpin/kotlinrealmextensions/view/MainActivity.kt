@@ -44,15 +44,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        User().deleteAll()
-        Item().deleteAll()
+        deleteAll<User>()
+        deleteAll<Item>()
     }
 
     private fun performUserTest(threadName: String, finishCallback: (() -> Unit)? = null) {
 
         addMessage("Starting test on $threadName with User realm configuration", important = true)
 
-        User().deleteAll()
+        deleteAll<User>()
         populateUserDb(userSize)
 
         addMessage("DB populated with $userSize users")
@@ -60,10 +60,11 @@ class MainActivity : AppCompatActivity() {
         addMessage("Querying users on $threadName...")
 
         addMessage("Result: ${User().queryAll().size} items ")
+        addMessage("Result: ${queryAll<User>().size} items ")
 
         addMessage("Deleting users on $threadName...")
 
-        User().deleteAll()
+        deleteAll<User>()
 
         addMessage("Querying users on $threadName...")
 
@@ -104,7 +105,7 @@ class MainActivity : AppCompatActivity() {
 
         addMessage("Starting test on $threadName...", important = true)
 
-        Item().deleteAll()
+        deleteAll<Item>()
         populateDB(numItems = dbSize)
 
         addMessage("DB populated with $dbSize items")
@@ -112,6 +113,7 @@ class MainActivity : AppCompatActivity() {
         addMessage("Querying items on $threadName...")
 
         addMessage("Result: ${Item().queryAll().size} items ")
+        addMessage("Result: ${queryAll<Item>().size} items ")
 
         addMessage("Deleting items on $threadName...")
 
