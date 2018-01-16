@@ -119,7 +119,9 @@ inline fun <D : RealmModel, T : Any> prepareObservableQuery(clazz: Class<D>, cro
 
 }
 
-internal fun getLooper(): Looper? {
+
+//Added annotation based on recommendation here: https://stackoverflow.com/a/41905907
+@PublishedApi internal fun getLooper(): Looper? {
     return if (Looper.myLooper() != Looper.getMainLooper()) {
         val backgroundThread = HandlerThread("Scheduler-Realm-BackgroundThread",
                 Process.THREAD_PRIORITY_BACKGROUND)
