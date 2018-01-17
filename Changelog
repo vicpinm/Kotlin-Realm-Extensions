@@ -1,3 +1,9 @@
+###2.1.0
+ - BREAKING CHANGE: Now queries with filters don't has a receiver in the lambda expression. You can directly use methods like equalTo(). For example, you should write Event().query { equalTo("id","abc") } instead of Event().query { it.equalTo("id","abc") }
+ - Parametriced global versions of all query, delete and count functions. Thanks to @PrashamTrivedi
+ - New initModule method in RealmConfigStore class. You can now initialize all your entities from a specific module in a single line. Thanks to @magillus
+ - Updated kotlin version to 1.2.10 and realm version to 4.3.1
+ 
 ###2.0.0
  - Added Realm 4.0 support
  - Removed rxjava1 support
