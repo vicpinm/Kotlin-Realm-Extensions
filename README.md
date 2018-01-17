@@ -28,7 +28,6 @@ compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
 * Version 1.2.0 for Kotlin 1.1.x and Realm 3.5.x
 * Version 1.0.9 for Kotlin 1.1.x and Realm 3.1.x
 * Version 1.0.6 for Kotlin 1.1.x and Realm 2.2.x
-* Version 1.2.0 for Kotlin 1.1.x and Realm 3.5.x
 
 ## Features
 
