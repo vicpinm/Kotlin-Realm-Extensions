@@ -6,7 +6,8 @@
 
 Simplify your code to its minimum expression with this set of Kotlin extensions for Realm. Forget all boilerplate related with Realm API and perform database operations in one line of code with this lightweight library. Full test coverage.
 
-## Download for Kotlin 1.1.x and Realm 4.1.x
+## Download for Kotlin 1.2.x and Realm 4.3.x
+This version has a breaking change. See changelog for details if you migrate from a previous version. 
 
 Grab via Gradle:
 
@@ -15,53 +16,20 @@ repositories {
     mavenCentral()
 }
 
-compile "com.github.vicpinm:krealmextensions:2.0.0"
+compile "com.github.vicpinm:krealmextensions:2.1.0"
 
 //For Single and Flowable queries:
 compile 'io.reactivex.rxjava2:rxjava:2.1.4'
 compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
 ```
-    
-## Download for Kotlin 1.1.x and Realm 3.5.0
 
-Grab via Gradle:
+## Previous versions of Kotlin and Realm
+* Version 2.0.0 for Kotlin 1.1.x and Realm 4.1.x
+* Version 1.2.0 for Kotlin 1.1.x and Realm 3.5.x
+* Version 1.0.9 for Kotlin 1.1.x and Realm 3.1.x
+* Version 1.0.6 for Kotlin 1.1.x and Realm 2.2.x
+* Version 1.2.0 for Kotlin 1.1.x and Realm 3.5.x
 
-```groovy
-repositories {
-    mavenCentral()
-}
-
-compile "com.github.vicpinm:krealmextensions:1.2.0"
-
-//For Observable queries:
-compile 'com.github.vicpinm:krealmextensions-rxjava:1.2.0'
-
-//For Single and Flowable queries:
-compile 'com.github.vicpinm:krealmextensions-rxjava2:1.2.0'
-```
-## Download for Kotlin 1.1.x and Realm 3.1.3
-
-Grab via Gradle:
-
-```groovy
-repositories {
-    mavenCentral()
-}
-
-compile 'com.github.vicpinm:krealmextensions:1.0.9'
-```
-
-## Download for Kotlin 1.0.x and Realm 2.2.1
-
-Grab via Gradle:
-
-```groovy
-repositories {
-    mavenCentral()
-}
-
-compile 'com.github.vicpinm:krealmextensions:1.0.6'
-```
 ## Features
 
 Forget about:
@@ -127,7 +95,8 @@ If you need to provide your own Realm instance, you can use the saveManaged(Real
 
 ### Query entities
 
-All query extensions return detached realm objects, using copyFromRealm() method. 
+* All query extensions return detached realm objects, using copyFromRealm() method. 
+* All query extensions has two versions. One is an extension of RealmModel, and you need to create an instance of that model to perform your query. The other version is a global parametrized funcion (thanks to @PrashamTrivedi). See below examples for details.
 
 #### Get first entity: Before (java)
 ```java
@@ -142,8 +111,9 @@ try {
 
 #### Get first entity: After (Kotlin + extensions)
 ```kotlin
-val firstEvent = Event().queryFirst()
+val firstEvent = Event().queryFirst() //Or val first = queryFirst<Event> 
 ```
+
 
 You can use lastItem extension too.
 
@@ -160,7 +130,7 @@ try {
 
 #### Get  all entities: After (Kotlin + extensions)
 ```kotlin
-val events = Event().queryAll()
+val events = Event().queryAll() //Or queryAll<Event>
 ```
 
 #### Get entities with conditions: Before (java)
@@ -177,7 +147,7 @@ try{
 
 #### Get entities with conditions: After (Kotlin + extensions)
 ```kotlin
-val events = Event().query { query -> query.equalTo("id",1) }
+val events = Event().query { query -> query.equalTo("id",1) } //Or query<Event> { ... }
 //NOTE: If you have a compilation problems in equalTo method (overload ambiguity error), you can use equalToValue("id",1) instead
 ```
 
@@ -215,7 +185,7 @@ try{
 
 #### Delete all: After (Kotlin + extensions)
 ```kotlin
-Event().deleteAll()
+Event().deleteAll() //Or deleteAll<Event>
 ```
 
 #### Delete with condition: Before (java)
@@ -252,7 +222,7 @@ Flowable<List<Event>> obs =  realm.where(Event.class).findAllAsync()
 #### After (Kotlin + extensions)
 
 ```kotlin
-val obs = Event().queryAllAsFlowable()
+val obs = Event().queryAllAsFlowable() //Or queryAllAsFlowable<Event>
 ```
 
 #### Observe query with condition: Before (java)
