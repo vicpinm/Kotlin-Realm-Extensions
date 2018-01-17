@@ -45,6 +45,10 @@ inline fun <reified D : RealmModel, T : Collection<D>> T.getRealmInstance(): Rea
     return RealmConfigStore.fetchConfiguration(D::class.java)?.realm() ?: Realm.getDefaultInstance()
 }
 
+inline fun <reified T : RealmModel> getRealmInstance(): Realm {
+    return RealmConfigStore.fetchConfiguration(T::class.java)?.realm() ?: Realm.getDefaultInstance()
+}
+
 inline fun <reified D : RealmModel> Array<D>.getRealmInstance(): Realm {
     return RealmConfigStore.fetchConfiguration(D::class.java)?.realm() ?: Realm.getDefaultInstance()
 }
