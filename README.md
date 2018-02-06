@@ -146,15 +146,15 @@ try{
 
 #### Get entities with conditions: After (Kotlin + extensions)
 ```kotlin
-val events = Event().query { query -> query.equalTo("id",1) } //Or query<Event> { ... }
+val events = Event().query { equalTo("id",1) } //Or query<Event> { ... }
 //NOTE: If you have a compilation problems in equalTo method (overload ambiguity error), you can use equalToValue("id",1) instead
 ```
 
 If you only need the first or last result, you can also use:
 
 ```kotlin
-val first = Event().queryFirst { query -> query.equalTo("id",1) }
-val last = Event().queryLast { query -> query.equalTo("id",1) }
+val first = Event().queryFirst { equalTo("id",1) }
+val last = Event().queryLast { equalTo("id",1) }
 ```
 
 #### Get sorted entities
@@ -163,7 +163,7 @@ val sortedEvents = Event().querySorted("name",Sort.DESCENDING)
 ```
 
 ```kotlin
-val sortedEvents = Event().querySorted("name",Sort.DESCENDING) { query -> query.equalTo("id",1) }
+val sortedEvents = Event().querySorted("name",Sort.DESCENDING) { equalTo("id",1) }
 ```
 
 
@@ -201,7 +201,7 @@ try{
 
 #### Delete with condition: After (Kotlin + extensions)
 ```kotlin
-Event().delete { query -> query.equalTo("id", 1) }
+Event().delete { equalTo("id", 1) }
 ```
 
 
@@ -238,7 +238,7 @@ Flowable<List<Event>> obs =  realm.where(Event.class).equalTo("id",1).findAllAsy
 #### Observe query with condition: After (Kotlin + extensions)
 
 ```kotlin
-val obs = Event().queryAsFlowable { query -> query.equalTo("id",1) }
+val obs = Event().queryAsFlowable { equalTo("id",1) }
 ```
 
 These kind of observable queries have to be performed on a thread with a looper attached to it. If you perform an observable query on the main thread, it will run on this thread. If you perform the query on a background thread, a new thread with a looper attached will be created for you to perform the query. This thread will be listen for data changes and it will terminate when you call unsubscribe() on your subscription. 
@@ -247,7 +247,7 @@ These kind of observable queries have to be performed on a thread with a looper 
 
 ```kotlin
 val single = Event().queryAllAsSingle()
-val single = Event().queryAsSingle { query -> query.equalTo("id", 1) }
+val single = Event().queryAsSingle { equalTo("id", 1) }
 
 ```
 
