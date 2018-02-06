@@ -21,34 +21,34 @@ import io.realm.Sort
 /**
  * Query for all entities and observe changes returning a Flowable.
  */
-fun <T : RealmModel> T.queryAllAsFlowable() = flowableQuery()
-inline fun <reified T : RealmModel> queryAllAsFlowable() = flowableQuery<T>()
+fun <T : RealmModel> T.queryAllAsFlowable(managed : Boolean = false) = flowableQuery(managed = managed)
+inline fun <reified T : RealmModel> queryAllAsFlowable(managed : Boolean = false) = flowableQuery<T>(managed = managed)
 
 /**
  * Query for entities in database asynchronously and observe changes returning a Flowable.
  */
-fun <T : RealmModel> T.queryAsFlowable(query: Query<T>) = flowableQuery(query = query)
-inline fun <reified T : RealmModel> queryAsFlowable(noinline query: Query<T>) = flowableQuery(query = query)
+fun <T : RealmModel> T.queryAsFlowable(managed : Boolean = false, query: Query<T>) = flowableQuery(managed = managed, query = query)
+inline fun <reified T : RealmModel> queryAsFlowable(managed : Boolean = false, noinline query: Query<T>) = flowableQuery(managed = managed, query = query)
 
 /**
  * Query for sorted entities and observe changes returning a Flowable.
  */
-fun <T : RealmModel> T.querySortedAsFlowable(fieldName: List<String>, order: List<Sort>, query: Query<T>? = null) = flowableQuery(fieldName, order, query)
-inline fun <reified T : RealmModel> querySortedAsFlowable(fieldName: List<String>, order: List<Sort>, noinline query: Query<T>? = null) = flowableQuery(fieldName, order, query)
+fun <T : RealmModel> T.querySortedAsFlowable(fieldName: List<String>, order: List<Sort>, managed : Boolean = false, query: Query<T>? = null) = flowableQuery(fieldName, order, managed, query)
+inline fun <reified T : RealmModel> querySortedAsFlowable(fieldName: List<String>, order: List<Sort>, managed : Boolean = false, noinline query: Query<T>? = null) = flowableQuery(fieldName, order, managed, query)
 
 /**
  * Query for sorted entities and observe changes returning a Flowable.
  */
-fun <T : RealmModel> T.querySortedAsFlowable(fieldName: String, order: Sort, query: Query<T>? = null) = flowableQuery(listOf(fieldName), listOf(order), query)
-inline fun <reified T : RealmModel> querySortedAsFlowable(fieldName: String, order: Sort, noinline query: Query<T>? = null) = flowableQuery(listOf(fieldName), listOf(order), query)
+fun <T : RealmModel> T.querySortedAsFlowable(fieldName: String, order: Sort, managed : Boolean = false, query: Query<T>? = null) = flowableQuery(listOf(fieldName), listOf(order), managed, query)
+inline fun <reified T : RealmModel> querySortedAsFlowable(fieldName: String, order: Sort, managed : Boolean = false, noinline query: Query<T>? = null) = flowableQuery(listOf(fieldName), listOf(order), managed, query)
 
 /**
  * INTERNAL FUNCTIONS
  */
-private fun <T : RealmModel> T.flowableQuery(fieldName: List<String>? = null, order: List<Sort>? = null, query: Query<T>? = null) = performFlowableQuery(fieldName, order, query, this.javaClass)
-@PublishedApi internal inline fun <reified T : RealmModel> flowableQuery(fieldName: List<String>? = null, order: List<Sort>? = null, noinline query: Query<T>? = null) = performFlowableQuery(fieldName, order, query, T::class.java)
+private fun <T : RealmModel> T.flowableQuery(fieldName: List<String>? = null, order: List<Sort>? = null, managed : Boolean = false, query: Query<T>? = null) = performFlowableQuery(fieldName, order, managed, query, this.javaClass)
+@PublishedApi internal inline fun <reified T : RealmModel> flowableQuery(fieldName: List<String>? = null, order: List<Sort>? = null, managed : Boolean = false, noinline query: Query<T>? = null) = performFlowableQuery(fieldName, order, managed, query, T::class.java)
 
-@PublishedApi internal fun <T:RealmModel> performFlowableQuery(fieldName: List<String>? = null, order: List<Sort>? = null, query: Query<T>? = null, javaClass : Class<T>): Flowable<List<T>> {
+@PublishedApi internal fun <T:RealmModel> performFlowableQuery(fieldName: List<String>? = null, order: List<Sort>? = null, managed : Boolean = false, query: Query<T>? = null, javaClass : Class<T>): Flowable<List<T>> {
     return prepareObservableQuery(javaClass, { realm, subscriber ->
         val realmQuery = realm.where(javaClass)
         query?.invoke(realmQuery)
@@ -61,7 +61,7 @@ private fun <T : RealmModel> T.flowableQuery(fieldName: List<String>? = null, or
 
         result.asFlowable()
                 .filter { it.isLoaded }
-                .map { realm.copyFromRealm(it) }
+                .map { if(!managed) realm.copyFromRealm(it) else it }
                 .subscribe({
                     subscriber.onNext(it)
                 }, { subscriber.onError(it) })

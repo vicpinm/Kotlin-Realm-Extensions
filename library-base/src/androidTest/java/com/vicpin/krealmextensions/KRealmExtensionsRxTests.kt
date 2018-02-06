@@ -70,6 +70,31 @@ class KRealmExtensionsRxTests {
 
     }
 
+    @Test fun testQueryAllAsFlowableManaged() {
+
+        var itemsCount = 5
+        var disposable: Disposable? = null
+
+        populateDBWithTestEntity(numItems = itemsCount)
+
+        block {
+            disposable = TestEntity().queryAllAsFlowable(managed = true).subscribe({
+                assertThat(it).hasSize(itemsCount)
+                it.forEach { assertThat(it.isManaged).isTrue() }
+                release()
+            },{ it.printStackTrace() })
+        }
+
+        block {
+            //Add one item more to db
+            ++itemsCount
+            populateDBWithTestEntity(numItems = 1)
+        }
+
+        disposable?.dispose()
+
+    }
+
     @Test fun testQueryAsFlowable() {
 
         populateDBWithTestEntityPK(numItems = 5)
@@ -78,6 +103,21 @@ class KRealmExtensionsRxTests {
             disposable = TestEntityPK().queryAsFlowable { equalToValue("id", 1) }.subscribe({
                 assertThat(it).hasSize(1)
                 assertThat(it[0].isManaged).isFalse()
+                release()
+            },{ it.printStackTrace() })
+        }
+
+        disposable?.dispose()
+    }
+
+    @Test fun testQueryAsFlowableManaged() {
+
+        populateDBWithTestEntityPK(numItems = 5)
+
+        block {
+            disposable = TestEntityPK().queryAsFlowable(managed = true) { equalToValue("id", 1) }.subscribe({
+                assertThat(it).hasSize(1)
+                it.forEach { assertThat(it.isManaged).isTrue() }
                 release()
             },{ it.printStackTrace() })
         }
@@ -134,6 +174,22 @@ class KRealmExtensionsRxTests {
         disposable?.dispose()
     }
 
+    @Test fun testQuerySortedAsFlowableManaged() {
+
+        populateDBWithTestEntityPK(numItems = 5)
+
+        block {
+            disposable = TestEntityPK().querySortedAsFlowable("id", Sort.DESCENDING, managed = true).subscribe({
+                assertThat(it).hasSize(5)
+                it.forEach { assertThat(it.isManaged).isTrue() }
+                assertThat(it[0].id).isEqualTo(4)
+                release()
+            },{ it.printStackTrace() })
+        }
+
+        disposable?.dispose()
+    }
+
     @Test fun testQuerySortedAsFlowableWithQuery() {
 
         populateDBWithTestEntityPK(numItems = 5)
@@ -142,6 +198,23 @@ class KRealmExtensionsRxTests {
             disposable = TestEntityPK().querySortedAsFlowable("id", Sort.DESCENDING) { equalToValue("id", 1) }.subscribe({
                 assertThat(it).hasSize(1)
                 assertThat(it[0].isManaged).isFalse()
+                assertThat(it[0].id).isEqualTo(1)
+                release()
+            },{ it.printStackTrace() })
+        }
+
+        disposable?.dispose()
+    }
+
+
+    @Test fun testQuerySortedAsFlowableManagedWithQuery() {
+
+        populateDBWithTestEntityPK(numItems = 5)
+
+        block {
+            disposable = TestEntityPK().querySortedAsFlowable("id", Sort.DESCENDING, managed = true) { equalToValue("id", 1) }.subscribe({
+                assertThat(it).hasSize(1)
+                it.forEach { assertThat(it.isManaged).isTrue() }
                 assertThat(it[0].id).isEqualTo(1)
                 release()
             },{ it.printStackTrace() })
