@@ -16,7 +16,7 @@ repositories {
     mavenCentral()
 }
 
-compile "com.github.vicpinm:krealmextensions:2.1.0"
+compile "com.github.vicpinm:krealmextensions:2.1.1"
 
 //For Single and Flowable queries:
 compile 'io.reactivex.rxjava2:rxjava:2.1.4'
