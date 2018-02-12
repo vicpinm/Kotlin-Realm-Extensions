@@ -189,7 +189,33 @@ inline fun <reified T : RealmModel> querySorted(fieldName: List<String>, order: 
  * commit transaction and close realm instance.
  */
 fun Realm.transaction(action: (Realm) -> Unit) {
-    use { executeTransaction { action(this) } }
+    use {
+        if(!isInTransaction) {
+            executeTransaction { action(this) }
+        }
+        else {
+            action(this)
+        }
+    }
+}
+
+/**
+ * Utility extension for modifying database. Create a transaction, run the function passed as argument,
+ * and commit transaction.
+ */
+fun Realm.transactionManaged(action: (Realm) -> Unit) {
+    if(!isInTransaction) {
+        executeTransaction { action(this) }
+    }
+    else {
+        action(this)
+    }
+}
+
+fun executeTransaction(realm : Realm = Realm.getDefaultInstance(), transaction: (Realm) -> Unit) {
+    realm.use {
+        realm.executeTransaction { transaction(it) }
+    }
 }
 
 /**
@@ -205,7 +231,7 @@ fun <T : RealmModel> T.create() {
  */
 fun <T : RealmModel> T.createManaged(realm: Realm): T {
     var result: T? = null
-    realm.executeTransaction { result = it.copyToRealm(this) }
+    realm.transactionManaged { result = it.copyToRealm(this) }
     return result!!
 }
 
@@ -222,7 +248,7 @@ fun <T : RealmModel> T.createOrUpdate() {
  */
 fun <T : RealmModel> T.createOrUpdateManaged(realm: Realm): T {
     var result: T? = null
-    realm.executeTransaction { result = it.copyToRealmOrUpdate(this) }
+    realm.transactionManaged { result = it.copyToRealmOrUpdate(this) }
     return result!!
 }
 
@@ -246,7 +272,7 @@ fun <T : RealmModel> T.save() {
  */
 inline fun <reified T : RealmModel> T.saveManaged(realm: Realm): T {
     var result: T? = null
-    realm.executeTransaction {
+    realm.transactionManaged {
         if (isAutoIncrementPK()) {
             initPk(realm)
         }
@@ -270,7 +296,7 @@ inline fun <reified D : RealmModel, T : Collection<D>> T.saveAll() {
 
 inline fun <reified T : RealmModel> Collection<T>.saveAllManaged(realm: Realm): List<T> {
     val results = mutableListOf<T>()
-    realm.executeTransaction {
+    realm.transactionManaged {
         if (first().isAutoIncrementPK()) {
             initPk(realm)
         }
@@ -290,7 +316,7 @@ inline fun <reified D : RealmModel> Array<D>.saveAll() {
 
 inline fun <reified T : RealmModel> Array<T>.saveAllManaged(realm: Realm): List<T> {
     val results = mutableListOf<T>()
-    realm.executeTransaction {
+    realm.transactionManaged {
         if (first().isAutoIncrementPK()) {
             initPk(realm)
         }
