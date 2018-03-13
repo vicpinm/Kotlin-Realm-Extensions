@@ -19,7 +19,7 @@ fun <T : RealmModel> T.queryFirstAsync(callback: (T?) -> Unit) = queryFirstAsync
 inline fun <reified T : RealmModel> queryFirstAsync(noinline callback: (T?) -> Unit) = queryFirstAsync(callback, T::class.java)
 
 @PublishedApi internal fun <T : RealmModel> queryFirstAsync(callback: (T?) -> Unit, javaClass: Class<T>) {
-	mainThread {
+	onLooperThread {
 
 		val realm = getRealmInstance(javaClass)
 
@@ -28,6 +28,9 @@ inline fun <reified T : RealmModel> queryFirstAsync(noinline callback: (T?) -> U
 			callback(if (RealmObject.isValid(it)) realm.copyFromRealm(it) else null)
 			RealmObject.removeAllChangeListeners(result)
 			realm.close()
+			if (isRealmThread()) {
+				Looper.myLooper().thread?.interrupt()
+			}
 		})
 	}
 }
@@ -54,7 +57,7 @@ fun <T : RealmModel> T.queryAllAsync(callback: (List<T>) -> Unit) = queryAllAsyn
 inline fun <reified T : RealmModel> queryAllAsync(noinline callback: (List<T>) -> Unit) = queryAllAsync(callback, T::class.java)
 
 @PublishedApi internal fun <T : RealmModel> queryAllAsync(callback: (List<T>) -> Unit, javaClass: Class<T>) {
-	mainThread {
+	onLooperThread {
 
 		val realm = getRealmInstance(javaClass)
 
@@ -64,6 +67,9 @@ inline fun <reified T : RealmModel> queryAllAsync(noinline callback: (List<T>) -
 			callback(realm.copyFromRealm(it))
 			result.removeAllChangeListeners()
 			realm.close()
+			if (isRealmThread()) {
+				Looper.myLooper().thread?.interrupt()
+			}
 		}
 	}
 }
@@ -75,7 +81,7 @@ fun <T : RealmModel> T.queryAsync(query: Query<T>, callback: (List<T>) -> Unit) 
 inline fun <reified T : RealmModel> queryAsync(noinline query: Query<T>, noinline callback: (List<T>) -> Unit) = queryAsync(query, callback, T::class.java)
 
 @PublishedApi internal fun <T : RealmModel> queryAsync(query: Query<T>, callback: (List<T>) -> Unit, javaClass: Class<T>) {
-	mainThread {
+	onLooperThread {
 
 		val realm = getRealmInstance(javaClass)
 		val realmQuery = realm.where(javaClass)
@@ -85,12 +91,19 @@ inline fun <reified T : RealmModel> queryAsync(noinline query: Query<T>, noinlin
 			callback(realm.copyFromRealm(it))
 			result.removeAllChangeListeners()
 			realm.close()
+			if (isRealmThread()) {
+				Looper.myLooper().thread?.interrupt()
+			}
 		}
 	}
 }
 
-fun mainThread(block: () -> Unit) {
-	Handler(Looper.getMainLooper()).post(block)
+fun onLooperThread(block: () -> Unit) {
+	if(Looper.myLooper() != null) {
+		block()
+	} else {
+		Handler(getLooper()).post(block)
+	}
 }
 
 

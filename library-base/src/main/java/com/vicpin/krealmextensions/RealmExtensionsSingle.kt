@@ -62,7 +62,7 @@ private fun <T : RealmModel> T.singleQuery(fieldName : List<String>? = null, ord
         emitter.setDisposable(Disposables.fromAction {
             result.removeAllChangeListeners()
             realm.close()
-            if (android.os.Looper.getMainLooper() != looper) {
+            if (isRealmThread()) {
                 looper?.thread?.interrupt()
             }
         })

@@ -68,21 +68,12 @@ private fun <T : RealmModel> T.flowableQuery(fieldName: List<String>? = null, or
     })
 }
 
-private class BackgroundThread : HandlerThread("Scheduler-Realm-BackgroundThread",
-        Process.THREAD_PRIORITY_BACKGROUND)
 
 private inline fun <D : RealmModel, T : Any> prepareObservableQuery(clazz: Class<D>, crossinline closure: (Realm, FlowableEmitter<in T>) -> Disposable): Flowable<T> {
     var realm: Realm? = null
     var mySubscription: Disposable? = null
 
-    var backgroundThread: HandlerThread? = null
-    val looper: Looper = if (Looper.myLooper() == null) {
-        backgroundThread = BackgroundThread()
-        backgroundThread.start()
-        backgroundThread.looper
-    } else {
-        Looper.getMainLooper()
-    }
+    val looper = getLooper()
 
     return Flowable.defer {
         Flowable.create(FlowableOnSubscribe<T> {
@@ -92,7 +83,9 @@ private inline fun <D : RealmModel, T : Any> prepareObservableQuery(clazz: Class
                 .doOnCancel {
                     realm?.close()
                     mySubscription?.dispose()
-                    backgroundThread?.interrupt()
+                    if (isRealmThread()) {
+                        looper?.thread?.interrupt()
+                    }
                 }
                 .unsubscribeOn(AndroidSchedulers.from(looper))
                 .subscribeOn(AndroidSchedulers.from(looper))
@@ -100,13 +93,17 @@ private inline fun <D : RealmModel, T : Any> prepareObservableQuery(clazz: Class
 
 }
 
+const val REALM_THREAD_NAME = "Scheduler-Realm-BackgroundThread"
+
+fun isRealmThread() = Thread.currentThread().name == REALM_THREAD_NAME
+
 internal fun getLooper(): Looper? {
-    return if (Looper.myLooper() != Looper.getMainLooper()) {
-        val backgroundThread = HandlerThread("Scheduler-Realm-BackgroundThread",
+    return if (Looper.myLooper() == null) {
+        val backgroundThread = HandlerThread(REALM_THREAD_NAME,
                 Process.THREAD_PRIORITY_BACKGROUND)
         backgroundThread.start()
         backgroundThread.looper
     } else {
-        Looper.getMainLooper()
+        Looper.myLooper()
     }
 }
