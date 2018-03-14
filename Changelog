@@ -1,3 +1,8 @@
+###2.1.3
+ - New global function executeTransaction { ... } for performing several operations in the same transaction (see readme for details)
+ - Async queries are not forced to be executed in the main thread anymore. A new thread with a looper attached to it will be created for you if needed (see thread management section in readme for details)
+ - Flowable and single queries now takes into account if the thread where you perform the query has a looper attached to it, in order to avoid creating a new one. 
+ 
 ###2.1.0
  - BREAKING CHANGE: Now queries with filters don't has a receiver in the lambda expression. You can directly use methods like equalTo(). For example, you should write Event().query { equalTo("id","abc") } instead of Event().query { it.equalTo("id","abc") }
  - Parametriced global versions of all query, delete and count functions. Thanks to @PrashamTrivedi
