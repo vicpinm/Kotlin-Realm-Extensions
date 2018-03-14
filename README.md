@@ -16,7 +16,7 @@ repositories {
     mavenCentral()
 }
 
-compile "com.github.vicpinm:krealmextensions:2.1.1"
+compile "com.github.vicpinm:krealmextensions:2.1.3"
 
 //For Single and Flowable queries:
 compile 'io.reactivex.rxjava2:rxjava:2.1.4'
@@ -251,6 +251,18 @@ val single = Event().queryAsSingle { equalTo("id", 1) }
 
 ```
 
+### Transactions
+If you need to perform several operations in one transaction, you can do:
+
+```kotlin
+executeTransaction {
+   User().deleteAll() //Or deleteAll<User>()
+   newUsers.saveAll()
+}
+```
+
+### Threads management
+Realm needs to perform observable queries and async queries in a thread with a looper attached to it. This library has that into account, and when you perform queries like queryAsFlowable, queryAsSingle, queryAsync and all other variants, a new thread with a looper attached to it will be created for you if the thread from where you execute the query does not have a looper attached. This thread created by the library will be finished automatically when the subscription is finished, or when the async query return its result.
 
 ### Proguard
 
