@@ -13,7 +13,9 @@ proguard/
 
 # Intellij
 *.iml
-.idea/
+.idea/*
+!.idea/codeStyleSettings.xml
+!.idea/inspectionProfiles
 
 # Keystore files
 *.jks
