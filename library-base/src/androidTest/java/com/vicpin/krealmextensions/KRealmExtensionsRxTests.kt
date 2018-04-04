@@ -27,7 +27,6 @@ class KRealmExtensionsRxTests {
     var latchReleased = false
     var disposable: Disposable? = null
 
-
     @Before fun setUp() {
         val realmConfig = configFactory.createConfiguration()
         realm = Realm.getInstance(realmConfig)
@@ -57,7 +56,7 @@ class KRealmExtensionsRxTests {
             disposable = TestEntity().queryAllAsFlowable().subscribe({
                 assertThat(it).hasSize(itemsCount)
                 release()
-            },{ it.printStackTrace() })
+            }, { it.printStackTrace() })
         }
 
         block {
@@ -67,7 +66,6 @@ class KRealmExtensionsRxTests {
         }
 
         disposable?.dispose()
-
     }
 
     @Test fun testQueryAllAsFlowableManaged() {
@@ -82,7 +80,7 @@ class KRealmExtensionsRxTests {
                 assertThat(it).hasSize(itemsCount)
                 it.forEach { assertThat(it.isManaged).isTrue() }
                 release()
-            },{ it.printStackTrace() })
+            }, { it.printStackTrace() })
         }
 
         block {
@@ -92,7 +90,6 @@ class KRealmExtensionsRxTests {
         }
 
         disposable?.dispose()
-
     }
 
     @Test fun testQueryAsFlowable() {
@@ -104,7 +101,7 @@ class KRealmExtensionsRxTests {
                 assertThat(it).hasSize(1)
                 assertThat(it[0].isManaged).isFalse()
                 release()
-            },{ it.printStackTrace() })
+            }, { it.printStackTrace() })
         }
 
         disposable?.dispose()
@@ -119,7 +116,7 @@ class KRealmExtensionsRxTests {
                 assertThat(it).hasSize(1)
                 it.forEach { assertThat(it.isManaged).isTrue() }
                 release()
-            },{ it.printStackTrace() })
+            }, { it.printStackTrace() })
         }
 
         disposable?.dispose()
@@ -136,8 +133,7 @@ class KRealmExtensionsRxTests {
                 assertThat(result).hasSize(itemsCount)
                 assertThat(result[0].isManaged).isFalse()
                 release()
-            },{ it.printStackTrace() })
-
+            }, { it.printStackTrace() })
         }
 
         assertThat(disposable?.isDisposed ?: false).isTrue()
@@ -152,7 +148,7 @@ class KRealmExtensionsRxTests {
                 assertThat(it).hasSize(1)
                 assertThat(it[0].isManaged).isFalse()
                 release()
-            },{ it.printStackTrace() })
+            }, { it.printStackTrace() })
         }
 
         assertThat(disposable?.isDisposed ?: false).isTrue()
@@ -168,7 +164,7 @@ class KRealmExtensionsRxTests {
                 assertThat(it[0].isManaged).isFalse()
                 assertThat(it[0].id).isEqualTo(4)
                 release()
-            },{ it.printStackTrace() })
+            }, { it.printStackTrace() })
         }
 
         disposable?.dispose()
@@ -184,7 +180,7 @@ class KRealmExtensionsRxTests {
                 it.forEach { assertThat(it.isManaged).isTrue() }
                 assertThat(it[0].id).isEqualTo(4)
                 release()
-            },{ it.printStackTrace() })
+            }, { it.printStackTrace() })
         }
 
         disposable?.dispose()
@@ -200,12 +196,11 @@ class KRealmExtensionsRxTests {
                 assertThat(it[0].isManaged).isFalse()
                 assertThat(it[0].id).isEqualTo(1)
                 release()
-            },{ it.printStackTrace() })
+            }, { it.printStackTrace() })
         }
 
         disposable?.dispose()
     }
-
 
     @Test fun testQuerySortedAsFlowableManagedWithQuery() {
 
@@ -217,12 +212,11 @@ class KRealmExtensionsRxTests {
                 it.forEach { assertThat(it.isManaged).isTrue() }
                 assertThat(it[0].id).isEqualTo(1)
                 release()
-            },{ it.printStackTrace() })
+            }, { it.printStackTrace() })
         }
 
         disposable?.dispose()
     }
-
 
     @Test fun testQuerySortedAsSingle() {
 
@@ -234,7 +228,7 @@ class KRealmExtensionsRxTests {
                 assertThat(it[0].isManaged).isFalse()
                 assertThat(it[0].id).isEqualTo(4)
                 release()
-            },{ it.printStackTrace() })
+            }, { it.printStackTrace() })
         }
 
         assertThat(disposable?.isDisposed ?: false).isTrue()
@@ -250,7 +244,7 @@ class KRealmExtensionsRxTests {
                 assertThat(it[0].isManaged).isFalse()
                 assertThat(it[0].id).isEqualTo(1)
                 release()
-            },{ it.printStackTrace() })
+            }, { it.printStackTrace() })
         }
 
         assertThat(disposable?.isDisposed ?: false).isTrue()
@@ -279,14 +273,9 @@ class KRealmExtensionsRxTests {
         latch = CountDownLatch(1)
     }
 
-
     fun block(closure: () -> Unit) {
         latchReleased = false
         closure()
         blockLatch()
     }
-
-
 }
-
-

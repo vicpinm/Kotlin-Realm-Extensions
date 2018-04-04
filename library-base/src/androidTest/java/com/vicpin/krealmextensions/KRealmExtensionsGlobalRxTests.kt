@@ -29,7 +29,6 @@ class KRealmExtensionsGlobalRxTests {
     var latchReleased = false
     var disposable: Disposable? = null
 
-
     @Before
     fun setUp() {
         val realmConfig = configFactory.createConfiguration()
@@ -62,7 +61,7 @@ class KRealmExtensionsGlobalRxTests {
             disposable = queryAllAsFlowable<TestEntity>().subscribe({
                 Truth.assertThat(it).hasSize(itemsCount)
                 release()
-            },{ it.printStackTrace() })
+            }, { it.printStackTrace() })
         }
 
         block {
@@ -72,7 +71,6 @@ class KRealmExtensionsGlobalRxTests {
         }
 
         disposable?.dispose()
-
     }
 
     @Test
@@ -85,7 +83,7 @@ class KRealmExtensionsGlobalRxTests {
                 Truth.assertThat(it).hasSize(1)
                 Truth.assertThat(it[0].isManaged).isFalse()
                 release()
-            },{ it.printStackTrace() })
+            }, { it.printStackTrace() })
         }
 
         disposable?.dispose()
@@ -103,8 +101,7 @@ class KRealmExtensionsGlobalRxTests {
                 Truth.assertThat(result).hasSize(itemsCount)
                 Truth.assertThat(result[0].isManaged).isFalse()
                 release()
-            },{ it.printStackTrace() })
-
+            }, { it.printStackTrace() })
         }
 
         Truth.assertThat(disposable?.isDisposed ?: false).isTrue()
@@ -120,7 +117,7 @@ class KRealmExtensionsGlobalRxTests {
                 Truth.assertThat(it).hasSize(1)
                 Truth.assertThat(it[0].isManaged).isFalse()
                 release()
-            },{ it.printStackTrace() })
+            }, { it.printStackTrace() })
         }
 
         Truth.assertThat(disposable?.isDisposed ?: false).isTrue()
@@ -137,7 +134,7 @@ class KRealmExtensionsGlobalRxTests {
                 Truth.assertThat(it[0].isManaged).isFalse()
                 Truth.assertThat(it[0].id).isEqualTo(4)
                 release()
-            },{ it.printStackTrace() })
+            }, { it.printStackTrace() })
         }
 
         disposable?.dispose()
@@ -154,12 +151,11 @@ class KRealmExtensionsGlobalRxTests {
                 Truth.assertThat(it[0].isManaged).isFalse()
                 Truth.assertThat(it[0].id).isEqualTo(1)
                 release()
-            },{ it.printStackTrace() })
+            }, { it.printStackTrace() })
         }
 
         disposable?.dispose()
     }
-
 
     @Test
     fun testQuerySortedAsSingle() {
@@ -172,7 +168,7 @@ class KRealmExtensionsGlobalRxTests {
                 Truth.assertThat(it[0].isManaged).isFalse()
                 Truth.assertThat(it[0].id).isEqualTo(4)
                 release()
-            },{ it.printStackTrace() })
+            }, { it.printStackTrace() })
         }
 
         Truth.assertThat(disposable?.isDisposed ?: false).isTrue()
@@ -189,7 +185,7 @@ class KRealmExtensionsGlobalRxTests {
                 Truth.assertThat(it[0].isManaged).isFalse()
                 Truth.assertThat(it[0].id).isEqualTo(1)
                 release()
-            },{ it.printStackTrace() })
+            }, { it.printStackTrace() })
         }
 
         Truth.assertThat(disposable?.isDisposed ?: false).isTrue()
@@ -218,12 +214,9 @@ class KRealmExtensionsGlobalRxTests {
         latch = CountDownLatch(1)
     }
 
-
     fun block(closure: () -> Unit) {
         latchReleased = false
         closure()
         blockLatch()
     }
-
-
 }

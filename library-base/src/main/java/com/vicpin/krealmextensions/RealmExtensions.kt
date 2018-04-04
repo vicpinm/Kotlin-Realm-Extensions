@@ -1,6 +1,11 @@
 package com.vicpin.krealmextensions
 
-import io.realm.*
+import io.realm.Realm
+import io.realm.RealmModel
+import io.realm.RealmObject
+import io.realm.RealmQuery
+import io.realm.RealmResults
+import io.realm.Sort
 import java.lang.reflect.Field
 
 typealias Query<T> = RealmQuery<T>.() -> Unit
@@ -115,7 +120,6 @@ inline fun <reified T : RealmModel> queryLast(query: Query<T>): T? {
     }
 }
 
-
 /**
  * Query to the database with RealmQuery instance as argument
  */
@@ -190,10 +194,9 @@ inline fun <reified T : RealmModel> querySorted(fieldName: List<String>, order: 
  */
 fun Realm.transaction(action: (Realm) -> Unit) {
     use {
-        if(!isInTransaction) {
+        if (!isInTransaction) {
             executeTransaction { action(this) }
-        }
-        else {
+        } else {
             action(this)
         }
     }
@@ -204,15 +207,14 @@ fun Realm.transaction(action: (Realm) -> Unit) {
  * and commit transaction.
  */
 fun Realm.transactionManaged(action: (Realm) -> Unit) {
-    if(!isInTransaction) {
+    if (!isInTransaction) {
         executeTransaction { action(this) }
-    }
-    else {
+    } else {
         action(this)
     }
 }
 
-fun executeTransaction(realm : Realm = Realm.getDefaultInstance(), transaction: (Realm) -> Unit) {
+fun executeTransaction(realm: Realm = Realm.getDefaultInstance(), transaction: (Realm) -> Unit) {
     realm.use {
         realm.executeTransaction { transaction(it) }
     }
@@ -290,7 +292,6 @@ inline fun <reified D : RealmModel, T : Collection<D>> T.saveAll() {
             }
             forEach { if (it.hasPrimaryKey(realm)) realm.copyToRealmOrUpdate(it) else realm.copyToRealm(it) }
         }
-
     }
 }
 
@@ -361,7 +362,6 @@ inline fun <reified T : RealmModel> T.queryAndUpdate(noinline query: Query<T>, n
     }
 }
 
-
 /**
  * Get count of entries
  */
@@ -391,7 +391,6 @@ inline fun <reified T : RealmModel> count(query: Query<T>): Long {
     }
 }
 
-
 /**
  * UTILITY METHODS
  */
@@ -405,7 +404,6 @@ private fun <T> T.withQuery(block: (T) -> Unit): T {
 inline fun <reified T : RealmModel> RealmQuery<T>.runQuery(block: RealmQuery<T>.() -> Unit): RealmQuery<T> {
     block(this); return this
 }
-
 
 fun <T : RealmModel> T.hasPrimaryKey(realm: Realm): Boolean {
     if (realm.schema.get(this.javaClass.simpleName) == null) {
@@ -481,24 +479,13 @@ fun RealmModel.initPk(realm: Realm) {
 
 fun <T : RealmModel> T.isAutoIncrementPK(): Boolean {
     return this.javaClass.declaredAnnotations.any { it.annotationClass == AutoIncrementPK::class }
-
 }
-
 
 fun <T> RealmQuery<T>.equalToValue(fieldName: String, value: Int) = equalTo(fieldName, value)
 fun <T> RealmQuery<T>.equalToValue(fieldName: String, value: Long) = equalTo(fieldName, value)
-
 
 fun Field.isNullFor(obj: Any) = try {
     get(obj) == null
 } catch (ex: NullPointerException) {
     true
 }
-
-
-
-
-
-
-
-

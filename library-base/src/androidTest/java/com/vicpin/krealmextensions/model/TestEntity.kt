@@ -10,8 +10,7 @@ open class TestEntity() : RealmObject() {
 
     var name: String = ""
 
-    constructor(name : String) : this(){
+    constructor(name: String) : this() {
         this.name = name
     }
-
 }

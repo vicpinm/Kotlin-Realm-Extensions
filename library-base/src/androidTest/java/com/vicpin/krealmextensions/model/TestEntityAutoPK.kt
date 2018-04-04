@@ -11,13 +11,12 @@ import io.realm.annotations.PrimaryKey
 @AutoIncrementPK
 open class TestEntityAutoPK() : RealmObject() {
 
-    @PrimaryKey var id : Long? = null
+    @PrimaryKey var id: Long? = null
 
     var name: String = ""
 
-    constructor(id: Long, name : String) : this(){
+    constructor(id: Long, name: String) : this() {
         this.id = id
         this.name = name
     }
-
 }

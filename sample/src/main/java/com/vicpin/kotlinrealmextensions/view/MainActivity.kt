@@ -39,7 +39,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }.start()
         }
-
     }
 
     override fun onDestroy() {
@@ -98,7 +97,6 @@ class MainActivity : AppCompatActivity() {
             addMessage("All users from user configuration : $userCount")
             finishCallback?.invoke()
         }
-
     }
 
     private fun performTest(threadName: String, finishCallback: (() -> Unit)? = null) {
@@ -164,5 +162,4 @@ class MainActivity : AppCompatActivity() {
             scroll.smoothScrollBy(0, 1000)
         }
     }
-
 }
