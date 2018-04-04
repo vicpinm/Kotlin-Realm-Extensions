@@ -1,13 +1,13 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.2.21'
+    ext.kotlin_version = '1.2.31'
     repositories {
         jcenter()
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.1.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "io.realm:realm-gradle-plugin:4.3.1"
 
@@ -15,24 +15,11 @@ buildscript {
         // in the individual module build.gradle files
     }
 }
-apply plugin: 'kotlin'
 
 allprojects {
     repositories {
+        mavenCentral()
         jcenter()
         google()
     }
-}
-
-
-repositories {
-    mavenCentral()
-    jcenter()
-    google()
-}
-dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-}
-sourceSets {
-    main.java.srcDirs += 'src/main/kotlin'
 }
