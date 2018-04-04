@@ -39,6 +39,6 @@ dependencies {
     androidTestImplementation "com.google.truth:truth:0.31"
     androidTestImplementation 'io.reactivex.rxjava2:rxjava:2.1.12'
     androidTestImplementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    kaptAndroidTest 'io.realm:realm-annotations:4.3.1'
-    kaptAndroidTest 'io.realm:realm-annotations-processor:4.3.1'
+    kaptAndroidTest 'io.realm:realm-annotations:5.0.0'
+    kaptAndroidTest 'io.realm:realm-annotations-processor:5.0.0'
 }
