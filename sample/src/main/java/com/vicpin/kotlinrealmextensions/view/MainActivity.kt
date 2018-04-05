@@ -12,7 +12,11 @@ import com.vicpin.kotlinrealmextensions.extensions.wait
 import com.vicpin.kotlinrealmextensions.model.Address
 import com.vicpin.kotlinrealmextensions.model.Item
 import com.vicpin.kotlinrealmextensions.model.User
-import com.vicpin.krealmextensions.*
+import com.vicpin.krealmextensions.deleteAll
+import com.vicpin.krealmextensions.getRealmInstance
+import com.vicpin.krealmextensions.queryAll
+import com.vicpin.krealmextensions.queryAllAsFlowable
+import com.vicpin.krealmextensions.saveAll
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -39,7 +43,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }.start()
         }
-
     }
 
     override fun onDestroy() {
@@ -98,7 +101,6 @@ class MainActivity : AppCompatActivity() {
             addMessage("All users from user configuration : $userCount")
             finishCallback?.invoke()
         }
-
     }
 
     private fun performTest(threadName: String, finishCallback: (() -> Unit)? = null) {
@@ -164,5 +166,4 @@ class MainActivity : AppCompatActivity() {
             scroll.smoothScrollBy(0, 1000)
         }
     }
-
 }

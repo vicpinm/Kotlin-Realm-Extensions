@@ -22,13 +22,11 @@ import java.util.concurrent.CountDownLatch
 @RunWith(AndroidJUnit4::class)
 class KRealmExtensionsGlobalTests {
 
-
     @get:Rule
     var configFactory = TestRealmConfigurationFactory()
     lateinit var realm: Realm
     lateinit var latch: CountDownLatch
     var latchReleased = false
-
 
     @Before
     fun setUp() {
@@ -56,7 +54,6 @@ class KRealmExtensionsGlobalTests {
         Truth.assertThat(count<TestEntity>(realm)).isEqualTo(1)
     }
 
-
     @Test
     fun testPersistPKEntityWithSaveMethodManaged() {
         val result = TestEntityPK(1).saveManaged(realm) //No exception expected
@@ -68,21 +65,21 @@ class KRealmExtensionsGlobalTests {
     fun testCountPKEntity() {
         val list = listOf(TestEntityPK(1), TestEntityPK(2), TestEntityPK(3))
         list.saveAll()
-        Truth.assertThat(count<TestEntityPK>()).isEqualTo(3) 
+        Truth.assertThat(count<TestEntityPK>()).isEqualTo(3)
     }
 
     @Test
     fun testCountDuplicatePKEntity() {
         val list = listOf(TestEntityPK(1), TestEntityPK(1), TestEntityPK(1))
         list.saveAll()
-        Truth.assertThat(count<TestEntityPK>()).isEqualTo(1) 
+        Truth.assertThat(count<TestEntityPK>()).isEqualTo(1)
     }
 
     @Test
     fun testCountEntity() {
         val list = listOf(TestEntity(), TestEntity(), TestEntity())
         list.saveAll()
-        Truth.assertThat(count<TestEntity>()).isEqualTo(3) 
+        Truth.assertThat(count<TestEntity>()).isEqualTo(3)
     }
 
     /**
@@ -91,27 +88,27 @@ class KRealmExtensionsGlobalTests {
     @Test
     fun testPersistAutoPKEntityWithSaveMethodShouldHavePK() {
         TestEntityAutoPK().save()
-        Truth.assertThat(count<TestEntityAutoPK>()).isEqualTo(1) 
-        Truth.assertThat(queryLast<TestEntityAutoPK>()?.id).isEqualTo(1) 
+        Truth.assertThat(count<TestEntityAutoPK>()).isEqualTo(1)
+        Truth.assertThat(queryLast<TestEntityAutoPK>()?.id).isEqualTo(1)
         TestEntityAutoPK().save()
         Truth.assertThat(count<TestEntityAutoPK>()).isEqualTo(2)
-        Truth.assertThat(queryLast<TestEntityAutoPK>()?.id).isEqualTo(2) 
+        Truth.assertThat(queryLast<TestEntityAutoPK>()?.id).isEqualTo(2)
         TestEntityAutoPK().save()
-        Truth.assertThat(count<TestEntityAutoPK>()).isEqualTo(3) 
-        Truth.assertThat(queryLast<TestEntityAutoPK>()?.id).isEqualTo(3) 
+        Truth.assertThat(count<TestEntityAutoPK>()).isEqualTo(3)
+        Truth.assertThat(queryLast<TestEntityAutoPK>()?.id).isEqualTo(3)
     }
 
     @Test
     fun testPersistAutoPkEntityWithPkShouldNotBeOverrided() {
         TestEntityAutoPK(4, "").save()
-        Truth.assertThat(count<TestEntityAutoPK>()).isEqualTo(1) 
-        Truth.assertThat(queryLast<TestEntityAutoPK>()?.id).isEqualTo(4) 
+        Truth.assertThat(count<TestEntityAutoPK>()).isEqualTo(1)
+        Truth.assertThat(queryLast<TestEntityAutoPK>()?.id).isEqualTo(4)
         TestEntityAutoPK(10, "").save()
-        Truth.assertThat(count<TestEntityAutoPK>()).isEqualTo(2) 
-        Truth.assertThat(queryLast<TestEntityAutoPK>()?.id).isEqualTo(10) 
+        Truth.assertThat(count<TestEntityAutoPK>()).isEqualTo(2)
+        Truth.assertThat(queryLast<TestEntityAutoPK>()?.id).isEqualTo(10)
         TestEntityAutoPK(12, "").save()
-        Truth.assertThat(count<TestEntityAutoPK>()).isEqualTo(3) 
-        Truth.assertThat(queryLast<TestEntityAutoPK>()?.id).isEqualTo(12) 
+        Truth.assertThat(count<TestEntityAutoPK>()).isEqualTo(3)
+        Truth.assertThat(queryLast<TestEntityAutoPK>()?.id).isEqualTo(12)
     }
 
     @Test
@@ -125,18 +122,18 @@ class KRealmExtensionsGlobalTests {
     fun testPersistAutoPKEntityListWithSaveMethod() {
         val list = listOf(TestEntityAutoPK(), TestEntityAutoPK(), TestEntityAutoPK())
         list.saveAll()
-        Truth.assertThat(count<TestEntityAutoPK>()).isEqualTo(3) 
-        Truth.assertThat(queryFirst<TestEntityAutoPK>()?.id).isEqualTo(1) 
-        Truth.assertThat(queryLast<TestEntityAutoPK>()?.id).isEqualTo(3) 
+        Truth.assertThat(count<TestEntityAutoPK>()).isEqualTo(3)
+        Truth.assertThat(queryFirst<TestEntityAutoPK>()?.id).isEqualTo(1)
+        Truth.assertThat(queryLast<TestEntityAutoPK>()?.id).isEqualTo(3)
     }
 
     @Test
     fun testPersistAutoPKEntityArrayWithSaveMethod() {
         val list = arrayOf(TestEntityAutoPK(), TestEntityAutoPK(), TestEntityAutoPK())
         list.saveAll()
-        Truth.assertThat(count<TestEntityAutoPK>()).isEqualTo(3) 
-        Truth.assertThat(queryFirst<TestEntityAutoPK>()?.id).isEqualTo(1) 
-        Truth.assertThat(queryLast<TestEntityAutoPK>()?.id).isEqualTo(3) 
+        Truth.assertThat(count<TestEntityAutoPK>()).isEqualTo(3)
+        Truth.assertThat(queryFirst<TestEntityAutoPK>()?.id).isEqualTo(1)
+        Truth.assertThat(queryLast<TestEntityAutoPK>()?.id).isEqualTo(3)
     }
 
     @Test
@@ -187,18 +184,18 @@ class KRealmExtensionsGlobalTests {
     @Test
     fun testAsyncQueryFirstObjectWithEmptyDBShouldReturnNull() {
         block {
-            queryFirstAsync<TestEntity> { Truth.assertThat(it).isNull();release() }
+            queryFirstAsync<TestEntity> { Truth.assertThat(it).isNull(); release() }
         }
     }
 
     @Test
     fun testQueryLastObjectWithEmptyDBShouldReturnNull() {
-        Truth.assertThat(queryLast<TestEntity>()).isNull() 
+        Truth.assertThat(queryLast<TestEntity>()).isNull()
     }
 
     @Test
     fun testQueryLastObjectWithConditionAndEmptyDBShouldReturnNull() {
-        Truth.assertThat(queryLast<TestEntity> { equalTo("name", "test") }).isNull() 
+        Truth.assertThat(queryLast<TestEntity> { equalTo("name", "test") }).isNull()
     }
 
     @Test
@@ -259,7 +256,6 @@ class KRealmExtensionsGlobalTests {
                 release()
             }
         }
-
     }
 
     @Test
@@ -300,7 +296,6 @@ class KRealmExtensionsGlobalTests {
             queryAllAsync<TestEntity> { Truth.assertThat(it).hasSize(5); release() }
         }
     }
-
 
     @Test
     fun testQueryAllItemsAfterSaveCollection() {
@@ -411,9 +406,8 @@ class KRealmExtensionsGlobalTests {
         deleteAll<TestEntity>()
 
         Truth.assertThat(TestEntity().queryAll()).hasSize(0)
-        Truth.assertThat(queryAll<TestEntity>()).hasSize(0) 
+        Truth.assertThat(queryAll<TestEntity>()).hasSize(0)
     }
-
 
     @Test
     fun testDeleteEntitiesWithPK() {
@@ -422,7 +416,7 @@ class KRealmExtensionsGlobalTests {
         deleteAll<TestEntityPK>()
 
         Truth.assertThat(TestEntityPK().queryAll()).hasSize(0)
-        Truth.assertThat(queryAll<TestEntityPK>()).hasSize(0) 
+        Truth.assertThat(queryAll<TestEntityPK>()).hasSize(0)
     }
 
     @Test
@@ -433,7 +427,6 @@ class KRealmExtensionsGlobalTests {
 
         Truth.assertThat(queryAll<TestEntityPK>()).hasSize(4)
     }
-
 
     /**
      * UTILITY TEST METHODS
@@ -458,12 +451,9 @@ class KRealmExtensionsGlobalTests {
         latch = CountDownLatch(1)
     }
 
-
     fun block(closure: () -> Unit) {
         latchReleased = false
         closure()
         blockLatch()
     }
-
-
 }
