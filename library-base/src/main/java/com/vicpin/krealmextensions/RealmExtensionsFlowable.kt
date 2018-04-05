@@ -54,7 +54,7 @@ private fun <T : RealmModel> T.flowableQuery(fieldName: List<String>? = null, or
         query?.invoke(realmQuery)
 
         val result = if (fieldName != null && order != null) {
-            realmQuery.findAllSortedAsync(fieldName.toTypedArray(), order.toTypedArray())
+            realmQuery.sort(fieldName.toTypedArray(), order.toTypedArray()).findAllAsync()
         } else {
             realmQuery.findAllAsync()
         }

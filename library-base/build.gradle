@@ -6,8 +6,7 @@ apply from: 'maven-push.gradle'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.1'
-
+    buildToolsVersion '27.0.3'
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 27
@@ -23,31 +22,23 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
     packagingOptions {
         exclude 'META-INF/rxjava.properties'
         exclude 'META-INF/library-base_debug.kotlin_module'
     }
-
 }
 
 dependencies {
-    compileOnly 'io.reactivex.rxjava2:rxjava:2.1.4'
-    compileOnly 'io.reactivex.rxjava2:rxandroid:2.0.1'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile 'com.android.support.test:runner:0.5'
-    androidTestCompile 'com.android.support.test:rules:0.5'
-    androidTestCompile "com.google.truth:truth:0.31"
-    androidTestCompile 'io.reactivex.rxjava2:rxjava:2.1.4'
-    androidTestCompile 'io.reactivex.rxjava2:rxandroid:2.0.1'
-
-    testCompile 'junit:junit:4.12'
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    kaptAndroidTest 'io.realm:realm-annotations:4.3.1'
-    kaptAndroidTest 'io.realm:realm-annotations-processor:4.3.1'
-}
-repositories {
-    mavenCentral()
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compileOnly 'io.reactivex.rxjava2:rxjava:2.1.12'
+    compileOnly 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test:rules:1.0.1'
+    androidTestImplementation "com.google.truth:truth:0.31"
+    androidTestImplementation 'io.reactivex.rxjava2:rxjava:2.1.12'
+    androidTestImplementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    kaptAndroidTest 'io.realm:realm-annotations:5.0.0'
+    kaptAndroidTest 'io.realm:realm-annotations-processor:5.0.0'
 }
