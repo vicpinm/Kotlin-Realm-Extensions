@@ -44,7 +44,6 @@ class RealmConfigStore {
                 }.forEach { cls ->
                     init(cls.java as Class<RealmObject>, realmCfg)
                 }
-
             }
         }
 
