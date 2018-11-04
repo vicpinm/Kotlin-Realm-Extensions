@@ -272,6 +272,7 @@ You need to add these rules if you use proguard, for rxjava and realm:
 ```bash
 -keep class com.vicpin.krealmextensions.** 
 -keepnames public class * extends io.realm.RealmObject
+-keepnames public class * extends io.realm.RealmModel
 -keep class io.realm.annotations.RealmModule
 -keep @io.realm.annotations.RealmModule class *
 -keep class io.realm.internal.Keep
