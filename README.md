@@ -6,8 +6,7 @@
 
 Simplify your code to its minimum expression with this set of Kotlin extensions for Realm. Forget all boilerplate related with Realm API and perform database operations in one line of code with this lightweight library. Full test coverage.
 
-## Download for Kotlin 1.2.x and Realm 4.3.x
-This version has a breaking change. See changelog for details if you migrate from a previous version. 
+## Download for Kotlin 1.2.x and Realm 5.0
 
 Grab via Gradle:
 
@@ -16,14 +15,15 @@ repositories {
     mavenCentral()
 }
 
-compile "com.github.vicpinm:krealmextensions:2.1.3"
+compile "com.github.vicpinm:krealmextensions:2.2.0"
 
 //For Single and Flowable queries:
-compile 'io.reactivex.rxjava2:rxjava:2.1.4'
+compile 'io.reactivex.rxjava2:rxjava:2.1.12'
 compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
 ```
 
 ## Previous versions of Kotlin and Realm
+* Version 2.1.3 for Kotlin 1.2.x and Realm 4.3.x
 * Version 2.0.0 for Kotlin 1.1.x and Realm 4.1.x
 * Version 1.2.0 for Kotlin 1.1.x and Realm 3.5.x
 * Version 1.0.9 for Kotlin 1.1.x and Realm 3.1.x
@@ -272,6 +272,7 @@ You need to add these rules if you use proguard, for rxjava and realm:
 ```bash
 -keep class com.vicpin.krealmextensions.** 
 -keepnames public class * extends io.realm.RealmObject
+-keepnames public class * extends io.realm.RealmModel
 -keep class io.realm.annotations.RealmModule
 -keep @io.realm.annotations.RealmModule class *
 -keep class io.realm.internal.Keep
