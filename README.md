@@ -18,8 +18,8 @@ repositories {
 compile "com.github.vicpinm:krealmextensions:2.3.0"
 
 //For Single and Flowable queries:
-compile 'io.reactivex.rxjava2:rxjava:2.1.12'
-compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+compile 'io.reactivex.rxjava2:rxjava:2.1.16'
+compile 'io.reactivex.rxjava2:rxandroid:2.0.2'
 ```
 
 ## Previous versions of Kotlin and Realm
