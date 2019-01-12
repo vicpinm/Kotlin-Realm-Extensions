@@ -1,10 +1,8 @@
-[![Sin título.png](https://s23.postimg.org/3sg28rkor/Sin_t_tulo.png)](https://postimg.org/image/lv94zzgjb/)
+ <p align="center">
+  <img width="80%" src ="/krealmextensions.png" />
+</p>
 
- Kotlin extensions to simplify Realm API.
-
-## Description
-
-Simplify your code to its minimum expression with this set of Kotlin extensions for Realm. Forget all boilerplate related with Realm API and perform database operations in one line of code with this lightweight library. Full test coverage.
+**Simplify your code to its minimum expression with this set of Kotlin extensions for Realm. Forget all boilerplate related with Realm API and perform database operations in one line of code with this lightweight library. Full test coverage.**
 
 ## Download for Kotlin 1.3 and Realm 5.8
 
