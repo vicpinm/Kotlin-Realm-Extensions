@@ -79,7 +79,7 @@ private inline fun <D : RealmModel, T : Any> prepareObservableQuery(clazz: Class
             realm = getRealmInstance(clazz)
             mySubscription = closure(realm!!, it)
         }, BackpressureStrategy.BUFFER)
-                .doOnCancel {
+                .doFinally {
                     realm?.close()
                     mySubscription?.dispose()
                     if (isRealmThread()) {
