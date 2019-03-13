@@ -24,14 +24,14 @@ internal fun <T : RealmModel> queryFirstAsync(callback: (T?) -> Unit, javaClass:
         val realm = getRealmInstance(javaClass)
 
         val result = realm.where(javaClass).findFirstAsync()
-        RealmObject.addChangeListener(result, { it ->
+        RealmObject.addChangeListener(result) { it ->
             callback(if (RealmObject.isValid(it)) realm.copyFromRealm(it) else null)
             RealmObject.removeAllChangeListeners(result)
             realm.close()
             if (isRealmThread()) {
                 Looper.myLooper().thread?.interrupt()
             }
-        })
+        }
     }
 }
 

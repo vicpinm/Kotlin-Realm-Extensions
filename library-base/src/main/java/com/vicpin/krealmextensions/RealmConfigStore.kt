@@ -22,14 +22,13 @@ class RealmConfigStore {
         fun <T : RealmModel> init(modelClass: Class<T>, realmCfg: RealmConfiguration) {
             Log.d(TAG, "Adding class $modelClass to realm ${realmCfg.realmFileName}")
             if (!configMap.containsKey(modelClass)) {
-                configMap.put(modelClass, realmCfg)
+                configMap[modelClass] = realmCfg
             }
         }
 
         fun <T : Any> initModule(cls: Class<T>, realmCfg: RealmConfiguration) {
             // check if class of the module
-            val annotation = cls.annotations.filter { it.annotationClass.java.name == RealmModule::class.java.name }
-                    .firstOrNull()
+            val annotation = cls.annotations.firstOrNull { it.annotationClass.java.name == RealmModule::class.java.name }
 
             if (annotation != null) {
                 Log.i("RealmConfigStore", "Got annotation in module " + annotation)
@@ -52,6 +51,21 @@ class RealmConfigStore {
          */
         fun <T : RealmModel> fetchConfiguration(modelClass: Class<T>): RealmConfiguration? {
             return configMap[modelClass]
+        }
+
+
+        /**
+         * Clear configuration map
+         */
+        fun clearConfigurations() {
+            configMap.clear()
+        }
+
+        /**
+         * Remove configuration for class
+         */
+        fun <T : RealmModel> removeConfigurationFor(modelClass: Class<T>) {
+            configMap.remove(modelClass)
         }
     }
 }

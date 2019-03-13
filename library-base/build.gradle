@@ -5,11 +5,10 @@ apply plugin: 'realm-android'
 apply from: 'maven-push.gradle'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
 
@@ -36,14 +35,14 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compileOnly 'io.reactivex.rxjava2:rxjava:2.1.16'
-    compileOnly 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    compileOnly 'io.reactivex.rxjava2:rxjava:2.2.4'
+    compileOnly 'io.reactivex.rxjava2:rxandroid:2.1.0'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test:rules:1.0.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
     androidTestImplementation "com.google.truth:truth:0.31"
-    androidTestImplementation 'io.reactivex.rxjava2:rxjava:2.1.16'
-    androidTestImplementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-    kaptAndroidTest 'io.realm:realm-annotations:5.8.0'
-    kaptAndroidTest 'io.realm:realm-annotations-processor:5.8.0'
+    androidTestImplementation 'io.reactivex.rxjava2:rxjava:2.2.4'
+    androidTestImplementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+    kaptAndroidTest 'io.realm:realm-annotations:5.9.0'
+    kaptAndroidTest 'io.realm:realm-annotations-processor:5.9.0'
 }
