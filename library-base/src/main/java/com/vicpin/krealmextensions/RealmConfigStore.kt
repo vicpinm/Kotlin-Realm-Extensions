@@ -53,6 +53,21 @@ class RealmConfigStore {
         fun <T : RealmModel> fetchConfiguration(modelClass: Class<T>): RealmConfiguration? {
             return configMap[modelClass]
         }
+
+
+        /**
+         * Clear configuration map
+         */
+        fun clearConfigurations() {
+            configMap.clear()
+        }
+
+        /**
+         * Remove configuration for class
+         */
+        fun <T : RealmModel> removeConfigurationFor(modelClass: Class<T>) {
+            configMap.remove(modelClass)
+        }
     }
 }
 
