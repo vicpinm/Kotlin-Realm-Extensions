@@ -47,6 +47,36 @@ class RealmConfigStore {
             }
         }
 
+        fun <T : RealmModel> delete(modelClass : Class<T>){
+
+            Log.d(TAG, "Deleting class $modelClass from realm")
+            if (configMap.containsKey(modelClass)) {
+                configMap.remove(modelClass)
+            }
+        }
+
+        fun <T : Any> deleteModule(cls: Class<T>){
+
+            // check if class of the module
+            val annotation = cls.annotations.filter { it.annotationClass.java.name == RealmModule::class.java.name }
+                    .firstOrNull()
+
+            if (annotation != null) {
+                Log.i("RealmConfigStore", "Got annotation in module $annotation")
+                val moduleAnnotation = annotation as RealmModule
+                moduleAnnotation.classes.filter { cls ->
+                    cls.java.interfaces.contains(RealmModel::class.java)
+                }.forEach { cls
+                    delete(cls as Class<RealmModel>)
+                }
+                moduleAnnotation.classes.filter { cls ->
+                    cls.java.superclass == RealmObject::class.java
+                }.forEach { cls ->
+                    delete(cls as Class<RealmObject>)
+                }
+            }
+        }
+
         /**
          * Fetches realm configuration for class.
          */
