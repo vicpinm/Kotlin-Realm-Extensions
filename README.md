@@ -13,7 +13,7 @@ repositories {
     mavenCentral()
 }
 
-implementation "com.github.vicpinm:krealmextensions:2.5.0"
+implementation "com.github.vicpinm:krealmextensions:2.6.0"
 
 //For Single and Flowable queries:
 implementation 'io.reactivex.rxjava2:rxjava:2.1.16'
